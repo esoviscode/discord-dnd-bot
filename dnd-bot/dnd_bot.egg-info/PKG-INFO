@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: dnd-bot
+Version: 0.0.1
+Summary: D&D bot
+License: MIT
+Classifier: Programming Language :: Python :: 3
+
+Dungeons & Dragons game master bot for discord

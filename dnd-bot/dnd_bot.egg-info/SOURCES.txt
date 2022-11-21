@@ -1,0 +1,15 @@
+pyproject.toml
+setup.cfg
+setup.py
+dnd_bot/__init__.py
+dnd_bot/main.py
+dnd_bot.egg-info/PKG-INFO
+dnd_bot.egg-info/SOURCES.txt
+dnd_bot.egg-info/dependency_links.txt
+dnd_bot.egg-info/entry_points.txt
+dnd_bot.egg-info/not-zip-safe
+dnd_bot.egg-info/requires.txt
+dnd_bot.egg-info/top_level.txt
+dnd_bot/assets/__init__.py
+dnd_bot/assets/audio/__init__.py
+dnd_bot/assets/gfx/__init__.py

@@ -1,0 +1,2 @@
+[console_scripts]
+dnd_bot = dnd_bot.main:main
