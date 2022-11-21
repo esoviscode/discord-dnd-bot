@@ -13,6 +13,10 @@ async def hello(ctx):
     await ctx.send("Hello world!")
 
 def main():
-    client.run('MTA0NDMwNzg2NzI2OTg2MTQwOA.G-6xOG.6OOnxia9luYir_dugHSITRxeZcRbBcbPuFXQ1E')
+    devpass_file = open("../devpass.cfg")
+    devpass = devpass_file.read()
+    devpass_file.close()
+    
+    client.run(devpass)
 
 main()
