@@ -3,23 +3,24 @@ from discord.ext import commands
 from discord import app_commands
 
 intents = discord.Intents().all()
-client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
 
-@client.event
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
 async def on_ready():
-    await tree.sync()
+    synced = await bot.tree.sync()
+    print(f"Synced {len(synced)} commands.");
     print('Bot has successfully started.')
 
-@tree.command(name="hello", description="Responds with greeting")#, guild=discord.Object(id=913375693864308797))
-async def hello(interaction):
-    await interaction.response.send_message("Hello")
+@bot.tree.command(name="hello", description="Responds with greeting")
+async def hello(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Hello {interaction.user.mention}")
 
 def main():
     devpass_file = open("../devpass.cfg")
     devpass = devpass_file.read()
     devpass_file.close()
 
-    client.run(devpass)
+    bot.run(devpass)
 
 main()
