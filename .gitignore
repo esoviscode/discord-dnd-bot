@@ -2,4 +2,4 @@
 dnd-bot/.idea
 dnd-bot/dnd_bot/__pycache__
 dnd-bot/devpass.cfg
-
+.env
