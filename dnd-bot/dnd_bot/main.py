@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 
@@ -13,10 +14,15 @@ async def hello(ctx):
     await ctx.send("Hello world!")
 
 def main():
-    devpass_file = open("../devpass.cfg")
-    devpass = devpass_file.read()
-    devpass_file.close()
+    env_token = "BOT_TOKEN"
+    token = os.getenv(env_token)
+
+    if token is None:
+        raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
+    # devpass_file = open("../devpass.cfg")
+    # devpass = devpass_file.read()
+    # devpass_file.close()
     
-    client.run(devpass)
+    client.run(token)
 
 main()
