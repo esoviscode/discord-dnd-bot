@@ -1,17 +1,21 @@
 import os
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 intents = discord.Intents().all()
-client = commands.Bot(command_prefix= '!', intents=intents)
 
-@client.event
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
 async def on_ready():
+    synced = await bot.tree.sync()
+    print(f"Synced {len(synced)} commands.");
     print('Bot has successfully started.')
 
-@client.command()
-async def hello(ctx):
-    await ctx.send("Hello world!")
+@bot.tree.command(name="hello", description="Responds with greeting")
+async def hello(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Hello {interaction.user.mention}")
 
 def main():
     env_token = "BOT_TOKEN"
@@ -23,6 +27,6 @@ def main():
     # devpass = devpass_file.read()
     # devpass_file.close()
     
-    client.run(token)
+    bot.run(token)
 
 main()
