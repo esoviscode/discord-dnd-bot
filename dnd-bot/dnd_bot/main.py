@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -17,10 +18,15 @@ async def hello(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hello {interaction.user.mention}")
 
 def main():
-    devpass_file = open("../devpass.cfg")
-    devpass = devpass_file.read()
-    devpass_file.close()
+    env_token = "BOT_TOKEN"
+    token = os.getenv(env_token)
 
-    bot.run(devpass)
+    if token is None:
+        raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
+    # devpass_file = open("../devpass.cfg")
+    # devpass = devpass_file.read()
+    # devpass_file.close()
+    
+    bot.run(token)
 
 main()
