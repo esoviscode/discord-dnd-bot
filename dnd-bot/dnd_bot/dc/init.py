@@ -23,16 +23,15 @@ async def unload(ctx, extension):
     await ctx.send(f'`dc.commands.{extension}` was unloaded. You can no longer use it until it is reloaded.')
 
 
-for filename in os.listdir('./dc/commands')[1:]:
-    if filename.endswith('.py'):
-        bot.load_extension(f'dc.commands.{filename[:-3]}')
-
-
 def bot_run():
     env_token = "BOT_TOKEN"
     token = os.getenv(env_token)
 
     if token is None:
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
+
+    for filename in os.listdir('./dc/commands')[1:]:
+        if filename.endswith('.py'):
+            bot.load_extension(f'dc.commands.{filename[:-3]}')
 
     bot.run(token)
