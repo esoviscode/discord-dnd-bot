@@ -1,3 +1,6 @@
 [submodule "docs"]
 	path = docs
 	url = git@github.com:esoviscode/docs.git
+[submodule "database"]
+	path = database
+	url = git@github.com:esoviscode/database.git
