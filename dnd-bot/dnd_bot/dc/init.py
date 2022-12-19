@@ -30,8 +30,8 @@ def bot_run():
     if token is None:
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
-    for filename in os.listdir('./dc/commands')[1:]:
+    for filename in os.listdir('./dc/cogs')[1:]:
         if filename.endswith('.py'):
-            bot.load_extension(f'dc.commands.{filename[:-3]}')
+            bot.load_extension(f'dc.cogs.{filename[:-3]}')
 
     bot.run(token)
