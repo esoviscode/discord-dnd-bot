@@ -33,5 +33,6 @@ def bot_run():
     for filename in os.listdir('./dc/cogs')[1:]:
         if filename.endswith('.py'):
             bot.load_extension(f'dc.cogs.{filename[:-3]}')
+            print(filename)
 
     bot.run(token)
