@@ -13,3 +13,11 @@ dnd_bot.egg-info/top_level.txt
 dnd_bot/assets/__init__.py
 dnd_bot/assets/audio/__init__.py
 dnd_bot/assets/gfx/__init__.py
+dnd_bot/database/__init__.py
+dnd_bot/dc/__init__.py
+dnd_bot/dc/init.py
+dnd_bot/dc/commands/__init__.py
+dnd_bot/dc/commands/hello.py
+dnd_bot/logic/__init__.py
+dnd_bot/logic/lobby/__init__.py
+dnd_bot/logic/prototype/__init__.py
