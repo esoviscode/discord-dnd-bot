@@ -16,7 +16,7 @@ class DatabaseConnection:
         db_user = 'admin'
         db_password = 'admin'
 
-        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='172.18.0.3')
+        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='25.74.173.113')
 
         DatabaseConnection.cursor = DatabaseConnection.connection.cursor()
 
@@ -64,3 +64,5 @@ class DatabaseConnection:
 
         return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2], 'id_campaign': game_tuple[3],
                 'game_state': game_tuple[4], 'players': users}
+
+
