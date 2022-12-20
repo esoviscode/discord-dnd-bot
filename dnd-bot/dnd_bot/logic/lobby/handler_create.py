@@ -1,6 +1,8 @@
 import random
 
-from dnd_bot.dc.ui.send_message import send_message, send_dm_message
+from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_enums import DatabaseEnums
+from dnd_bot.dc.ui.send_message import Messager
 from dnd_bot.logic.prototype.game import Game
 
 generated_ids = []
@@ -43,10 +45,11 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(server, channel_id, host_id):
-        host = server.get_member(host_id)
-        game_id = 42069
-        await send_message(server, channel_id, f"Hello {host.mention}!\n "
+    async def create_lobby(bot, channel_id, host_id):
+        host = bot.get_user(host_id)
+        token = 42069
+        await Messager.send_message(channel_id, f"Hello {host.mention}!\n "
                                                f"A fresh game for you and your team has been created! Make sure that everyone who wants to play has to be in this server!\n"
-                                               f"Game ID: ||{game_id}||")
-        await send_dm_message(server, host_id, f"Welcome to **{game_id}** lobby!")
+                                               f"Game ID: ||{token}||")
+        await Messager.send_dm_message(host_id, f"Welcome to **{token}** lobby!")
+        DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
