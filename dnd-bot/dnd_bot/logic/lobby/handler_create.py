@@ -27,7 +27,7 @@ class HandlerCreate:
         return ret
 
     @staticmethod
-    def __generate_random_unique_numbers(to_generate):
+    def generate_random_unique_numbers(to_generate):
         generated_ids_number = 0
 
         for i in range(to_generate):
@@ -47,9 +47,11 @@ class HandlerCreate:
     @staticmethod
     async def create_lobby(bot, channel_id, host_id):
         host = bot.get_user(host_id)
-        token = 42069
+        token = random.randint(10000, 99999)
         await Messager.send_message(channel_id, f"Hello {host.mention}!\n "
-                                               f"A fresh game for you and your team has been created! Make sure that everyone who wants to play has to be in this server!\n"
-                                               f"Game ID: ||{token}||")
+                                               f"A fresh game for you and your team has been created! Make sure that everyone who wants to play is in this server!\n"
+                                               f"Game token: ||{token}||")
         await Messager.send_dm_message(host_id, f"Welcome to **{token}** lobby!")
-        DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
+
+        game_id = DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
+        DatabaseConnection.add_user(game_id, host_id)
