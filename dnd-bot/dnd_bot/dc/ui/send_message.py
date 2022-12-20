@@ -1,10 +1,12 @@
-from nextcord import Guild
+class Messager:
 
+    bot = None
 
-async def send_message(server: Guild, channel_id: id, content: str):
-    channel = await server.fetch_channel(channel_id)
-    await channel.send(content=content)
+    @staticmethod
+    async def send_message(channel_id: id, content: str):
+        channel = Messager.bot.get_channel(channel_id)
+        await channel.send(content=content)
 
-
-async def send_dm_message(server, user_id, content):
-    await server.get_member(user_id).dm_channel.send(content=content)
+    @staticmethod
+    async def send_dm_message(user_id, content):
+        await Messager.bot.get_user(user_id).send(content=content)
