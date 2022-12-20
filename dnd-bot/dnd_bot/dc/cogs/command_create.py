@@ -13,7 +13,7 @@ class CommandCreate(Cog):
     async def create(self, interaction):
         if interaction.user.dm_channel is None:
             await interaction.user.create_dm()
-        await HandlerCreate.create_lobby(interaction.guild, interaction.channel_id, interaction.user.id)
+        await HandlerCreate.create_lobby(self.bot, interaction.channel_id, interaction.user.id)
 
 
 def setup(bot):

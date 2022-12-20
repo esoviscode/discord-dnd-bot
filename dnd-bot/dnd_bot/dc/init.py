@@ -2,6 +2,9 @@ from nextcord.ext import commands
 from nextcord import Intents
 import os
 
+from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.dc.ui.send_message import Messager
+
 bot = commands.Bot(command_prefix='$', intents=Intents().all())
 bot.remove_command('help')
 
@@ -13,14 +16,14 @@ async def on_ready():
 
 @bot.command()
 async def load(ctx, extension):
-    bot.load_extension(f'dc.commands.{extension}')
-    await ctx.send(f'`dc.commands.{extension}` was loaded.')
+    bot.load_extension(f'dc.cogs.{extension}')
+    await ctx.send(f'`dc.cogs.{extension}` was loaded.')
 
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'dc.commands.{extension}')
-    await ctx.send(f'`dc.commands.{extension}` was unloaded. You can no longer use it until it is reloaded.')
+    bot.unload_extension(f'dc.cogs.{extension}')
+    await ctx.send(f'`dc.cogs.{extension}` was unloaded. You can no longer use it until it is reloaded.')
 
 
 def bot_run():
@@ -34,5 +37,8 @@ def bot_run():
         if filename.endswith('.py'):
             bot.load_extension(f'dc.cogs.{filename[:-3]}')
             print(filename)
+
+    Messager.bot = bot
+    DatabaseConnection.connection_establish()
 
     bot.run(token)

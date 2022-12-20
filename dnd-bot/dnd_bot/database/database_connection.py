@@ -16,7 +16,7 @@ class DatabaseConnection:
         db_user = 'admin'
         db_password = 'admin'
 
-        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='172.18.0.2')
+        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='25.74.173.113')
 
         DatabaseConnection.cursor = DatabaseConnection.connection.cursor()
 
@@ -31,7 +31,9 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
 
     @staticmethod
-    def add_game(id_game: int, password: str, id_host: int, id_campaign: int, game_state: str):
+    def add_game(password: str, id_host: int, id_campaign: int, game_state: str):
+
+        id_game = 2
 
         DatabaseConnection.cursor.execute('INSERT INTO public."Game" (id_game, password, id_host, id_campaign, game_state) VALUES (%s, %s, %s, %s, %s)',
                                           (id_game, password, id_host, id_campaign, game_state))
