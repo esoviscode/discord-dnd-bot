@@ -11,10 +11,9 @@ class CommandCreate(Cog):
 
     @slash_command(name="create", description="Creates new lobby")
     async def create(self, interaction):
-        await interaction.response.send_message(f"Hello {interaction.user.id}")
         if interaction.user.dm_channel is None:
             await interaction.user.create_dm()
-        await HandlerCreate.create_lobby(interaction.guild, interaction.channel_id, interaction.user.id, interaction.user.dm_channel.id)
+        await HandlerCreate.create_lobby(interaction.guild, interaction.channel_id, interaction.user.id)
 
 
 def setup(bot):
