@@ -16,7 +16,7 @@ class DatabaseConnection:
         db_user = 'admin'
         db_password = 'admin'
 
-        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='172.18.0.3')
+        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='25.74.173.113')
 
         DatabaseConnection.cursor = DatabaseConnection.connection.cursor()
 
