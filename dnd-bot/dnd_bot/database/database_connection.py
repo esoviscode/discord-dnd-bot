@@ -51,10 +51,13 @@ class DatabaseConnection:
         return user_id
 
     @staticmethod
-    def find_game_by_token(token: str) -> dict:
+    def find_game_by_token(token: str) -> dict | None:
 
         DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state = %s', (token, 'LOBBY'))
         game_tuple = DatabaseConnection.cursor.fetchone()
+
+        if not game_tuple:
+            return None
 
         DatabaseConnection.cursor.execute(f'SELECT * FROM public."User" WHERE id_game = {game_tuple[0]}')
         users_tuples = DatabaseConnection.cursor.fetchall()
@@ -64,3 +67,9 @@ class DatabaseConnection:
 
         return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2], 'id_campaign': game_tuple[3],
                 'game_state': game_tuple[4], 'players': users}
+
+    @staticmethod
+    def update_game_state(id_game: int, game_state: str) -> None:
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = %s WHERE id_game = %s', (game_state, id_game))
+
+        DatabaseConnection.connection.commit()
