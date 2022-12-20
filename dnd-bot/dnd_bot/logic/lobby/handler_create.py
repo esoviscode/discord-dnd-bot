@@ -50,4 +50,3 @@ class HandlerCreate:
                                                f"A fresh game for you and your team has been created! Make sure that everyone who wants to play has to be in this server!\n"
                                                f"Game ID: ||{game_id}||")
         await send_dm_message(server, host_id, f"Welcome to **{game_id}** lobby!")
-
