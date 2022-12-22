@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 
 from psycopg2 import connect
@@ -12,13 +13,29 @@ class DatabaseConnection:
 
     @staticmethod
     def connection_establish():
-        db_name = 'discord_bot'
-        db_user = 'admin'
-        db_password = 'admin'
+        db_address, db_name, db_user, db_password, db_port = DatabaseConnection.__connection_get_authentication__()
 
-        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password, host='25.74.173.113')
+        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password,
+                                                host=db_address, port=db_port)
 
         DatabaseConnection.cursor = DatabaseConnection.connection.cursor()
+
+    @staticmethod
+    def __connection_get_authentication__():
+        address = os.getenv('DB_ADDRESS')
+        name = os.getenv('DB_NAME')
+        user = os.getenv('DB_USER')
+        password = os.getenv('DB_PASSWORD')
+        port = os.getenv('DB_PORT')
+
+        if not user:
+            user = 'admin'
+        if not password:
+            password = 'admin'
+        if not port:
+            port = 5432
+
+        return address, name, user, password, port
 
     @staticmethod
     def connection_close():
