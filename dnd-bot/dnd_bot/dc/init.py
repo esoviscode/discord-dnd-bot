@@ -11,7 +11,7 @@ bot.remove_command('help')
 
 @bot.event
 async def on_ready():
-    print('Bot started successfully')
+    print('\nBot started successfully')
 
 
 @bot.command()
@@ -33,10 +33,11 @@ def bot_run():
     if token is None:
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
+    print('Loading extensions:')
     for filename in os.listdir('./dnd_bot/dc/cogs')[1:]:
         if filename.endswith('.py'):
             bot.load_extension(f'dnd_bot.dc.cogs.{filename[:-3]}')
-            print(filename)
+            print(f'    {filename[:-3]}')
 
     Messager.bot = bot
     DatabaseConnection.connection_establish()
