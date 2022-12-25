@@ -1,6 +1,6 @@
 <h1 align="center">
     </br>
-    <img src="./.github/images/discord-bot-bg-2.png" width="30%" height="30%">
+    <img src="./.github/images/discord-bot-bg-2.jpg" width="30%" height="30%">
     </br>
     Discord D&D Bot / Game
     </br>
