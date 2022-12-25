@@ -8,7 +8,10 @@
 
 <p align="center">
     <a href=""> <!-- TODO -->
-        <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" width="8%" height="8%">
+        <img src="https://img.shields.io/discord/913375693864308797?color=blue&label=discord">
+    </a>
+    <a href="https://github.com/nextcord/nextcord">
+        <img src="https://img.shields.io/pypi/pyversions/nextcord">
     </a>
     <a href="https://github.com/esoviscode/discord-bot/actions/workflows/docker-publish.yml">
         <img src="https://github.com/esoviscode/discord-bot/actions/workflows/docker-publish.yml/badge.svg">
