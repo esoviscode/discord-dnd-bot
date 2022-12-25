@@ -43,4 +43,3 @@ class Test(Cog):
 
 def setup(bot):
     bot.add_cog(Test(bot))
-    print("Setuped")

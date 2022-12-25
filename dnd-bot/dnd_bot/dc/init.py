@@ -11,19 +11,19 @@ bot.remove_command('help')
 
 @bot.event
 async def on_ready():
-    print('Bot started successfully')
+    print('\nBot started successfully')
 
 
 @bot.command()
 async def load(ctx, extension):
-    bot.load_extension(f'dc.cogs.{extension}')
-    await ctx.send(f'`dc.cogs.{extension}` was loaded.')
+    bot.load_extension(f'dnd_bot.dc.cogs.{extension}')
+    await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was loaded.')
 
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'dc.cogs.{extension}')
-    await ctx.send(f'`dc.cogs.{extension}` was unloaded. You can no longer use it until it is reloaded.')
+    bot.unload_extension(f'dnd_bot.dc.cogs.{extension}')
+    await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was unloaded. You can no longer use it until it is reloaded.')
 
 
 def bot_run():
@@ -33,10 +33,11 @@ def bot_run():
     if token is None:
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
-    for filename in os.listdir('./dc/cogs')[1:]:
+    print('Loading extensions:')
+    for filename in os.listdir('./dnd_bot/dc/cogs')[1:]:
         if filename.endswith('.py'):
-            bot.load_extension(f'dc.cogs.{filename[:-3]}')
-            print(filename)
+            bot.load_extension(f'dnd_bot.dc.cogs.{filename[:-3]}')
+            print(f'    {filename[:-3]}')
 
     Messager.bot = bot
     DatabaseConnection.connection_establish()
