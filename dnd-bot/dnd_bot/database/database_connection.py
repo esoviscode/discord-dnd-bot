@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 
-from psycopg2 import connect
+from psycopg2 import connect, ProgrammingError
 
 from dnd_bot.database.database_enums import DatabaseEnums
 
@@ -54,7 +54,13 @@ class DatabaseConnection:
                                           '(%s, %s, %s, %s)',
                                           (token, id_host, id_campaign, game_state))
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
-        game_id = DatabaseConnection.cursor.fetchone()[0]
+
+        try:
+            game_id = DatabaseConnection.cursor.fetchone()[0]
+        except ProgrammingError as err:
+            print(f"db: error adding game {err}")
+            return None
+
         DatabaseConnection.connection.commit()
         return game_id
 
@@ -63,7 +69,13 @@ class DatabaseConnection:
 
         DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)', (id_game, discord_id))
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
-        user_id = DatabaseConnection.cursor.fetchone()[0]
+
+        try:
+            user_id = DatabaseConnection.cursor.fetchone()[0]
+        except ProgrammingError as err:
+            print(f"db: error adding user {err}")
+            return None
+
         DatabaseConnection.connection.commit()
         return user_id
 
