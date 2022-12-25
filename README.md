@@ -19,9 +19,9 @@
 </p>
 
 <h3 align="center">
-    <a href="">🔗 Invite the bot</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1044307867269861408&permissions=8&scope=bot">🔗 Invite the bot</a>
     &nbsp;&nbsp;•&nbsp;&nbsp;
-    <a href="">📖 Wiki</a>
+    <a href="https://github.com/esoviscode/discord-bot/wiki">📖 Wiki</a>
 </h3>
 
 # Overview
