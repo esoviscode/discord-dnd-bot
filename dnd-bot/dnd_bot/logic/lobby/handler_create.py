@@ -45,13 +45,16 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(bot, channel_id, host_id):
-        host = bot.get_user(host_id)
+    async def create_lobby(host_id) -> (bool, int):
         token = random.randint(10000, 99999)
-        await Messager.send_message(channel_id, f"Hello {host.mention}!\n "
-                                               f"A fresh game for you and your team has been created! Make sure that everyone who wants to play is in this server!\n"
-                                               f"Game token: ||{token}||")
-        await Messager.send_dm_message(host_id, f"Welcome to **{token}** lobby!")
 
         game_id = DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
+        if game_id is None:
+            return False, -1
+
         DatabaseConnection.add_user(game_id, host_id)
+
+        if game_id is not None:
+            return True, token
+        else:
+            return False, -1
