@@ -56,7 +56,11 @@ Below you will find some information on running the bot locally
 development and testing purposes -->
 
 1. Clone the repository and `cd` into the main directory
-2. Create a file which will contain all environment variables (secrets)
+2. Initialize the `database` and `docs` submodules
+   ```
+   git submodule update --init --recursive
+   ```
+3. Create a file which will contain all environment variables (secrets)
    ```shell
    touch .env
    ```
@@ -70,7 +74,7 @@ development and testing purposes -->
    DB_PASSWORD=some_password
    ```
    > You will need to provide some correct values here, of course.
-3. Getting the docker image
+4. Getting the docker image
    
    Here you can either:
    - Use a prepared image
@@ -78,9 +82,9 @@ development and testing purposes -->
      docker pull ghcr.io/esoviscode/discord-bot:latest
      ```
     - Build one from local sources:
-     ```
-     docker build . -t dndbot-dev
-     ```
+      ```
+      docker build . -t dndbot-dev
+      ```
 
 # Usage
 
