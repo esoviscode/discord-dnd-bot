@@ -17,6 +17,5 @@ class CommandJoin(Cog):
         await HandlerJoin.join_lobby(token, interaction.user.id, interaction.user.name)
 
 
-
 def setup(bot):
     bot.add_cog(CommandJoin(bot))

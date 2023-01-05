@@ -21,8 +21,7 @@ class JoinButton(nextcord.ui.View):
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await interaction.response.send_message("Check direct message!", ephemeral=True)
         await HandlerJoin.join_lobby(str(self.token), interaction.user.id, interaction.user.name)
-        self.value = True
-        self.stop()
+        self.value = False
 
 
 class CommandCreate(Cog):
@@ -38,18 +37,17 @@ class CommandCreate(Cog):
 
         if status:
             await Messager.send_dm_message(interaction.user.id,
-                                           f'You have successfully created a lobby! Game token: {token}')
+                                           f'You have successfully created a lobby! Game token: `{token}`')
             host_name = await get_user_name_by_id(interaction.user.id)
             await Messager.send_dm_message(user_id=interaction.user.id,
                                            content=None,
                                            embed=MessageTemplates.lobby_view_message_template(token, [(host_name, False, True)]))
 
-            
             view = JoinButton(token)
             await interaction.response.send_message(f"Hello {interaction.user.mention}!\n"
                                                               f"A fresh game for you and your team has been created! Make sure "
                                                               f"that everyone who wants to play is in this server!\n\n"
-                                                              f"Game token: `{token}`")
+                                                              f"Game token: `{token}`", view=view)
 
             await view.wait()
 
