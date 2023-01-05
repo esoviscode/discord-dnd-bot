@@ -11,20 +11,26 @@ from dnd_bot.dc.utils.utils import get_user_name_by_id
 class HandlerJoin:
 
     @staticmethod
-    async def join_lobby(token, user_id, name):
+    async def join_lobby(token, user_id, name) -> (bool, list, str):
+        """join_lobby
+            returns true if everything went correctly
+                - second argument is an empty string
+            returns false if an error happened
+                - players in lobby is the third argument (list consisting of (player name, readiness, is_host, id_player) tuple)
+                - error message is the fourth argument
+        """
+
         game_data = DatabaseConnection.find_game_by_token(token)
         if game_data is None:
-            await Messager.send_dm_message(user_id, "The token is wrong or the game has already started")
-            return
+            return False, [], f':no_entry: The token is wrong or the game has already started'
 
         users = game_data['players']
 
         for user in users:
             if user['discord_id'] == user_id:
-                await Messager.send_dm_message(user_id, "You have already joined this game.")
-                return
+                return False, [], f':no_entry: You have already joined this game.'
 
-        # send message to other users in the lobby
+        # handle join user operation
         DatabaseConnection.add_user(game_data['id_game'], user_id)
 
         game_data = DatabaseConnection.find_game_by_token(token)
@@ -34,18 +40,8 @@ class HandlerJoin:
         for user in users:
             username = await get_user_name_by_id(user['discord_id'])
             if user['discord_id'] == game_data['id_host']:
-                lobby_players.append((username, False, True))
+                lobby_players.append((username, False, True, user['discord_id']))
             else:
-                lobby_players.append((username, False, False))
+                lobby_players.append((username, False, False, user['discord_id']))
 
-        lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
-
-        await Messager.send_dm_message(user_id, f"Welcome to lobby of game {token}.\nNumber of players in lob"
-                                          f"by: **{len(users)}**", embed=lobby_view_embed)
-
-        for user in users:
-            if user['discord_id'] != user_id:
-                await Messager.send_dm_message(user['discord_id'], f"\n**{name}** has joined the lobby! Current number of "
-                                                                f"players: **{len(users)}**", embed=lobby_view_embed)
-
-
+        return True, lobby_players, ""
