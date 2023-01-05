@@ -1,3 +1,5 @@
+import time
+
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
@@ -18,10 +20,16 @@ class CommandCreate(Cog):
 
         if status:
             await Messager.send_dm_message(interaction.user.id, f"Welcome to **{token}** lobby!")
-            await interaction.response.send_message(f"Hello {interaction.user.mention}!\n "
-                                                    f"A fresh game for you and your team has been created! Make sure "
-                                                    f"that everyone who wants to play is in this server!\n "
-                                                    f"Game token: ||{token}||")
+            partial_message = await interaction.response.send_message(f"Hello {interaction.user.mention}!\n "
+                                                              f"A fresh game for you and your team has been created! Make sure "
+                                                              f"that everyone who wants to play is in this server!\n "
+                                                              f"Game token: ||{token}||")
+
+            message = await partial_message.fetch()
+
+            time.sleep(5)
+            await Messager.edit_message(interaction.channel_id, message.id, f'This is an edited message!')
+
         else:
             await interaction.response.send_message(f"Something went wrong while creating the lobby! :(")
 
