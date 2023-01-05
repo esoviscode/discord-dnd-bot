@@ -1,7 +1,7 @@
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.ui.send_message import Messager
+from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 
 
