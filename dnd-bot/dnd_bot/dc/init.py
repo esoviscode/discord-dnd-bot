@@ -1,9 +1,10 @@
+import nextcord
 from nextcord.ext import commands
 from nextcord import Intents
 import os
 
 from dnd_bot.database.database_connection import DatabaseConnection
-from dnd_bot.dc.ui.send_message import Messager
+from dnd_bot.dc.ui.messager import Messager
 
 bot = commands.Bot(command_prefix='$', intents=Intents().all())
 bot.remove_command('help')
@@ -43,3 +44,27 @@ def bot_run():
     DatabaseConnection.connection_establish()
 
     bot.run(token)
+
+
+# Error handling
+@bot.event
+async def on_command_error(interaction, error):
+    error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
+                                 description="😞 We are sorry for any inconveniences",
+                                 color=0xFF5733)
+
+    error_embed.set_author(name=interaction.bot.user.display_name, icon_url=interaction.bot.user.display_avatar)
+
+    if isinstance(error, commands.errors.MissingRequiredArgument):
+        error_embed.add_field(name="Error is described below.",
+                              value=f"**Type:** {type(error)}\n\n```You're missing a required argument.```")
+    else:
+        error_embed.add_field(name="Error is described below.", value=f"**Type:** {type(error)}\n\n```py\n{error}\n```")
+
+    error_embed.add_field(name="__**What To do?**__",
+                          value="Don't worry we will forward this message to the devs.",
+                          inline=False)
+    error_embed.set_footer(
+        text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
+
+    await interaction.response.send_message(embed=error_embed)
