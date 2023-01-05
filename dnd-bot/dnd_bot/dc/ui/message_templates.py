@@ -3,19 +3,21 @@ import nextcord
 
 class MessageTemplates:
 
-    @staticmethod
-    def lobby_view_message_template(lobby_token):
+    color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 
-        desc = "\nCampaign: 📜 Storm King's Thunder\n\n" \
-               "Silentsky0 👑🔴\n\n" \
-               "ziutek 🔵\n\n" \
-               "cimek 🟤\n\n"
+    @staticmethod
+    def lobby_view_message_template(lobby_token, players, campaign="📜 Storm King's Thunder\n\n"):
+
+        desc = f'\nCampaign: {campaign}'
+
+        for i, player in enumerate(players):
+            if player[2]:
+                desc += f'{MessageTemplates.color_emojis[i]} {player[0]} 👑\n\n'
+            else:
+                desc += f'{MessageTemplates.color_emojis[i]} {player[0]} \n\n'
 
         embed = nextcord.Embed(title=f'Dungeons&Dragons 🐉 Lobby #{lobby_token}',
                                description=desc)
-
-        # for player in players:
-        #     pass
 
         embed.set_footer(text="The game will start when all the players are ready!")
 
