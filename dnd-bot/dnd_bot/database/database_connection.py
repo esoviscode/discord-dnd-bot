@@ -65,7 +65,7 @@ class DatabaseConnection:
         return game_id
 
     @staticmethod
-    def add_user(id_game: int, discord_id: int) -> int:
+    def add_user(id_game: int, discord_id: int) -> int | None:
 
         DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
                                           (id_game, discord_id))

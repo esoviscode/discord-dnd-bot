@@ -43,16 +43,15 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(host_id) -> (bool, int):
+    async def create_lobby(host_id) -> (bool, int, str):
         token = random.randint(10000, 99999)
 
         game_id = DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
         if game_id is None:
-            return False, -1
+            return False, -1, ":no_entry: Error creating game!"
 
-        DatabaseConnection.add_user(game_id, host_id)
+        user_id = DatabaseConnection.add_user(game_id, host_id)
+        if user_id is None:
+            return False, -1, ":no_entry: Error creating host user"
 
-        if game_id is not None:
-            return True, token
-        else:
-            return False, -1
+        return True, token, ""
