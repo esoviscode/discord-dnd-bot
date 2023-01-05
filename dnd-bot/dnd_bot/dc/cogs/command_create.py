@@ -1,7 +1,9 @@
+import time
+
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.ui.send_message import Messager
+from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 
 
@@ -19,9 +21,10 @@ class CommandCreate(Cog):
         if status:
             await Messager.send_dm_message(interaction.user.id, f"Welcome to **{token}** lobby!")
             await interaction.response.send_message(f"Hello {interaction.user.mention}!\n "
-                                                    f"A fresh game for you and your team has been created! Make sure "
-                                                    f"that everyone who wants to play is in this server!\n "
-                                                    f"Game token: ||{token}||")
+                                                              f"A fresh game for you and your team has been created! Make sure "
+                                                              f"that everyone who wants to play is in this server!\n "
+                                                              f"Game token: ||{token}||")
+
         else:
             await interaction.response.send_message(f"Something went wrong while creating the lobby! :(")
 

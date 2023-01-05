@@ -3,7 +3,7 @@ from nextcord import Intents
 import os
 
 from dnd_bot.database.database_connection import DatabaseConnection
-from dnd_bot.dc.ui.send_message import Messager
+from dnd_bot.dc.ui.messager import Messager
 
 bot = commands.Bot(command_prefix='$', intents=Intents().all())
 bot.remove_command('help')
