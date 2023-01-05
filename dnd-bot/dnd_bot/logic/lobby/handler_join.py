@@ -4,7 +4,7 @@ import nextcord
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.message_templates import MessageTemplates
-from dnd_bot.dc.ui.send_message import Messager
+from dnd_bot.dc.ui.messager import Messager
 
 
 class HandlerJoin:

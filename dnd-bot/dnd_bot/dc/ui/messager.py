@@ -1,5 +1,4 @@
 class Messager:
-
     bot = None
 
     @staticmethod
@@ -11,3 +10,10 @@ class Messager:
     async def send_dm_message(user_id: int, content: str | None, embed=None):
 
         await Messager.bot.get_user(user_id).send(content=content, embed=embed)
+
+    @staticmethod
+    async def edit_message(channel_id: int, message_id: int, new_content: str):
+        channel = Messager.bot.get_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        await message.edit(content=new_content, embeds=message.embeds)
