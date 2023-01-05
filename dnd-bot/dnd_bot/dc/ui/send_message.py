@@ -8,5 +8,6 @@ class Messager:
         await channel.send(content=content)
 
     @staticmethod
-    async def send_dm_message(user_id, content):
-        await Messager.bot.get_user(user_id).send(content=content)
+    async def send_dm_message(user_id: int, content: str | None, embed=None):
+
+        await Messager.bot.get_user(user_id).send(content=content, embed=embed)

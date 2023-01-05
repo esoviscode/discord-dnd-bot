@@ -3,6 +3,7 @@ from nextcord import slash_command
 
 from dnd_bot.dc.ui.send_message import Messager
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
+from dnd_bot.dc.ui.message_templates import MessageTemplates
 
 
 class CommandCreate(Cog):
@@ -17,7 +18,11 @@ class CommandCreate(Cog):
         status, token = await HandlerCreate.create_lobby(interaction.user.id)
 
         if status:
-            await Messager.send_dm_message(interaction.user.id, f"Welcome to **{token}** lobby!")
+            await Messager.send_dm_message(interaction.user.id,
+                                           f'You have successfully created a lobby! Game token: {token}')
+            await Messager.send_dm_message(user_id=interaction.user.id, content=None,
+                                           embed=MessageTemplates.lobby_view_message_template(token))
+
             await interaction.response.send_message(f"Hello {interaction.user.mention}!\n "
                                                     f"A fresh game for you and your team has been created! Make sure "
                                                     f"that everyone who wants to play is in this server!\n "
