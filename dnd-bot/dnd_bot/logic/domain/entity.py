@@ -1,6 +1,6 @@
 class Entity:
 
-    def __init__(self, entity_id, x, y, sprite, name, skill=None):
+    def __init__(self, entity_id: int, x: int, y: int, sprite, name: str, skill):
         self.x = x
         self.y = y
         self.sprite = sprite
