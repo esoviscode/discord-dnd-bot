@@ -9,12 +9,12 @@ class CommandStart(Cog):
         self.bot = bot
 
     @slash_command(name="start", description="Exits from lobby and starts game")
-    async def start(self, interaction, token: str):
+    async def start(self, interaction, token: str, campaign_name: str):
         if interaction.user.dm_channel is None:
             await interaction.user.create_dm()
 
         # TODO HandlerStart class with start_game static method
-        status, lobby_players_identities, campaign_name, error_message = await HandlerStart.start_game(token, interaction.user.id)
+        status, lobby_players_identities, error_message = await HandlerStart.start_game(token, interaction.user.id)
 
         if status:
             # send messages about successful start operation
