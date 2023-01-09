@@ -13,9 +13,6 @@ class HandlerStart:
         if game_data is None:
             return False, [], f':no_entry: Game of provided token doesn\'t exist!'
 
-        print(game_data)
-        print(user_id)
-
         if user_id != game_data['id_host']:
             return False, [], f':warning: Only the host can start the game!'
 
