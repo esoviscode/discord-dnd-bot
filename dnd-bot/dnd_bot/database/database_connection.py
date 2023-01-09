@@ -1,6 +1,4 @@
 import os
-from copy import deepcopy
-
 from psycopg2 import connect, ProgrammingError
 
 
@@ -65,6 +63,13 @@ class DatabaseConnection:
         return game_id
 
     @staticmethod
+    def start_game(id_game: int) -> None:
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state=(%s) WHERE id_game = (%s)',
+                                          ('ACTIVE', id_game))
+
+        DatabaseConnection.connection.commit()
+
+    @staticmethod
     def add_user(id_game: int, discord_id: int) -> int | None:
 
         DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
@@ -83,8 +88,8 @@ class DatabaseConnection:
     @staticmethod
     def find_game_by_token(token: str) -> dict | None:
 
-        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state = %s',
-                                          (token, 'LOBBY'))
+        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state != %s',
+                                          (token, 'FINISHED'))
         game_tuple = DatabaseConnection.cursor.fetchone()
 
         if not game_tuple:

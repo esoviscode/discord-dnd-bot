@@ -6,8 +6,8 @@ import os
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.messager import Messager
 
-bot = commands.Bot(command_prefix='$', intents=Intents().all())
-bot.remove_command('help')
+activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
+bot = commands.Bot(command_prefix='$', intents=Intents().all(), activity=activity)
 
 
 @bot.event

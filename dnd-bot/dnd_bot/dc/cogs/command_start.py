@@ -18,6 +18,8 @@ class CommandStart(Cog):
         status, lobby_players_identities, error_message = await HandlerStart.start_game(token, interaction.user.id)
 
         if status:
+            await interaction.response.send_message('Starting the game!', ephemeral=True)
+
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user,
