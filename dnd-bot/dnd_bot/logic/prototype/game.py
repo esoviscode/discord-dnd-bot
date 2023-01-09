@@ -1,6 +1,7 @@
 from dnd_bot.logic.prototype.user import User
 import copy
 
+
 class Game:
 
     def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None):

@@ -1,5 +1,3 @@
-import time
-
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 import nextcord
@@ -49,7 +47,7 @@ class JoinButton(nextcord.ui.View):
 
                     await Messager.send_dm_message(user[3],
                                                    f"\n**{await get_user_name_by_id(interaction.user.id)}** has "
-                                                   f"joined the lobby! Current number of"
+                                                   f"joined the lobby! Current number of "
                                                    f"players: **{len(lobby_players)}**",
                                                    embed=lobby_view_embed, view=view)
         else:
