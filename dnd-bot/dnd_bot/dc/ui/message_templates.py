@@ -22,3 +22,16 @@ class MessageTemplates:
         embed.set_footer(text="The game will start when all the players are ready!")
 
         return embed
+
+    @staticmethod
+    def lobby_creation_message(token):
+        desc = f"A fresh game for you and your team has been created! \n" \
+               f"Make sure that everyone who wants to play is in " \
+               f"this server!\n\n" \
+               f"You can join by pressing the *Join* button or by using the `/join` command\n" \
+               f"\n Game token: **`{token}`** "
+
+        embed = nextcord.Embed(title=f"New Dungeons&Dragons :dragon: Lobby!", description=desc)
+        embed.set_footer(text=None)
+
+        return embed
