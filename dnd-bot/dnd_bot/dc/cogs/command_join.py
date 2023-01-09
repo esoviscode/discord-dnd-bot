@@ -19,7 +19,6 @@ class CommandJoin(Cog):
 
         status, lobby_players, error_message = await HandlerJoin.join_lobby(token, interaction.user.id, interaction.user.dm_channel.id, interaction.user.name)
 
-
         if status:
             await interaction.response.send_message("Check direct message!", ephemeral=True)
 
