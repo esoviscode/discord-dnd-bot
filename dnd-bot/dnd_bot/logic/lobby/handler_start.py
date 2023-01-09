@@ -1,4 +1,5 @@
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.database.database_connection import DatabaseConnection
 
 
 class HandlerStart:
@@ -8,8 +9,14 @@ class HandlerStart:
 
     @staticmethod
     async def start_game(token, user_id) -> (bool, list, str):
-
         game = Multiverse.get_game(token)
+        game_id = DatabaseConnection.add_game(token, game.id_host, 0, "LOBBY")
+
+        if game_id is None:
+            return False, [], ":no_entry: Error creating game!"
+        for user in game.user_list:
+            DatabaseConnection.add_user(game_id, user.discord_id)
+
         if game is None:
             return False, [], f':no_entry: Game of provided token doesn\'t exist!'
 
