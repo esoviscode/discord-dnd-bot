@@ -22,7 +22,10 @@ class HandlerJoin:
 
         game_data = DatabaseConnection.find_game_by_token(token)
         if game_data is None:
-            return False, [], f':no_entry: The token is wrong or the game has already started'
+            return False, [], f':no_entry: No game found using this token!'
+
+        if game_data['game_state'] != 'LOBBY':
+            return False, [], f':warning: This game has already started!'
 
         users = game_data['players']
 

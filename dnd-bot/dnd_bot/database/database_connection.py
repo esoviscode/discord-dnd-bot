@@ -83,8 +83,8 @@ class DatabaseConnection:
     @staticmethod
     def find_game_by_token(token: str) -> dict | None:
 
-        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state = %s',
-                                          (token, 'LOBBY'))
+        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state != %s',
+                                          (token, 'FINISHED'))
         game_tuple = DatabaseConnection.cursor.fetchone()
 
         if not game_tuple:
