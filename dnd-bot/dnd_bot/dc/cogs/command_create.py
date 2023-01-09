@@ -20,7 +20,10 @@ class JoinButton(nextcord.ui.View):
     @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green)
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
-        status, lobby_players, error_message = await HandlerJoin.join_lobby(str(self.token), interaction.user.id, interaction.user.name)
+        if interaction.user.dm_channel is None:
+            await interaction.user.create_dm()
+
+        status, lobby_players, error_message = await HandlerJoin.join_lobby(self.token, interaction.user.id, interaction.user.dm_channel.id, interaction.user.name)
         print(f'{status}, {interaction.user.name}')
 
         if status:
@@ -53,7 +56,8 @@ class CommandCreate(Cog):
         if interaction.user.dm_channel is None:
             await interaction.user.create_dm()
 
-        status, token, error_message = await HandlerCreate.create_lobby(interaction.user.id)
+        status, token, error_message = await HandlerCreate.create_lobby(interaction.user.id, interaction.user.dm_channel
+                                                                        , interaction.user.name)
 
         if status:
             await Messager.send_dm_message(interaction.user.id,
