@@ -9,7 +9,6 @@ MAX_RANDOM_VALUE = 10000
 
 
 class HandlerCreate:
-
     id_index = 0
 
     @staticmethod
@@ -38,7 +37,10 @@ class HandlerCreate:
 
     @staticmethod
     async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
-        token = str(random.randint(10000, 99999))
+        tokens = DatabaseConnection.get_all_game_tokens()
+        token = await HandlerCreate.generate_token()
+        while token in tokens:
+            token = await HandlerCreate.generate_token()
 
         game_id = DatabaseConnection.add_game(token, host_id, 0, "LOBBY")
         if game_id is None:
@@ -54,3 +56,7 @@ class HandlerCreate:
         Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
 
         return True, token, ""
+
+    @staticmethod
+    async def generate_token() -> str:
+        return str(random.randint(10000, 99999))

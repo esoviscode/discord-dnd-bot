@@ -111,3 +111,11 @@ class DatabaseConnection:
                                           (game_state, id_game))
 
         DatabaseConnection.connection.commit()
+
+    @staticmethod
+    def get_all_game_tokens():
+        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game"')
+        tokens = DatabaseConnection.cursor.fetchall()
+        DatabaseConnection.connection.commit()
+
+        return tokens
