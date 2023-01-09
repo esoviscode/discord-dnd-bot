@@ -14,7 +14,6 @@ class CommandStart(Cog):
         if interaction.user.dm_channel is None:
             await interaction.user.create_dm()
 
-        # TODO HandlerStart class with start_game static method
         status, lobby_players_identities, error_message = await HandlerStart.start_game(token, interaction.user.id)
 
         if status:
@@ -23,7 +22,7 @@ class CommandStart(Cog):
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user,
-                                               "Game has successfully started!\n")
+                                               "Game has started successfully!\n")
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

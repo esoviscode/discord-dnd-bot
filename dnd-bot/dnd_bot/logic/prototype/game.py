@@ -22,4 +22,9 @@ class Game:
         user.is_host = True
         self.user_list.append(user)
 
+    def all_users_ready(self):
+        for user in self.user_list:
+            if not user.is_ready:
+                return False
 
+        return True
