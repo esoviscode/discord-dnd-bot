@@ -1,4 +1,4 @@
-from dnd_bot.logic.domain.entity import Entity
+from dnd_bot.logic.prototype.entity import Entity
 
 
 class Creature(Entity):

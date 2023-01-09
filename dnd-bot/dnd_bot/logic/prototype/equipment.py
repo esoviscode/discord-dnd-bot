@@ -1,4 +1,4 @@
-from dnd_bot.logic.domain.item import Item
+from dnd_bot.logic.prototype.item import Item
 
 
 class Equipment:
