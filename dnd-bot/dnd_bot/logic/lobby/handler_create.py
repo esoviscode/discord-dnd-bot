@@ -51,7 +51,6 @@ class HandlerCreate:
         game = Game(token)
 
         Multiverse.add_game(game)
-        print(Multiverse.games)
         Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
 
         return True, token, ""
