@@ -6,12 +6,13 @@ from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.utils import get_user_name_by_id
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class HandlerJoin:
 
     @staticmethod
-    async def join_lobby(token, user_id, name) -> (bool, list, str):
+    async def join_lobby(token, user_id, user_dm_channel, username) -> (bool, list, str):
         """join_lobby
             returns true if everything went correctly
                 - second argument is an empty string
@@ -46,5 +47,9 @@ class HandlerJoin:
                 lobby_players.append((username, False, True, user['discord_id']))
             else:
                 lobby_players.append((username, False, False, user['discord_id']))
+
+        # add data to Multiverse
+        game = Multiverse.get_game(token)
+        game.add_player(user_id, user_dm_channel, username)
 
         return True, lobby_players, ""
