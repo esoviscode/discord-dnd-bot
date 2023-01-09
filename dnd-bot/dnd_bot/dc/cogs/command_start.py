@@ -24,3 +24,7 @@ class CommandStart(Cog):
                                                "Game has successfully started!\n")
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
+
+
+def setup(bot):
+    bot.add_cog(CommandStart(bot))

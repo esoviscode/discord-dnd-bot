@@ -64,10 +64,7 @@ class CommandCreate(Cog):
                                            embed=MessageTemplates.lobby_view_message_template(token, [(host_name, False, True)]))
 
             view = JoinButton(token)
-            await interaction.response.send_message(f"Hello {interaction.user.mention}!\n"
-                                                              f"A fresh game for you and your team has been created! Make sure "
-                                                              f"that everyone who wants to play is in this server!\n\n"
-                                                              f"Game token: `{token}`", view=view)
+            await interaction.response.send_message(f"Hello {interaction.user.mention}!", view=view, embed=MessageTemplates.lobby_creation_message(token))
 
             await view.wait()
 
