@@ -1,6 +1,4 @@
 import os
-from copy import deepcopy
-
 from psycopg2 import connect, ProgrammingError
 
 
@@ -63,6 +61,13 @@ class DatabaseConnection:
 
         DatabaseConnection.connection.commit()
         return game_id
+
+    @staticmethod
+    def start_game(id_game: int) -> None:
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state=(%s) WHERE id_game = (%s)',
+                                          ('ACTIVE', id_game))
+
+        DatabaseConnection.connection.commit()
 
     @staticmethod
     def add_user(id_game: int, discord_id: int) -> int | None:
