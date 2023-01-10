@@ -1,4 +1,5 @@
 class User:
+    """defines discord user"""
 
     def __init__(self, id_game, discord_id, channel_id, username):
         self.id_game = id_game
@@ -7,4 +8,3 @@ class User:
         self.username = username
         self.is_host = False
         self.is_ready = False
-
