@@ -10,7 +10,7 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class CommandJoin(Cog):
-
+    """handles join command"""
     def __init__(self, bot: Bot):
         self.bot = bot
 
