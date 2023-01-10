@@ -5,7 +5,7 @@ from dnd_bot.logic.prototype.game import Game
 
 class Multiverse:
 
-    games = {}
+    games = dict()
 
     @staticmethod
     def get_game(token) -> Game:
