@@ -16,14 +16,14 @@ class HandlerJoin:
         try:
             game = Multiverse.get_game(token)
         except KeyError:
-            return False, [], f':no_entry: No game found using this token!'
-
-        if game.game_state != 'LOBBY':
-            return False, [], f':warning: This game has already started!'
+            return False, [], f':warning: No game found using this token!'
 
         for user in game.user_list:
-            if user['discord_id'] == user_id:
+            if user.discord_id == user_id:
                 return False, [], f':no_entry: You have already joined this game.'
+
+        if game.game_state != 'LOBBY':
+            return False, [], f':no_entry: This game has already started!'
 
         game.add_player(user_id, user_dm_channel, username)
 
