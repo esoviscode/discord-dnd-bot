@@ -10,7 +10,7 @@ class HandlerStart:
     @staticmethod
     async def start_game(token, user_id) -> (bool, list, str):
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.add_game(token, game.id_host, 0, "LOBBY")
+        game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
