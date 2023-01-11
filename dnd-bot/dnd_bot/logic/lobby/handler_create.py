@@ -2,21 +2,14 @@ import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.logic.prototype.game import Game
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 generated_ids = []
 MAX_RANDOM_VALUE = 10000
 
 
 class HandlerCreate:
-
     id_index = 0
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def handler_create(id_host):
-        game = Game(id_host)
 
     @staticmethod
     def generate_game_id():
@@ -43,10 +36,13 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(host_id) -> (bool, int, str):
-        token = random.randint(10000, 99999)
+    async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
+        tokens = DatabaseConnection.get_all_game_tokens()
+        token = await HandlerCreate.generate_token()
+        while token in tokens:
+            token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
+        game_id = DatabaseConnection.add_game(token, host_id, 0, "LOBBY")
         if game_id is None:
             return False, -1, ":no_entry: Error creating game!"
 
@@ -54,4 +50,13 @@ class HandlerCreate:
         if user_id is None:
             return False, -1, ":no_entry: Error creating host user"
 
+        game = Game(token)
+
+        Multiverse.add_game(game)
+        Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
+
         return True, token, ""
+
+    @staticmethod
+    async def generate_token() -> str:
+        return str(random.randint(10000, 99999))

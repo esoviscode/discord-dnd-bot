@@ -1,17 +1,10 @@
-import asyncio
-
-import nextcord
-
-from dnd_bot.database.database_connection import DatabaseConnection
-from dnd_bot.dc.ui.message_templates import MessageTemplates
-from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.utils import get_user_name_by_id
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class HandlerJoin:
 
     @staticmethod
-    async def join_lobby(token, user_id, name) -> (bool, list, str):
+    async def join_lobby(token, user_id, user_dm_channel, username) -> (bool, list, str):
         """join_lobby
             returns true if everything went correctly
                 - second argument is an empty string
@@ -20,28 +13,24 @@ class HandlerJoin:
                 - error message is the fourth argument
         """
 
-        game_data = DatabaseConnection.find_game_by_token(token)
-        if game_data is None:
-            return False, [], f':no_entry: The token is wrong or the game has already started'
+        try:
+            game = Multiverse.get_game(token)
+        except KeyError:
+            return False, [], f':warning: No game found using this token!'
 
-        users = game_data['players']
-
-        for user in users:
-            if user['discord_id'] == user_id:
+        for user in game.user_list:
+            if user.discord_id == user_id:
                 return False, [], f':no_entry: You have already joined this game.'
 
-        # handle join user operation
-        DatabaseConnection.add_user(game_data['id_game'], user_id)
+        if game.game_state != 'LOBBY':
+            return False, [], f':no_entry: This game has already started!'
 
-        game_data = DatabaseConnection.find_game_by_token(token)
-        users = game_data['players']
+        game.add_player(user_id, user_dm_channel, username)
+
+        users = game.user_list
         lobby_players = []
 
         for user in users:
-            username = await get_user_name_by_id(user['discord_id'])
-            if user['discord_id'] == game_data['id_host']:
-                lobby_players.append((username, False, True, user['discord_id']))
-            else:
-                lobby_players.append((username, False, False, user['discord_id']))
+            lobby_players.append((user.username, user.is_ready, user.is_host, user.discord_id))
 
         return True, lobby_players, ""

@@ -1,6 +1,4 @@
 import os
-from copy import deepcopy
-
 from psycopg2 import connect, ProgrammingError
 
 
@@ -12,7 +10,7 @@ class DatabaseConnection:
     def connection_establish():
         db_address, db_name, db_user, db_password, db_port = DatabaseConnection.__connection_get_authentication__()
 
-        print(f'DB: attempting connection to {db_name} database at {db_address}:{db_port} {db_user}:{db_password}')
+        print(f'DB: attempting connection to {db_name} database at {db_address}:{db_port}')
 
         DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password,
                                                 host=db_address, port=db_port)
@@ -65,6 +63,13 @@ class DatabaseConnection:
         return game_id
 
     @staticmethod
+    def start_game(id_game: int) -> None:
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state=(%s) WHERE id_game = (%s)',
+                                          ('ACTIVE', id_game))
+
+        DatabaseConnection.connection.commit()
+
+    @staticmethod
     def add_user(id_game: int, discord_id: int) -> int | None:
 
         DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
@@ -83,8 +88,8 @@ class DatabaseConnection:
     @staticmethod
     def find_game_by_token(token: str) -> dict | None:
 
-        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state = %s',
-                                          (token, 'LOBBY'))
+        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state != %s',
+                                          (token, 'FINISHED'))
         game_tuple = DatabaseConnection.cursor.fetchone()
 
         if not game_tuple:
@@ -106,3 +111,11 @@ class DatabaseConnection:
                                           (game_state, id_game))
 
         DatabaseConnection.connection.commit()
+
+    @staticmethod
+    def get_all_game_tokens():
+        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game"')
+        tokens = DatabaseConnection.cursor.fetchall()
+        DatabaseConnection.connection.commit()
+
+        return tokens
