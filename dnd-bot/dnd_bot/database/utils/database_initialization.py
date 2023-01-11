@@ -1,3 +1,4 @@
+import requests as requests
 from psycopg2 import connect
 from dnd_bot.database.database_connection import DatabaseConnection
 
@@ -18,7 +19,8 @@ cursor = connection.cursor()
 
 print('DB table initialization: successfully connected')
 
-queries = open("../../../../database/scripts/create_tables.sql", "r").read()
+queries = requests.get("https://raw.githubusercontent.com/esoviscode/database/main/scripts/create_tables.sql").content\
+    .decode("UTF8")
 cursor.execute(queries)
 
 print('Tables created.')
