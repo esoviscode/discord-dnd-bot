@@ -41,9 +41,9 @@ class HandlerCreate:
     async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
         """creates an actual lobby
         :param host_id: discord id of the host/user who used the command
-        :param host_dm_channel: discord private channel
-        :param host_username: username
-        :return: (if creation was successful, new game token, optional error message)
+        :param host_dm_channel: discord private message channel with host
+        :param host_username: discord username
+        :return: status, (if creation was successful, new game token, optional error message)
         """
         token = str(random.randint(10000, 99999))
 

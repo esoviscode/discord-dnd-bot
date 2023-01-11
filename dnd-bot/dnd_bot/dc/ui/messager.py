@@ -1,5 +1,5 @@
 class Messager:
-    """contains static methods to manage sending, editing and deleting messages"""
+    """contains static methods to manage sending, editing and deleting messages on discord"""
     bot = None
 
     @staticmethod

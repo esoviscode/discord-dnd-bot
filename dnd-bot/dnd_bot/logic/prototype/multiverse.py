@@ -4,7 +4,7 @@ from dnd_bot.logic.prototype.game import Game
 
 
 class Multiverse:
-    """contains all the games"""
+    """contains the list of all the games (objects of Game class) that are being played"""
     games = {}
 
     @staticmethod

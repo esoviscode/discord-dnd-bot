@@ -10,8 +10,8 @@ class HandlerStart:
     async def start_game(token, user_id) -> (bool, list, str):
         """in lobby, starts a game; have an effect when used by the host of the lobby
         :param token: game token
-        :param user_id: id of the user who run the command or the host that pressed the start button
-        :return:
+        :param user_id: id of the user who ran the command or the host that pressed the start button
+        :return: status, (if start was successful, users list, optional error message)
         """
         game_data = DatabaseConnection.find_game_by_token(token)
         if game_data is None:
