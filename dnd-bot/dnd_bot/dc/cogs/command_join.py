@@ -1,7 +1,7 @@
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.cogs.command_create import StartButton, StartButtonDisabled
+from dnd_bot.dc.cogs.command_create import HostButtons, HostButtonDisabled, StartButton, ReadyButton
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.utils import get_user_name_by_id
@@ -30,18 +30,27 @@ class CommandJoin(Cog):
 
             # send messages about successful join operation
             await Messager.send_dm_message(interaction.user.id,
-                                           f"Welcome to lobby of game {token}.\nNumber of players in lob"
-                                           f"by: **{len(lobby_players)}**", embed=lobby_view_embed)
+                                           f"Welcome to lobby of game {token}.\nNumber of players in lobby: "
+                                           f"**{len(lobby_players)}**", embed=lobby_view_embed)
             for user in lobby_players:
                 if interaction.user.name != user[0]:
-                    if Multiverse.get_game(token).all_users_ready():
-                        view = StartButton(token)
+                    if user[2]:
+                        if user[1]:
+                            if Multiverse.get_game(token).all_users_ready():
+                                view = StartButton(token)
+                            else:
+                                view = HostButtonDisabled(token)
+                        else:
+                            view = HostButtons(token)
                     else:
-                        view = StartButtonDisabled(token)
+                        if user[1]:
+                            view = None
+                        else:
+                            view = ReadyButton(token)
 
                     await Messager.send_dm_message(user[3],
                                                    f"\n**{await get_user_name_by_id(interaction.user.id)}** has "
-                                                   f"joined the lobby! Current number of"
+                                                   f"joined the lobby! Current number of "
                                                    f"players: **{len(lobby_players)}**", embed=lobby_view_embed,
                                                    view=view)
 
