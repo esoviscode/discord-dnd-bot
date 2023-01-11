@@ -10,6 +10,7 @@ MAX_RANDOM_VALUE = 10000
 
 class HandlerCreate:
     """handles creation of the lobby"""
+
     id_index = 0
 
     @staticmethod
@@ -45,7 +46,10 @@ class HandlerCreate:
         :param host_username: discord username
         :return: status, (if creation was successful, new game token, optional error message)
         """
-        token = str(random.randint(10000, 99999))
+        tokens = DatabaseConnection.get_all_game_tokens()
+        token = await HandlerCreate.generate_token()
+        while token in tokens:
+            token = await HandlerCreate.generate_token()
 
         game_id = DatabaseConnection.add_game(token, host_id, 0, "LOBBY")
         if game_id is None:
@@ -61,3 +65,7 @@ class HandlerCreate:
         Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
 
         return True, token, ""
+
+    @staticmethod
+    async def generate_token() -> str:
+        return str(random.randint(10000, 99999))
