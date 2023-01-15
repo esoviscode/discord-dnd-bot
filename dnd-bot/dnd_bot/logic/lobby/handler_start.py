@@ -9,7 +9,7 @@ class HandlerStart:
 
     @staticmethod
     async def start_game(token, user_id) -> (bool, list, str):
-        """in lobby, starts a game; have an effect when used by the host of the lobby
+        """in lobby, starts a game; has an effect when used by the host of the lobby
                 :param token: game token
                 :param user_id: id of the user who ran the command or the host that pressed the start button
                 :return: status, (if start was successful, users list, optional error message)
