@@ -13,6 +13,7 @@ bot = commands.Bot(command_prefix='$', intents=Intents().all(), activity=activit
 
 @bot.event
 async def on_ready():
+    MultiverseStartupLoad.load_data()
     print('\nBot started successfully')
 
 
@@ -45,8 +46,6 @@ def bot_run():
     DatabaseConnection.connection_establish()
 
     bot.run(token)
-
-    MultiverseStartupLoad.load_data()
 
 
 # Error handling
