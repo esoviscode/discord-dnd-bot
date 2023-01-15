@@ -13,7 +13,7 @@ class HandlerJoin:
         :param username: username
         :return:
             true if everything went correctly
-                  - second argument is an empty string;
+                  - third argument is an empty string (no error);
             false if an error happened
                   - players in lobby is the third argument (list consisting of (player name, readiness, is_host, id_player) tuple),
                   - error message is the fourth argument
