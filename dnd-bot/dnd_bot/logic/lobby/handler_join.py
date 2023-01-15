@@ -2,7 +2,7 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class HandlerJoin:
-    """handles joining to the lobby """
+    """handles joining the lobby """
 
     @staticmethod
     async def join_lobby(token, user_id, user_dm_channel, username) -> (bool, list, str):
