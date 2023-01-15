@@ -9,7 +9,7 @@ class HandlerJoin:
         """ tries to join the player to the lobby
         :param token: token of the lobby/game
         :param user_id: user discord id
-        :param user_dm_channel: users private channel
+        :param user_dm_channel: user's private channel
         :param username: username
         :return:
             true if everything went correctly
