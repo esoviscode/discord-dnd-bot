@@ -5,6 +5,7 @@ import os
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.database.database_startup_load import MultiverseStartupLoad
 
 activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
 bot = commands.Bot(command_prefix='$', intents=Intents().all(), activity=activity)
@@ -42,6 +43,7 @@ def bot_run():
 
     Messager.bot = bot
     DatabaseConnection.connection_establish()
+    MultiverseStartupLoad.load_data()
 
     bot.run(token)
 
