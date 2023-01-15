@@ -15,8 +15,8 @@ class HandlerJoin:
             true if everything went correctly
                   - third argument is an empty string (no error);
             false if an error happened
-                  - players in lobby is the third argument (list consisting of (player name, readiness, is_host, id_player) tuple),
-                  - error message is the fourth argument
+                  - players in lobby is the second argument (list consisting of (player name, readiness, is_host, id_player) tuple),
+                  - error message is the third argument
         """
 
         try:
