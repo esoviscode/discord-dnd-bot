@@ -43,9 +43,10 @@ def bot_run():
 
     Messager.bot = bot
     DatabaseConnection.connection_establish()
-    MultiverseStartupLoad.load_data()
 
     bot.run(token)
+
+    MultiverseStartupLoad.load_data()
 
 
 # Error handling
