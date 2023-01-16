@@ -1,5 +1,5 @@
 from dnd_bot.logic.prototype.user import User
-
+from queue import Queue
 
 class Game:
     """class represents particular games and lobbies"""
@@ -12,6 +12,9 @@ class Game:
         self.game_state = game_state
         self.user_list = user_list
         self.entities = []
+
+        # this queue contains all the creatures in current map that can possibly make move in a turn
+        self.creatures_queue = Queue(maxsize=0)
 
     def add_player(self, user_id, user_channel_id, username):
         """adds player to the game
