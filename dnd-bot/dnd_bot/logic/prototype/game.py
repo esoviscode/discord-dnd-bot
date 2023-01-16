@@ -11,6 +11,7 @@ class Game:
         self.id_campaign = id_campaign
         self.game_state = game_state
         self.user_list = user_list
+        self.entities = []
 
     def add_player(self, user_id, user_channel_id, username):
         """adds player to the game
