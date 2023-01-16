@@ -2,6 +2,7 @@ import nextcord
 
 
 class MessageTemplates:
+    """Defines message templates, used mainly with discord embeds"""
 
     color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 

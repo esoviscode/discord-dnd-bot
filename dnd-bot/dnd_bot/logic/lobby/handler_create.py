@@ -9,10 +9,13 @@ MAX_RANDOM_VALUE = 10000
 
 
 class HandlerCreate:
+    """handles creation of the lobby"""
+
     id_index = 0
 
     @staticmethod
     def generate_game_id():
+        """generates unique and random game token"""
         ret = generated_ids[HandlerCreate.id_index]
         HandlerCreate.id_index += 1
         return ret
@@ -37,6 +40,12 @@ class HandlerCreate:
 
     @staticmethod
     async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
+        """creates an actual lobby
+        :param host_id: discord id of the host/user who used the command
+        :param host_dm_channel: discord private message channel with host
+        :param host_username: discord username
+        :return: status, (if creation was successful, new game token, optional error message)
+        """
         tokens = DatabaseConnection.get_all_game_tokens()
         token = await HandlerCreate.generate_token()
         while token in tokens:

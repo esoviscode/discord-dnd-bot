@@ -3,12 +3,17 @@ from dnd_bot.database.database_connection import DatabaseConnection
 
 
 class HandlerStart:
-
+    """handles starting of the game when all players in lobby are ready"""
     def __init__(self):
         pass
 
     @staticmethod
     async def start_game(token, user_id) -> (bool, list, str):
+        """in lobby, starts a game; has an effect when used by the host of the lobby
+                :param token: game token
+                :param user_id: id of the user who ran the command or the host that pressed the start button
+                :return: status, (if start was successful, users list, optional error message)
+                """
         game = Multiverse.get_game(token)
         game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
 
