@@ -1,6 +1,7 @@
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.game import Game
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class GameLoop:
@@ -9,7 +10,7 @@ class GameLoop:
     """
 
     @staticmethod
-    def begin_turn(game_id):
+    def begin_turn(game_token):
         """does all the necessities to begin the turn"""
         pass
 
@@ -35,6 +36,6 @@ class GameLoop:
                 game.creatures_queue.put(c)
 
     @staticmethod
-    def get_game_object(game_id):
+    def get_game_object(game_token):
         """returns game object from given id"""
-        return None
+        return Multiverse.get_game(game_token)
