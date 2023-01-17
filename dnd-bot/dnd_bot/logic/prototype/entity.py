@@ -7,4 +7,3 @@ class Entity:
         self.name = name
         self.id_game = id_game
         self.skills = skills
-
