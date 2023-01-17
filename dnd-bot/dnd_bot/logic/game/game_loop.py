@@ -44,6 +44,7 @@ class GameLoop:
 
     @staticmethod
     def game_loop(game_token):
+        """loops over all creatures and lets them perform actions, each iteration is a move"""
         # TODO game_token could be a static variable inside GameLoop
         game = GameLoop.get_game_object(game_token)
 
@@ -58,13 +59,16 @@ class GameLoop:
 
     @staticmethod
     def players_turn(game, player):
+        """one turn of a player"""
         player.active = True
 
         while True:
+            # player performs asynchronous actions via commands or buttons
             if not player.active:
                 break
 
     @staticmethod
     def creature_turn(game, creature):
+        """one turn of a creature"""
         # TODO creature performs some actions
         pass
