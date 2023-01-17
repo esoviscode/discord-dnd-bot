@@ -151,3 +151,29 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
 
         return tokens
+
+    @staticmethod
+    def get_id_game_from_game_token(token: str) -> int | None:
+        """returns database game id based on the token, None if the query fails
+        """
+        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = %s', token)
+        game_id = DatabaseConnection.cursor.fetchone()
+        DatabaseConnection.connection.commit()
+
+        if not game_id:
+            return None
+
+        return game_id
+
+    @staticmethod
+    def get_game_token_from_id_game(id_game: int) -> str | None:
+        """returns game token based on database game id, None if the query fails
+        """
+        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = %s', id_game)
+        game_token = DatabaseConnection.cursor.fetchone()
+        DatabaseConnection.connection.commit()
+
+        if not game_token:
+            return None
+
+        return game_token
