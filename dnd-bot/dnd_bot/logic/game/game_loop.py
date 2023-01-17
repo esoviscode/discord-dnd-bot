@@ -29,13 +29,13 @@ class GameLoop:
         game.entities.sort(reverse=True, key=entity_sorting_value)
 
         # make sure that the queue is empty
-        if not game.creatures_queue.empty():
-            game.creatures_queue.queue.clear()
+        if not game.creatures_queue.count() == 0:
+            game.creatures_queue.clear()
 
         # add creatures to the queue
         for c in game.entities:
             if isinstance(c, Creature):
-                game.creatures_queue.put(c)
+                game.creatures_queue.append(c)
 
     @staticmethod
     def get_game_object(game_token):
@@ -50,7 +50,7 @@ class GameLoop:
 
         while game.game_state == 'ACTIVE':
             # each iteration is a creature's move
-            current_creature: Creature = game.creatures_queue.get()
+            current_creature: Creature = game.creatures_queue.popleft()
 
             if isinstance(current_creature, Player):
                 GameLoop.players_turn(game, current_creature)
