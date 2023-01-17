@@ -2,6 +2,7 @@ from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 
 
 class GameLoop:
@@ -57,8 +58,13 @@ class GameLoop:
 
     @staticmethod
     def players_turn(game, player):
-        pass
+        player.active = True
+
+        while True:
+            if not player.active:
+                break
 
     @staticmethod
     def creature_turn(game, creature):
+        # TODO creature performs some actions
         pass

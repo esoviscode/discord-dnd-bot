@@ -15,3 +15,4 @@ class Player(Creature):
         self.alignment = alignment
         self.backstory = backstory
         self.equipment = equipment
+        self.active = False
