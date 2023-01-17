@@ -1,6 +1,8 @@
 class Entity:
     """This class is the base class for all entities in the game like creatures and elements on the map"""
-    def __init__(self, x=0, y=0, sprite=None, name="", id_game=None, skills=[]):
+    def __init__(self, x=0, y=0, sprite=None, name="", id_game=None, skills=None):
+        if skills is None:
+            skills = []
         self.x = x
         self.y = y
         self.sprite = sprite
