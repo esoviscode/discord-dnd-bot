@@ -2,24 +2,20 @@ import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.logic.prototype.game import Game
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 generated_ids = []
 MAX_RANDOM_VALUE = 10000
 
 
 class HandlerCreate:
+    """handles creation of the lobby"""
 
     id_index = 0
 
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def handler_create(id_host):
-        game = Game(id_host)
-
     @staticmethod
     def generate_game_id():
+        """generates unique and random game token"""
         ret = generated_ids[HandlerCreate.id_index]
         HandlerCreate.id_index += 1
         return ret
@@ -43,10 +39,19 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(host_id) -> (bool, int, str):
-        token = random.randint(10000, 99999)
+    async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
+        """creates an actual lobby
+        :param host_id: discord id of the host/user who used the command
+        :param host_dm_channel: discord private message channel with host
+        :param host_username: discord username
+        :return: status, (if creation was successful, new game token, optional error message)
+        """
+        tokens = DatabaseConnection.get_all_game_tokens()
+        token = await HandlerCreate.generate_token()
+        while token in tokens:
+            token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(str(token), host_id, 0, "LOBBY")
+        game_id = DatabaseConnection.add_game(token, host_id, 0, "LOBBY")
         if game_id is None:
             return False, -1, ":no_entry: Error creating game!"
 
@@ -54,4 +59,13 @@ class HandlerCreate:
         if user_id is None:
             return False, -1, ":no_entry: Error creating host user"
 
+        game = Game(token)
+
+        Multiverse.add_game(game)
+        Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
+
         return True, token, ""
+
+    @staticmethod
+    async def generate_token() -> str:
+        return str(random.randint(10000, 99999))
