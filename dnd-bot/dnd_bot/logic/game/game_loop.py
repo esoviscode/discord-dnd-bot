@@ -17,6 +17,7 @@ class GameLoop:
     @staticmethod
     def prepare_queue(game: Game):
         """puts all the creatures to the queue with order by initiative"""
+
         def entity_sorting_value(e):
             if isinstance(e, Entity):
                 return -1
@@ -39,3 +40,25 @@ class GameLoop:
     def get_game_object(game_token):
         """returns game object from given id"""
         return Multiverse.get_game(game_token)
+
+    @staticmethod
+    def game_loop(game_token):
+        # TODO game_token could be a static variable inside GameLoop
+        game = GameLoop.get_game_object(game_token)
+
+        while game.game_state == 'ACTIVE':
+            # each iteration is a creature's move
+            current_creature: Creature = game.creatures_queue.get()
+
+            if isinstance(current_creature, Player):
+                GameLoop.players_turn(game, current_creature)
+            else:
+                GameLoop.creature_turn(game, current_creature)
+
+    @staticmethod
+    def players_turn(game, player):
+        pass
+
+    @staticmethod
+    def creature_turn(game, creature):
+        pass

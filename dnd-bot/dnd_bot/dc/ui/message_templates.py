@@ -38,3 +38,13 @@ class MessageTemplates:
         embed.set_footer(text=None)
 
         return embed
+
+    @staticmethod
+    def tmp_view_template():
+        image = 'assets/gfx/map_view.png'
+
+        embed = nextcord.Embed(title='test')
+
+        return embed
+
+

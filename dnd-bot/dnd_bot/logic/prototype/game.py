@@ -3,9 +3,11 @@ from queue import Queue
 
 class Game:
     """class represents particular games and lobbies"""
-    def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None):
+    def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None, events=None):
         if user_list is None:
             user_list = []
+        if events is None:
+            events = []
         self.id_host = id_host
         self.token = token
         self.id_campaign = id_campaign
@@ -15,6 +17,7 @@ class Game:
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         self.creatures_queue = Queue(maxsize=0)
+        self.events = events
 
     def add_player(self, user_id, user_channel_id, username):
         """adds player to the game
