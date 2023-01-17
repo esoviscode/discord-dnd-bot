@@ -1,5 +1,5 @@
 class Item:
-
+    """represents an item in the player's inventory"""
     def __init__(self, id_item: int, name: str, hp: int, strength: int, dexterity: int, intelligence: int,
                  charisma: int, perception: int, action_points: int, effect=None):
         self.id = id_item
