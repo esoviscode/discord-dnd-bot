@@ -1,5 +1,6 @@
 from collections import deque
 
+from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
 
@@ -59,3 +60,10 @@ class Game:
                 return False
 
         return True
+
+    def get_player_by_id_user(self, id_user):
+        for entity in self.entities:
+            if isinstance(entity, Player):
+                if entity.discord_identity == id_user:
+                    return entity
+        return None

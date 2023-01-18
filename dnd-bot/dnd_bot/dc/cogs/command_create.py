@@ -4,6 +4,7 @@ from nextcord.ext.commands import Cog, Bot
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.ui.views.view_movement import ViewMovement
 from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
@@ -87,24 +88,9 @@ class StartButton(nextcord.ui.View):
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
 
-                # TODO remove this, testing purposes
-                map_view = '```'
-                game = Multiverse.get_game(self.token)
-                for entity_row in game.entities:
-                    for entity in entity_row:
-                        if entity is None:
-                            map_view += '⬜'
-                        else:
-                            if isinstance(entity, Rock):
-                                map_view += '🪨'
-                            elif isinstance(entity, Hole):
-                                map_view += '🕳️'
-                            elif isinstance(entity, Player):
-                                map_view += '👨‍🦯'
-                    map_view += '\n'
-                map_view += '```'
+                map_view_message = MessageTemplates.map_view_template(self.token)
 
-                await Messager.send_dm_message(user, map_view)
+                await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
                 # TODO remove above
         else:
             await interaction.response.send_message(error_message, ephemeral=True)

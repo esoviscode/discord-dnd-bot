@@ -41,14 +41,9 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
             for player_pos in players_positions:
-                print(entities[player_pos[1]][player_pos[0]])
-
-                player = Player(x=player_pos[0], y=player_pos[1], name='Player')
 
                 entities[player_pos[1]].pop(player_pos[0])
-                entities[player_pos[1]].insert(player_pos[0], player)
-
-                print(entities[player_pos[1]][player_pos[0]])
+                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1], name='Player'))
 
             game.entities = copy.deepcopy(entities)
 
