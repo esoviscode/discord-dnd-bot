@@ -9,3 +9,9 @@ class Entity:
         self.name = name
         self.id_game = id_game
         self.skills = skills
+
+    def __str__(self):
+        return f'<{self.name} x={self.x} y={self.y}>'
+
+    def __repr__(self):
+        return f'<{self.name} x={self.x} y={self.y}>'

@@ -1,13 +1,14 @@
-from nextcord.ext.commands import Cog, Bot
-from nextcord import slash_command
 import nextcord
+from nextcord import slash_command
+from nextcord.ext.commands import Cog, Bot
+
+from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
-from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
-from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
+from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -82,6 +83,21 @@ class StartButton(nextcord.ui.View):
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
+
+                # TODO remove this, testing purposes
+                map_view = '```'
+                game = Multiverse.get_game(self.token)
+                for entity_row in game.entities:
+                    for entity in entity_row:
+                        if entity is None:
+                            map_view += '     '
+                        else:
+                            map_view += f'{entity.name} '
+                    map_view += '\n'
+                map_view += '```'
+
+                await Messager.send_dm_message(user, map_view)
+                # TODO remove above
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

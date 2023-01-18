@@ -1,3 +1,4 @@
+from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.database.database_connection import DatabaseConnection
 
@@ -40,6 +41,8 @@ class HandlerStart:
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
                 DatabaseConnection.add_user(game_id, user.discord_id)
+
+            GameStart.start(token)
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
