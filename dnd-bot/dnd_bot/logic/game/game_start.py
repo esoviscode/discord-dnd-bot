@@ -12,8 +12,6 @@ class GameStart:
 
         InitializeWorld.load_entities(game, 'dnd_bot/assets/maps/map.json')
 
-        print(game.entities)
-
 
 
 

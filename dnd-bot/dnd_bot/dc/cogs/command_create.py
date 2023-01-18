@@ -9,7 +9,10 @@ from dnd_bot.logic.lobby.handler_create import HandlerCreate
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
 from dnd_bot.logic.lobby.handler_start import HandlerStart
+from dnd_bot.logic.prototype.entities.hole import Hole
+from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 
 
 class JoinButton(nextcord.ui.View):
@@ -90,9 +93,14 @@ class StartButton(nextcord.ui.View):
                 for entity_row in game.entities:
                     for entity in entity_row:
                         if entity is None:
-                            map_view += '     '
+                            map_view += '⬜'
                         else:
-                            map_view += f'{entity.name} '
+                            if isinstance(entity, Rock):
+                                map_view += '🪨'
+                            elif isinstance(entity, Hole):
+                                map_view += '🕳️'
+                            elif isinstance(entity, Player):
+                                map_view += '👨‍🦯'
                     map_view += '\n'
                 map_view += '```'
 

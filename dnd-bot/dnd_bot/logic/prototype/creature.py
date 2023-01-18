@@ -4,9 +4,9 @@ from dnd_bot.logic.prototype.equipment import Equipment
 
 class Creature(Entity):
     """represents a creature"""
-    def __init__(self, entity_id: int, x: int, y: int, sprite, name: str, skill, hp: int, strength: int, dexterity: int,
-                 intelligence: int, charisma: int, perception: int, initiative: int, action_points: int, level: int,
-                 drop_equipment: Equipment, drop_money: int, items=None):
+    def __init__(self, entity_id: int=0, x: int=0, y: int=0, sprite=None, name: str='Creature', skill=None, hp: int=0, strength: int=0, dexterity: int=0,
+                 intelligence: int=0, charisma: int=0, perception: int=0, initiative: int=0, action_points: int=0, level: int=0,
+                 drop_equipment: Equipment=None, drop_money: int=0, items=None):
         super().__init__(entity_id, x, y, sprite, name, skill)
         if items is None:
             items = []
