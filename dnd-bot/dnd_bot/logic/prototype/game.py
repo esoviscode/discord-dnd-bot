@@ -1,12 +1,13 @@
-import copy
+from collections import deque
 
 from dnd_bot.logic.prototype.user import User
-from queue import Queue
-from collections import deque
+
 
 class Game:
     """class represents particular games and lobbies"""
-    def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None, events=None, queue=None):
+
+    def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None, events=None,
+                 queue=None):
         if user_list is None:
             user_list = []
         if events is None:
@@ -22,11 +23,6 @@ class Game:
         if queue is None:
             self.creatures_queue = deque()
         self.events = events
-
-    # def __deepcopy__(self, memodict={}):
-    #     queue = copy.deepcopy(self.creatures_queue)
-    #     return Game(self, self.token, id_host=self.id_host, id_campaign=self.id_campaign, game_state=self.game_state,
-    #                 user_list=self.user_list, events=self.events, queue=queue)
 
     def add_player(self, user_id, user_channel_id, username):
         """adds player to the game
