@@ -59,7 +59,7 @@ class DatabaseConnection:
         :param token: lobby/game token (5 digit password)
         :param id_host: discord id of host
         :param game_state: string enum, initial value of added game is 'LOBBY'
-        :param campaign_name: campaign name
+        :param campaign_name: campaign  name
         :return:
             on success: game id, on failure: None
         """

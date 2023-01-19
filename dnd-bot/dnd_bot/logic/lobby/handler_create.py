@@ -51,7 +51,7 @@ class HandlerCreate:
         while token in tokens:
             token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
+        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY",  "Storm King's Thunder")
         if game_id is None:
             return False, -1, ":no_entry: Error creating game!"
 
