@@ -6,6 +6,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.dc.ui.views.view_attack import ViewAttack
 from dnd_bot.dc.ui.views.view_movement import ViewMovement
+from dnd_bot.dc.ui.views.view_character import ViewCharacter
 
 
 class ViewMain(View):
@@ -46,7 +47,12 @@ class ViewMain(View):
     @nextcord.ui.button(label='Character', style=nextcord.ButtonStyle.blurple)
     async def character(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening character menu"""
-        pass
+        player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
+        map_view_message = MessageTemplates.map_view_template(
+            self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
+
+        await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
+                                              view=ViewCharacter(self.token))
 
     @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger)
     async def more_actions(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
