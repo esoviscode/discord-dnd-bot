@@ -9,6 +9,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_movement import ViewMovement
 from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.game.game_loop import GameLoop
+from dnd_bot.logic.game.handler_game import HandlerGame
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
@@ -95,8 +96,7 @@ class StartButton(nextcord.ui.View):
 
                 await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
 
-            # create a separate thread running the main game loop
-            Thread(target=GameLoop.game_loop, args=(self.token, )).start()
+            HandlerGame.handle_game(self.token)
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
