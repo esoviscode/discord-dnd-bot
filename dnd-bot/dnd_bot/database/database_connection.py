@@ -10,34 +10,38 @@ class DatabaseConnection:
     def connection_establish():
         """ establishes connection with the database using the provided ip address, credentials and port
         """
-        db_address, db_name, db_user, db_password, db_port = DatabaseConnection.__connection_get_authentication__()
+        db_address, db_name, db_user, db_passwords, db_port = DatabaseConnection.__connection_get_authentication__()
 
-        print(f'DB: attempting connection to {db_name} database at {db_address}:{db_port}')
+        print(f'db: attempting connection to {db_name} database at {db_address}:{db_port}')
 
-        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_password,
+        DatabaseConnection.connection = connect(database=db_name, user=db_user, password=db_passwords.pop(),
                                                 host=db_address, port=db_port)
 
+        # erase password in memory upon using it
+        db_passwords.clear()
+
         DatabaseConnection.cursor = DatabaseConnection.connection.cursor()
-        print(f'DB: successfully connected')
+        print(f'db: successfully connected')
 
     @staticmethod
     def __connection_get_authentication__():
         """extracts database credentials and others from environment variables passed to the app
         """
+        passwords = []
         address = os.getenv('DB_ADDRESS')
         name = os.getenv('DB_NAME')
         user = os.getenv('DB_USER')
-        password = os.getenv('DB_PASSWORD')
+        passwords.append(os.getenv('DB_PASSWORD'))
         port = os.getenv('DB_PORT')
 
         if not user:
             user = 'admin'
-        if not password:
-            password = 'admin'
+        if passwords[0] is None:
+            passwords.append('admin')
         if not port:
             port = 5432
 
-        return address, name, user, password, port
+        return address, name, user, passwords, port
 
     @staticmethod
     def connection_close():
@@ -54,19 +58,19 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
 
     @staticmethod
-    def add_game(token: str, id_host: int, id_campaign: int, game_state: str) -> int | None:
+    def add_game(token: str, id_host: int, game_state: str, campaign_name: str) -> int | None:
         """start game and add game to database
         :param token: lobby/game token (5 digit password)
         :param id_host: discord id of host
-        :param id_campaign: id of campaign
         :param game_state: string enum, initial value of added game is 'LOBBY'
+        :param campaign_name: campaign  name
         :return:
             on success: game id, on failure: None
         """
 
-        DatabaseConnection.cursor.execute('INSERT INTO public."Game" (token, id_host, id_campaign, game_state) VALUES '
+        DatabaseConnection.cursor.execute('INSERT INTO public."Game" (token, id_host, game_state, campaign_name) VALUES '
                                           '(%s, %s, %s, %s)',
-                                          (token, id_host, id_campaign, game_state))
+                                          (token, id_host, game_state, campaign_name))
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
 
         try:
@@ -137,7 +141,7 @@ class DatabaseConnection:
     def update_game_state(id_game: int, game_state: str) -> None:
         """updates game state on the one provided
         """
-        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = %s WHERE id_game = %s',
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
                                           (game_state, id_game))
 
         DatabaseConnection.connection.commit()
@@ -156,7 +160,7 @@ class DatabaseConnection:
     def get_id_game_from_game_token(token: str) -> int | None:
         """returns database game id based on the token, None if the query fails
         """
-        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = %s', token)
+        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = (%s)', (token,))
         game_id = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
 
@@ -169,7 +173,7 @@ class DatabaseConnection:
     def get_game_token_from_id_game(id_game: int) -> str | None:
         """returns game token based on database game id, None if the query fails
         """
-        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = %s', id_game)
+        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = (%s)', (id_game,))
         game_token = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
 

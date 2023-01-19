@@ -18,6 +18,7 @@ class Entity:
 
     def move_one_tile(self, direction, game):
         """moves entity one tile in set direction"""
+
         if direction == 'right':
             if game.entities[self.y][self.x + 1] is not None:
                 return False, 'This field is taken!'

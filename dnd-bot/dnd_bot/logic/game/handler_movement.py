@@ -15,7 +15,12 @@ class HandlerMovement:
         if not player.active:
             return False, 'You can\'t perform a move right now!'
 
+        if player.action_points == 0:
+            return False, 'You\'re out of action points!'
+
         if num_tiles == 1:
+            if player.action_points is not None and player.action_points > 0:
+                player.action_points -= 1
             status, error_message = player.move_one_tile(direction, game)
         else:
             return False, 'Not implemented yet!'  # TODO implement moving >1 tiles
@@ -31,6 +36,7 @@ class HandlerMovement:
         game = Multiverse.get_game(token)
 
         player = game.get_player_by_id_user(id_user)
+        player.action_points = player.initial_action_points
 
         player.active = False
 

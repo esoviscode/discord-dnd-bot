@@ -45,7 +45,7 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def map_view_template(token):
+    def map_view_template(token, active_player_name, action_points, is_players_turn):
         """message segment that shows the current state of the map"""
         map_view = '```'
         game = Multiverse.get_game(token)
@@ -63,14 +63,73 @@ class MessageTemplates:
             map_view += '\n'
         map_view += '```'
 
+        if is_players_turn:
+            map_view += f'{active_player_name}\'s turn | your action points: {action_points}\n'
+        else:
+            map_view += f'{active_player_name}\'s turn'
+
         return map_view
 
     @staticmethod
-    def tmp_view_template():
-        image = 'assets/gfx/map_view.png'
+    def attack_view_message_template(enemies):
+        """message segment that shows the list of enemies to attack"""
+        desc = ""
+        for i, enemy in enumerate(enemies):
+            desc += f'{i}. {enemy.name} ({enemy.hp}HP) at ({enemy.x}, {enemy.y})\n'
 
-        embed = nextcord.Embed(title='test')
+        embed = nextcord.Embed(title="Select enemy:",
+                               description=desc)
 
+        embed.set_footer(text="Choose the enemy you want to attack!")
+
+        return embed
+
+    @staticmethod
+    def equipment_message_template(player):
+        """message segment that shows the equipment of the player"""
+        desc = "Equipped items:\n"
+        desc += f'Helmet: {player.equipment.helmet}\n'
+        desc += f'Chest: {player.equipment.chest}\n'
+        desc += f'Leg Armor: {player.equipment.leg_armor}\n'
+        desc += f'Boots: {player.equipment.boots}\n'
+        desc += f'Left Hand: {player.equipment.left_hand}\n'
+        desc += f'Right Hand: {player.equipment.right_hand}\n'
+        desc += f'Accessory: {player.equipment.accessory}\n'
+
+        desc = "\n\n Your Items:\n"
+        for i, item in enumerate(player.items):
+            desc += f'{i+1}. {item.name}'
+
+        embed = nextcord.Embed(title="Your equipment:",
+                               description=desc)
+        return embed
+
+    @staticmethod
+    def stats_message_template(player):
+        """message segment that shows the stats of the player"""
+        desc = ""
+        desc += f'Strength: {player.strength}'
+        desc += f'Dexterity: {player.dexterity}\n'
+        desc += f'Max HP: {player.hp}\n'
+        desc += f'Intelligence: {player.intelligence}\n'
+        desc += f'Charisma: {player.charisma}\n'
+        desc += f'Perception: {player.perception}\n'
+        desc += f'Initiative: {player.initiative}\n'
+        desc += f'Action Points: {player.action_points}\n'
+
+        embed = nextcord.Embed(title="Your Stats:",
+                               description=desc)
+        return embed
+
+    @staticmethod
+    def skills_message_template(player):
+        """message segment that shows the skills of the player"""
+        desc = ""
+        for i, skill in enumerate(player.skills):
+            desc += f'{i+1}. {skill.name}\n'
+
+        embed = nextcord.Embed(title="Your Skills:",
+                               description=desc)
         return embed
 
 

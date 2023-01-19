@@ -82,3 +82,9 @@ class Game:
                     movable_entities.append(entity)
         return movable_entities
 
+    def get_active_player(self):
+        """returns current active player"""
+        for entity_row in self.entities:
+            for entity in entity_row:
+                if isinstance(entity, Player) and entity.active:
+                    return entity

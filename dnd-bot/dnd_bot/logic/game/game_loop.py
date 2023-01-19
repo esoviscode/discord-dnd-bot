@@ -48,7 +48,6 @@ class GameLoop:
         """loops over all creatures and lets them perform actions, each iteration is a move"""
         # TODO game_token could be a static variable inside GameLoop
         game = GameLoop.get_game_object(game_token)
-        GameLoop.prepare_queue(game)
 
         while game.game_state == 'ACTIVE':
             # each iteration is a creature's move
