@@ -1,3 +1,5 @@
+from threading import Thread
+
 import nextcord
 from nextcord import slash_command
 from nextcord.ext.commands import Cog, Bot
@@ -92,6 +94,10 @@ class StartButton(nextcord.ui.View):
                 map_view_message = MessageTemplates.map_view_template(self.token)
 
                 await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+
+            # create a separate thread running the main game loop
+            Thread(target=GameLoop.game_loop, args=(self.token, )).start()
+
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

@@ -12,13 +12,13 @@ class HandlerMovement:
         if player is None:
             return False, 'This user doesn\'t have a player!'
 
-        player.active = True  # TODO remove, testing purposes
+        # player.active = True  # TODO remove, testing purposes
         if not player.active:
             return False, 'You can\'t perform a move right now!'
-        player.active = False  # TODO remove, testing purposes
+        # player.active = False  # TODO remove, testing purposes
 
         if num_tiles == 1:
-            status, error_message = player.move_one_tile(direction, num_tiles, game)
+            status, error_message = player.move_one_tile(direction, game)
         else:
             return False, 'Not implemented yet!'  # TODO implement moving >1 tiles
 

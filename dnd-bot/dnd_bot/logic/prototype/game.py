@@ -1,5 +1,6 @@
 from collections import deque
 
+from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
@@ -70,3 +71,13 @@ class Game:
                     if entity.discord_identity == id_user:
                         return entity
         return None
+
+    def get_movable_entities(self):
+        """returns all entities which are able to move"""
+        movable_entities = []
+        for entity_row in self.entities:
+            for entity in entity_row:
+                if isinstance(entity, Creature):
+                    movable_entities.append(entity)
+        return movable_entities
+

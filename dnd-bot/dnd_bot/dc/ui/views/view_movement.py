@@ -62,4 +62,4 @@ class ViewMovement(View):
     @staticmethod
     async def move_one_tile(direction, id_user, token):
         """shared movement by one tile function for all directions"""
-        return await HandlerMovement.handle_movement(direction, id_user, token)
+        return await HandlerMovement.handle_movement(direction, 1, id_user, token)
