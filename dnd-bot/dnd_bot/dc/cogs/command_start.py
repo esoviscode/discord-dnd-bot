@@ -5,7 +5,7 @@ from dnd_bot.logic.lobby.handler_start import HandlerStart
 
 
 class CommandStart(Cog):
-
+    """handles start command"""
     def __init__(self, bot: Bot):
         self.bot = bot
 

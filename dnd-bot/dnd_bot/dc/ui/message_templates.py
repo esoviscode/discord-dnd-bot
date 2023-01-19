@@ -1,7 +1,13 @@
 import nextcord
 
+from dnd_bot.logic.prototype.entities.hole import Hole
+from dnd_bot.logic.prototype.entities.rock import Rock
+from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
+
 
 class MessageTemplates:
+    """Defines message templates, used mainly with discord embeds"""
 
     color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 
@@ -37,3 +43,34 @@ class MessageTemplates:
         embed.set_footer(text=None)
 
         return embed
+
+    @staticmethod
+    def map_view_template(token):
+        """message segment that shows the current state of the map"""
+        map_view = '```'
+        game = Multiverse.get_game(token)
+        for entity_row in game.entities:
+            for entity in entity_row:
+                if entity is None:
+                    map_view += '⬜'
+                else:
+                    if isinstance(entity, Rock):
+                        map_view += '🪨'
+                    elif isinstance(entity, Hole):
+                        map_view += '🕳️'
+                    elif isinstance(entity, Player):
+                        map_view += '👨‍🦯'
+            map_view += '\n'
+        map_view += '```'
+
+        return map_view
+
+    @staticmethod
+    def tmp_view_template():
+        image = 'assets/gfx/map_view.png'
+
+        embed = nextcord.Embed(title='test')
+
+        return embed
+
+

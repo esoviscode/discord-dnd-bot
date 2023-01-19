@@ -17,17 +17,21 @@ async def on_ready():
 
 @bot.command()
 async def load(ctx, extension):
+    """loads nextcord cogs"""
     bot.load_extension(f'dnd_bot.dc.cogs.{extension}')
     await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was loaded.')
 
 
 @bot.command()
 async def unload(ctx, extension):
+    """unloads nextcord cogs"""
     bot.unload_extension(f'dnd_bot.dc.cogs.{extension}')
     await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was unloaded. You can no longer use it until it is reloaded.')
 
 
 def bot_run():
+    """starts basic bot configuration like setting commands, establishing connection to the database and setting
+    crucial variables """
     env_token = "BOT_TOKEN"
     token = os.getenv(env_token)
 
@@ -49,6 +53,7 @@ def bot_run():
 # Error handling
 @bot.event
 async def on_command_error(interaction, error):
+    """handles errors"""
     error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
                                  description="😞 We are sorry for any inconveniences",
                                  color=0xFF5733)

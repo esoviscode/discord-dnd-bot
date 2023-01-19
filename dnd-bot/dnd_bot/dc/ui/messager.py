@@ -1,4 +1,5 @@
 class Messager:
+    """contains static methods to manage sending, editing and deleting messages on discord"""
     bot = None
 
     @staticmethod
@@ -8,7 +9,6 @@ class Messager:
 
     @staticmethod
     async def send_dm_message(user_id: int, content: str | None, embed=None, view=None):
-
         await Messager.bot.get_user(user_id).send(content=content, embed=embed, view=view)
 
     @staticmethod
