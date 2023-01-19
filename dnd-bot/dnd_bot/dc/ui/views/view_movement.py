@@ -47,13 +47,15 @@ class ViewMovement(View):
 
         # send messages about successful start operation
         for user in lobby_players:
-
-            map_view_message = MessageTemplates.map_view_template(self.token)
-
             player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
+
             if player.discord_identity == next_active_player.discord_identity:
+                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                                                                      player.action_points, True)
                 await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
             else:
+                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                                                                      player.action_points, False)
                 await Messager.send_dm_message(user.discord_id, map_view_message)
 
         return
@@ -67,12 +69,16 @@ class ViewMovement(View):
             await interaction.response.send_message(error_message)
             return
 
-        map_view_message = MessageTemplates.map_view_template(token)
         lobby_players = Multiverse.get_game(token).user_list
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+
             if player.active:
+                map_view_message = MessageTemplates.map_view_template(
+                    token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
                                                       view=ViewMovement(token))
             else:
+                map_view_message = MessageTemplates.map_view_template(
+                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)

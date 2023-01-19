@@ -5,7 +5,7 @@ from dnd_bot.logic.prototype.equipment import Equipment
 class Creature(Entity):
     """represents a creature"""
 
-    def __init__(self, x=0, y=0, sprite=None, name='Creature', skill=None, hp=0, strength=0, dexterity=0,
+    def __init__(self, x=0, y=0, sprite=None, name='Creature', hp=0, strength=0, dexterity=0,
                  intelligence=0, charisma=0, perception=0, initiative=0, action_points=0,
                  level=0, drop_equipment: Equipment = None, drop_money=0, items=None):
         super().__init__(x=x, y=y, sprite=sprite, name=name)

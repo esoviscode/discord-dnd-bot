@@ -92,9 +92,18 @@ class StartButton(nextcord.ui.View):
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
 
-                map_view_message = MessageTemplates.map_view_template(self.token)
+                player = Multiverse.get_game(self.token).get_player_by_id_user(user)
 
-                await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                if player.active:
+                    map_view_message = MessageTemplates. \
+                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
+                                          player.action_points, True)
+                    await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                else:
+                    map_view_message = MessageTemplates. \
+                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
+                                          player.action_points, False)
+                    await Messager.send_dm_message(user, map_view_message)
 
             HandlerGame.handle_game(self.token)
 
