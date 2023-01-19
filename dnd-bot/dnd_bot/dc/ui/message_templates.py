@@ -104,4 +104,21 @@ class MessageTemplates:
                                description=desc)
         return embed
 
+    @staticmethod
+    def stats_message_template(player):
+        """message segment that shows the equipment of the player"""
+        desc = ""
+        desc += f'Strength: {player.strength}'
+        desc += f'Dexterity: {player.dexterity}\n'
+        desc += f'Max HP: {player.hp}\n'
+        desc += f'Intelligence: {player.intelligence}\n'
+        desc += f'Charisma: {player.charisma}\n'
+        desc += f'Perception: {player.perception}\n'
+        desc += f'Initiative: {player.initiative}\n'
+        desc += f'Action Points: {player.action_points}\n'
+
+        embed = nextcord.Embed(title="Your Stats:",
+                               description=desc)
+        return embed
+
 
