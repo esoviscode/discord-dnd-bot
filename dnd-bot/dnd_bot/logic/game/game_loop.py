@@ -61,17 +61,11 @@ class GameLoop:
                 GameLoop.players_turn(game, current_creature)
             else:
                 GameLoop.creature_turn(game, current_creature)
-            # game.creatures_queue.append(current_creature)
 
     @staticmethod
     def players_turn(game, player):
         """one turn of a player"""
         player.active = True
-
-        # map_view_message = MessageTemplates.map_view_template(game.token)
-        # view = ViewMovement(game.token)
-        # await Messager.send_dm_message(player.discord_identity, content=map_view_message,
-        #                                view=view)
 
         while True:
             # player performs asynchronous actions via commands or buttons
