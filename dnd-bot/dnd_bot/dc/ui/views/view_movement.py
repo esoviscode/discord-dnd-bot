@@ -16,86 +16,29 @@ class ViewMovement(View):
     @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple)
     async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile left"""
-        status, error_message = await ViewMovement.move_one_tile('left', interaction.user.id, self.token)
-        if not status:
-            await interaction.response.send_message(error_message)
-            return
-
-        map_view_message = MessageTemplates.map_view_template(self.token)
-        lobby_players = Multiverse.get_game(self.token).user_list
-        for user in lobby_players:
-            player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
-            if player.active:
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
-            else:
-                await Messager.send_dm_message(user.discord_id, map_view_message)
-
-        await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
-        return
+        await ViewMovement.move_one_tile('left', interaction.user.id, self.token, interaction)
 
     @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple)
     async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile right"""
-        status, error_message = await ViewMovement.move_one_tile('right', interaction.user.id, self.token)
-        if not status:
-            await interaction.response.send_message(error_message)
-            return
-
-        map_view_message = MessageTemplates.map_view_template(self.token)
-        lobby_players = Multiverse.get_game(self.token).user_list
-        for user in lobby_players:
-            player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
-            if player.active:
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
-            else:
-                await Messager.send_dm_message(user.discord_id, map_view_message)
-
-        # await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
-        return
+        await ViewMovement.move_one_tile('right', interaction.user.id, self.token, interaction)
 
     @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple)
     async def move_one_up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile up"""
-        status, error_message = await ViewMovement.move_one_tile('up', interaction.user.id, self.token)
-        if not status:
-            await interaction.response.send_message(error_message)
-            return
-
-        map_view_message = MessageTemplates.map_view_template(self.token)
-        lobby_players = Multiverse.get_game(self.token).user_list
-        for user in lobby_players:
-            player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
-            if player.active:
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
-            else:
-                await Messager.send_dm_message(user.discord_id, map_view_message)
-
-        #await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
-        return
+        await ViewMovement.move_one_tile('up', interaction.user.id, self.token, interaction)
 
     @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple)
     async def move_one_down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile down"""
-        status, error_message = await ViewMovement.move_one_tile('down', interaction.user.id, self.token)
-        if not status:
-            await interaction.response.send_message(error_message)
-            return
-
-        map_view_message = MessageTemplates.map_view_template(self.token)
-        lobby_players = Multiverse.get_game(self.token).user_list
-        for user in lobby_players:
-            player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
-            if player.active:
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
-            else:
-                await Messager.send_dm_message(user.discord_id, map_view_message)
-        await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
-        return
+        await ViewMovement.move_one_tile('down', interaction.user.id, self.token, interaction)
 
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger)
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
-        status = await HandlerMovement.handle_end_turn(interaction.user.id, self.token)
+        status, error_message = await HandlerMovement.handle_end_turn(interaction.user.id, self.token)
+        if not status:
+            await interaction.response.send_message(error_message)
 
         lobby_players = Multiverse.get_game(self.token).user_list
 
@@ -115,6 +58,19 @@ class ViewMovement(View):
         return
 
     @staticmethod
-    async def move_one_tile(direction, id_user, token):
+    async def move_one_tile(direction, id_user, token, interaction: nextcord.Interaction):
         """shared movement by one tile function for all directions"""
-        return await HandlerMovement.handle_movement(direction, 1, id_user, token)
+        status, error_message = await HandlerMovement.handle_movement(direction, 1, id_user, token)
+
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
+        map_view_message = MessageTemplates.map_view_template(token)
+        lobby_players = Multiverse.get_game(token).user_list
+        for user in lobby_players:
+            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+            if player.active:
+                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(token))
+            else:
+                await Messager.send_dm_message(user.discord_id, map_view_message)

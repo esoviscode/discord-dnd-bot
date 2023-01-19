@@ -34,4 +34,4 @@ class HandlerMovement:
 
         player.active = False
 
-        return True
+        return True, ''
