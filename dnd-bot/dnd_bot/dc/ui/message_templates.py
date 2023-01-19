@@ -70,4 +70,18 @@ class MessageTemplates:
 
         return map_view
 
+    @staticmethod
+    def attack_view_message_template(enemies):
+        """message segment that shows the list of enemies to attack"""
+        desc = ""
+        for i, enemy in enumerate(enemies):
+            desc += f'{i}. {enemy.name} ({enemy.hp}HP) at ({enemy.x}, {enemy.y})\n'
+
+        embed = nextcord.Embed(title="Select enemy:",
+                               description=desc)
+
+        embed.set_footer(text="Choose the enemy you want to attack!")
+
+        return embed
+
 
