@@ -126,25 +126,7 @@ class HostButtons(nextcord.ui.View):
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
-        lobby_players = await HandlerReady.on_ready(self.token, interaction.user.id)
-        lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
-
-        for user in lobby_players:
-            if user[2]:
-                if user[1]:
-                    if Multiverse.get_game(self.token).all_users_ready():
-                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed, view=StartButton(self.token))
-                    else:
-                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                              view=HostButtonDisabled(self.token))
-                else:
-                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                          view=HostButtons(self.token))
-            else:
-                if user[1]:
-                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
-                else:
-                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed, view=ReadyButton(self.token))
+        await ReadyButton.view_handle_ready(self.token, interaction)
 
         self.value = False
 
@@ -157,29 +139,30 @@ class ReadyButton(nextcord.ui.View):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await ReadyButton.view_handle_ready(self.token, interaction)
 
-        lobby_players = await HandlerReady.on_ready(self.token, interaction.user.id)
-        lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
+        self.value = False
+
+    @staticmethod
+    async def view_handle_ready(token, interaction):
+        lobby_players = await HandlerReady.on_ready(token, interaction.user.id)
+        lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
 
         for user in lobby_players:
             if user[2]:
                 if user[1]:
-                    if Multiverse.get_game(self.token).all_users_ready():
+                    if Multiverse.get_game(token).all_users_ready():
                         await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                              view=StartButton(self.token))
+                                                              view=StartButton(token))
                     else:
                         await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                              view=HostButtonDisabled(self.token))
+                                                              view=HostButtonDisabled(token))
                 else:
                     await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                          view=HostButtons(self.token))
+                                                          view=HostButtons(token))
             else:
                 if user[1]:
                     await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
                 else:
                     await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                          view=ReadyButton(self.token))
-
-        self.value = False
-
-
+                                                          view=ReadyButton(token))

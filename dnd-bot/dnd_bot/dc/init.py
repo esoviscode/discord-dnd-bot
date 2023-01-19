@@ -75,11 +75,3 @@ async def on_command_error(interaction, error):
         text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
 
     await interaction.response.send_message(embed=error_embed)
-
-
-@bot.event
-async def on_close():
-    for thread in threading.enumerate():
-        if thread.name != 'MainThread':
-            print(thread.name)
-            thread.join()
