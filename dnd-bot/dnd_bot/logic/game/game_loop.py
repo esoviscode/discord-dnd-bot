@@ -26,15 +26,16 @@ class GameLoop:
                 return e.initiative
 
         # sort entities to put creatures into the queue in right order
-        game.entities.sort(reverse=True, key=entity_sorting_value)
+        entities = game.get_movable_entities()
+        entities.sort(reverse=True, key=entity_sorting_value)
 
         # make sure that the queue is empty
-        if not game.creatures_queue.count() == 0:
+        if not len(game.creatures_queue) == 0:
             game.creatures_queue.clear()
 
         # add creatures to the queue
-        for c in game.entities:
-            if isinstance(c, Creature):
+        for c in entities:
+            if isinstance(c, Creature) or isinstance(c, Player):
                 game.creatures_queue.append(c)
 
     @staticmethod
@@ -47,10 +48,14 @@ class GameLoop:
         """loops over all creatures and lets them perform actions, each iteration is a move"""
         # TODO game_token could be a static variable inside GameLoop
         game = GameLoop.get_game_object(game_token)
+        GameLoop.prepare_queue(game)
 
         while game.game_state == 'ACTIVE':
             # each iteration is a creature's move
             current_creature: Creature = game.creatures_queue.popleft()
+
+            if len(game.creatures_queue) == 0:
+                GameLoop.prepare_queue(game)
 
             if isinstance(current_creature, Player):
                 GameLoop.players_turn(game, current_creature)

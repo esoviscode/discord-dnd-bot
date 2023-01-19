@@ -150,7 +150,7 @@ class DatabaseConnection:
         tokens = DatabaseConnection.cursor.fetchall()
         DatabaseConnection.connection.commit()
 
-        return tokens
+        return [x[0] for x in tokens]
 
     @staticmethod
     def get_id_game_from_game_token(token: str) -> int | None:

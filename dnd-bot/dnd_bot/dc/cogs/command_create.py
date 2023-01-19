@@ -1,14 +1,23 @@
-from nextcord.ext.commands import Cog, Bot
-from nextcord import slash_command
+from threading import Thread
+
 import nextcord
-from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.utils import get_user_name_by_id
-from dnd_bot.logic.lobby.handler_create import HandlerCreate
+from nextcord import slash_command
+from nextcord.ext.commands import Cog, Bot
+
 from dnd_bot.dc.ui.message_templates import MessageTemplates
+from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.ui.views.view_movement import ViewMovement
+from dnd_bot.dc.utils.utils import get_user_name_by_id
+from dnd_bot.logic.game.game_loop import GameLoop
+from dnd_bot.logic.game.handler_game import HandlerGame
+from dnd_bot.logic.lobby.handler_create import HandlerCreate
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
-from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
+from dnd_bot.logic.lobby.handler_start import HandlerStart
+from dnd_bot.logic.prototype.entities.hole import Hole
+from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 
 
 class JoinButton(nextcord.ui.View):
@@ -71,7 +80,7 @@ class StartButton(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label="Start game", style=nextcord.ButtonStyle.blurple)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
         status, lobby_players_identities, error_message = await HandlerStart.start_game(self.token, interaction.user.id)
@@ -82,6 +91,13 @@ class StartButton(nextcord.ui.View):
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
+
+                map_view_message = MessageTemplates.map_view_template(self.token)
+
+                await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+
+            HandlerGame.handle_game(self.token)
+
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

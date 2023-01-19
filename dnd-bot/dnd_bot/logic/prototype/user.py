@@ -8,3 +8,6 @@ class User:
         self.username = username
         self.is_host = False
         self.is_ready = False
+
+    def __repr__(self):
+        return f'<{self.username} id={self.discord_id} host={self.is_host}>'
