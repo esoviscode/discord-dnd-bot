@@ -98,7 +98,7 @@ class StartButton(nextcord.ui.View):
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
                                           player.action_points, True)
-                    await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                    await Messager.send_dm_message(user, map_view_message, view=ViewMain(self.token))
                 else:
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
