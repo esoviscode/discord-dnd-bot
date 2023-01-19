@@ -6,6 +6,7 @@ from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_movement import ViewMovement
 from dnd_bot.dc.utils.utils import get_user_name_by_id
+from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
@@ -91,7 +92,6 @@ class StartButton(nextcord.ui.View):
                 map_view_message = MessageTemplates.map_view_template(self.token)
 
                 await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
-                # TODO remove above
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

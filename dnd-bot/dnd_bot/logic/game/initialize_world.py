@@ -21,7 +21,7 @@ class InitializeWorld:
             map_size_x = map_json['map']['size']['x']
             map_size_y = map_json['map']['size']['y']
 
-            entities=[]
+            entities = []
             player_spawning_points = []
             for y, row in enumerate(entities_json):
                 entities_row = []
@@ -40,10 +40,10 @@ class InitializeWorld:
 
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
-            for player_pos in players_positions:
-
+            for i, player_pos in enumerate(players_positions):
                 entities[player_pos[1]].pop(player_pos[0])
-                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1], name='Player'))
+                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1], name=game.user_list[i].username,
+                                                                     discord_identity=game.user_list[i].discord_id))
 
             game.entities = copy.deepcopy(entities)
 

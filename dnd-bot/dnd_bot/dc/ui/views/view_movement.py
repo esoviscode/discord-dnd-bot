@@ -13,26 +13,48 @@ class ViewMovement(View):
 
     @nextcord.ui.button(label='⬅️', style=nextcord.ButtonStyle.blurple)
     async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await ViewMovement.move_one_tile('left', interaction.user.id, self.token)
+        status, error_message = await ViewMovement.move_one_tile('left', interaction.user.id, self.token)
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
         map_view_message = MessageTemplates.map_view_template(self.token)
         await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
         return
 
     @nextcord.ui.button(label='➡️', style=nextcord.ButtonStyle.blurple)
     async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await ViewMovement.move_one_tile('right', interaction.user.id, self.token)
+        status, error_message = await ViewMovement.move_one_tile('right', interaction.user.id, self.token)
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
+        map_view_message = MessageTemplates.map_view_template(self.token)
+        await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
         return
 
     @nextcord.ui.button(label='⬆️', style=nextcord.ButtonStyle.blurple)
     async def move_one_up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await ViewMovement.move_one_tile('up', interaction.user.id, self.token)
+        status, error_message = await ViewMovement.move_one_tile('up', interaction.user.id, self.token)
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
+        map_view_message = MessageTemplates.map_view_template(self.token)
+        await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
         return
 
     @nextcord.ui.button(label='⬇️', style=nextcord.ButtonStyle.blurple)
     async def move_one_down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await ViewMovement.move_one_tile('down', interaction.user.id, self.token)
+        status, error_message = await ViewMovement.move_one_tile('down', interaction.user.id, self.token)
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
+        map_view_message = MessageTemplates.map_view_template(self.token)
+        await interaction.response.send_message(map_view_message, view=ViewMovement(self.token))
         return
 
     @staticmethod
     async def move_one_tile(direction, id_user, token):
-        status = await HandlerMovement.handle_movement(direction, id_user, token)
+        return await HandlerMovement.handle_movement(direction, id_user, token)

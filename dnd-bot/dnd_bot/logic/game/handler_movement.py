@@ -11,19 +11,17 @@ class HandlerMovement:
         if player is None:
             return False, 'This user doesn\'t have a player!'
 
+        player.active = True  # TODO remove, testing purposes
         if not player.active:
             return False, 'You can\'t perform a move right now!'
+        player.active = False  # TODO remove, testing purposes
 
-        if direction == 'right':
-            player.x += 1
-        elif direction == 'left':
-            player.x -= 1
-        elif direction == 'up':
-            player.y += 1
-        elif direction == 'down':
-            player.y -= 1
-        else:
-            raise SyntaxError('This direction doesn\'t exist!')
+        print(f'moving one tile {direction}')
+        print(game.entities)
+        status, error_message = player.move_one_tile(direction, game)
+        print(game.entities)
+        print('\n')
+        if not status:
+            return False, error_message
 
         return True, ''
-
