@@ -80,7 +80,7 @@ class StartButton(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label="Start game", style=nextcord.ButtonStyle.blurple)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
         status, lobby_players_identities, error_message = await HandlerStart.start_game(self.token, interaction.user.id)

@@ -1,3 +1,8 @@
+import asyncio
+
+from dnd_bot.dc.ui.message_templates import MessageTemplates
+from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.ui.views.view_movement import ViewMovement
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.game import Game
@@ -54,19 +59,25 @@ class GameLoop:
             # each iteration is a creature's move
             current_creature: Creature = game.creatures_queue.popleft()
 
+            if len(game.creatures_queue) == 0:
+                GameLoop.prepare_queue(game)
+
             if isinstance(current_creature, Player):
                 GameLoop.players_turn(game, current_creature)
             else:
                 GameLoop.creature_turn(game, current_creature)
-            game.creatures_queue.append(current_creature)
+            # game.creatures_queue.append(current_creature)
 
-            if len(game.creatures_queue) == 0:
-                GameLoop.prepare_queue(game)
 
     @staticmethod
     def players_turn(game, player):
         """one turn of a player"""
         player.active = True
+
+        # map_view_message = MessageTemplates.map_view_template(game.token)
+        # view = ViewMovement(game.token)
+        # await Messager.send_dm_message(player.discord_identity, content=map_view_message,
+        #                                view=view)
 
         while True:
             # player performs asynchronous actions via commands or buttons

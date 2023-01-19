@@ -24,3 +24,14 @@ class HandlerMovement:
             return False, error_message
 
         return True, ''
+
+    @staticmethod
+    async def handle_end_turn(id_user, token):
+        """handles end of player's turn"""
+        game = Multiverse.get_game(token)
+
+        player = game.get_player_by_id_user(id_user)
+
+        player.active = False
+
+        return True
