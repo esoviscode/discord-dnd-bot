@@ -4,6 +4,7 @@ from nextcord.ui import Button
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -278,7 +279,7 @@ class ViewCharacter(View):
 
         skills_embed = MessageTemplates.equipment_message_template(player)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
-                                              embed=skills_embed, view=ViewSkills(self.token))
+                                              embed=skills_embed, view=ViewCharacterSkills(self.token))
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -325,7 +326,7 @@ class ViewStats(View):
                                               view=ViewMain(self.token))
 
 
-class ViewSkills(View):
+class ViewCharacterSkills(View):
     def __init__(self, token):
         super().__init__()
         self.value = None
@@ -340,3 +341,100 @@ class ViewSkills(View):
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               view=ViewMain(self.token))
+
+
+class ViewSkills(View):
+    def __init__(self, token, skills):
+        super().__init__()
+        self.value = None
+        self.token = token
+        self.skills = skills
+        self.use_skill_buttons = [Button(label=str(x+1), style=nextcord.ButtonStyle.blurple)
+                                     for x in range(10)]
+
+        async def use_skill1(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 1"""
+            await ViewSkills.use_skill(skills[0], interaction.user.id, self.token, interaction)
+
+        async def use_skill2(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 2"""
+            await ViewSkills.use_skill(skills[1], interaction.user.id, self.token, interaction)
+
+        async def use_skill3(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 3"""
+            await ViewSkills.use_skill(skills[2], interaction.user.id, self.token, interaction)
+
+        async def use_skill4(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 4"""
+            await ViewSkills.use_skill(skills[3], interaction.user.id, self.token, interaction)
+
+        async def use_skill5(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 5"""
+            await ViewSkills.use_skill(skills[4], interaction.user.id, self.token, interaction)
+
+        async def use_skill6(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 6"""
+            await ViewSkills.use_skill(skills[5], interaction.user.id, self.token, interaction)
+
+        async def use_skill7(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 7"""
+            await ViewSkills.use_skill(skills[6], interaction.user.id, self.token, interaction)
+
+        async def use_skill8(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 8"""
+            await ViewSkills.use_skill(skills[7], interaction.user.id, self.token, interaction)
+
+        async def use_skill9(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 9"""
+            await ViewSkills.use_skill(skills[8], interaction.user.id, self.token, interaction)
+
+        async def use_skill10(interaction: nextcord.Interaction):
+            """callback function for button for using skill number 10"""
+            await ViewSkills.use_skill(skills[9], interaction.user.id, self.token, interaction)
+
+        self.use_skill_buttons[0].callback = use_skill1
+        self.use_skill_buttons[1].callback = use_skill2
+        self.use_skill_buttons[2].callback = use_skill3
+        self.use_skill_buttons[3].callback = use_skill4
+        self.use_skill_buttons[4].callback = use_skill5
+        self.use_skill_buttons[5].callback = use_skill6
+        self.use_skill_buttons[6].callback = use_skill7
+        self.use_skill_buttons[7].callback = use_skill8
+        self.use_skill_buttons[8].callback = use_skill9
+        self.use_skill_buttons[9].callback = use_skill10
+
+        for i in range(len(skills)):
+            self.add_item(self.use_skill_buttons[i])
+
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for moving back to main manu"""
+        player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
+        map_view_message = MessageTemplates.map_view_template(
+            self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
+
+        await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
+                                              view=ViewMain(self.token))
+
+    @staticmethod
+    async def use_skill(skill, id_user, token, interaction: nextcord.Interaction):
+        """attack enemy nr enemy_number from the available enemy list with the main weapon"""
+        status,  error_message = await HandlerSkills.handle_use_skill(skill, id_user, token)
+
+        if not status:
+            await interaction.response.send_message(error_message)
+            return
+
+        map_view_message = MessageTemplates.map_view_template(token)
+
+        player = Multiverse.get_game(token).get_player_by_id_user(interaction.user.id)
+        skills_list_embed = MessageTemplates.skills_message_template(player)
+        lobby_players = Multiverse.get_game(token).user_list
+        for user in lobby_players:
+            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+            if player.active:
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                      embed=skills_list_embed, view=ViewSkills(token, player.skills))
+            else:
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)
+
