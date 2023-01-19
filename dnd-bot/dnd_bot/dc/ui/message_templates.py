@@ -46,6 +46,7 @@ class MessageTemplates:
 
     @staticmethod
     def map_view_template(token):
+        """message segment that shows the current state of the map"""
         map_view = '```'
         game = Multiverse.get_game(token)
         for entity_row in game.entities:

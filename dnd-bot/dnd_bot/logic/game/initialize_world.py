@@ -10,8 +10,9 @@ from dnd_bot.logic.prototype.player import Player
 class InitializeWorld:
 
     @staticmethod
-    def load_entities(game, path):
-        with open(path) as file:
+    def load_entities(game, map_path):
+        """loads entities from json, players will be placed in random available spawning spots"""
+        with open(map_path) as file:
             map_json = json.load(file)
             entities_json = map_json['map']['entities']
 
@@ -49,6 +50,7 @@ class InitializeWorld:
 
     @staticmethod
     def spawn_players(spawning_points, num_players):
+        """function that places players in random available spawning points"""
         players_positions = []
         for _ in range(num_players):
             x, y = spawning_points.pop(random.randint(0, len(spawning_points) - 1))

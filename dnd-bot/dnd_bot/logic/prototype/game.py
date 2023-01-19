@@ -47,6 +47,7 @@ class Game:
         self.user_list.append(user)
 
     def find_user(self, discord_id):
+        """returns user by discord id, returns None if not successful"""
         for u in self.user_list:
             if u.discord_id == discord_id:
                 return u
@@ -62,6 +63,7 @@ class Game:
         return True
 
     def get_player_by_id_user(self, id_user):
+        """finds player by host's discord id, returns Player(Creature) if successful, None otherwise """
         for entity_row in self.entities:
             for entity in entity_row:
                 if isinstance(entity, Player):
