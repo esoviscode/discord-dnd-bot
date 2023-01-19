@@ -13,25 +13,33 @@ class ViewMovement(View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple)
-    async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """button for moving one tile left"""
-        await ViewMovement.move_one_tile('left', interaction.user.id, self.token, interaction)
+    @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    async def empty_button_1(self):
+        pass
 
-    @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple)
-    async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """button for moving one tile right"""
-        await ViewMovement.move_one_tile('right', interaction.user.id, self.token, interaction)
-
-    @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple, row=0)
     async def move_one_up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile up"""
         await ViewMovement.move_one_tile('up', interaction.user.id, self.token, interaction)
 
-    @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    async def empty_button_2(self):
+        pass
+
+    @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple, row=1)
+    async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for moving one tile left"""
+        await ViewMovement.move_one_tile('left', interaction.user.id, self.token, interaction)
+
+    @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple, row=1)
     async def move_one_down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile down"""
         await ViewMovement.move_one_tile('down', interaction.user.id, self.token, interaction)
+
+    @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple, row=1)
+    async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for moving one tile right"""
+        await ViewMovement.move_one_tile('right', interaction.user.id, self.token, interaction)
 
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger)
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
