@@ -45,7 +45,7 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def map_view_template(token, active_player_name, action_points):
+    def map_view_template(token, active_player_name, action_points, is_players_turn):
         """message segment that shows the current state of the map"""
         map_view = '```'
         game = Multiverse.get_game(token)
@@ -63,10 +63,10 @@ class MessageTemplates:
             map_view += '\n'
         map_view += '```'
 
-        if active_player_name is None:
-            map_view += f'Initial map view'
+        if is_players_turn:
+            map_view += f'{active_player_name}\'s turn | your action points: {action_points}\n'
         else:
-            map_view += f'\n{active_player_name}\'s turn | your action points: {action_points}'
+            map_view += f'{active_player_name}\'s turn'
 
         return map_view
 

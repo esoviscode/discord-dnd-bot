@@ -18,8 +18,6 @@ class Entity:
 
     def move_one_tile(self, direction, game):
         """moves entity one tile in set direction"""
-        if self.action_points is not None:
-            self.action_points -= 1
 
         if direction == 'right':
             if game.entities[self.y][self.x + 1] is not None:

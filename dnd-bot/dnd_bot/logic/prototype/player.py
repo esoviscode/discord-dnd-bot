@@ -20,7 +20,7 @@ class Player(Creature):
         charisma = random.randint(1, 5)
         perception = random.randint(1, 5)
         initiative = random.randint(1, 5)
-        action_points = random.randint(1, 5)
+        action_points = random.randint(5, 10)
         # TODO remove above
 
         super().__init__(x=x, y=y, sprite=sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,

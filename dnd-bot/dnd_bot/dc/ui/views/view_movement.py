@@ -49,12 +49,13 @@ class ViewMovement(View):
         for user in lobby_players:
             player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
 
-            map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
-                                                                  player.action_points)
-
             if player.discord_identity == next_active_player.discord_identity:
+                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                                                                      player.action_points, True)
                 await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
             else:
+                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                                                                      player.action_points, False)
                 await Messager.send_dm_message(user.discord_id, map_view_message)
 
         return
@@ -71,10 +72,12 @@ class ViewMovement(View):
         lobby_players = Multiverse.get_game(token).user_list
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
-            map_view_message = MessageTemplates.map_view_template(
-                token, Multiverse.get_game(token).get_active_player().name, player.action_points)
 
             if player.active:
+                map_view_message = MessageTemplates.map_view_template(
+                    token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
                 await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(token))
             else:
+                map_view_message = MessageTemplates.map_view_template(
+                    token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
                 await Messager.send_dm_message(user.discord_id, map_view_message)
