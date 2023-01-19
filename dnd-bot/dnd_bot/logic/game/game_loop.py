@@ -1,8 +1,3 @@
-import asyncio
-
-from dnd_bot.dc.ui.message_templates import MessageTemplates
-from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.ui.views.view_movement import ViewMovement
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.game import Game
@@ -67,7 +62,6 @@ class GameLoop:
             else:
                 GameLoop.creature_turn(game, current_creature)
             # game.creatures_queue.append(current_creature)
-
 
     @staticmethod
     def players_turn(game, player):
