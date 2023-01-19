@@ -76,8 +76,9 @@ class ViewMovement(View):
             if player.active:
                 map_view_message = MessageTemplates.map_view_template(
                     token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(token))
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                      view=ViewMovement(token))
             else:
                 map_view_message = MessageTemplates.map_view_template(
-                    token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
-                await Messager.send_dm_message(user.discord_id, map_view_message)
+                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)
