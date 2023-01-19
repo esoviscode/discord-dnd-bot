@@ -106,7 +106,7 @@ class MessageTemplates:
 
     @staticmethod
     def stats_message_template(player):
-        """message segment that shows the equipment of the player"""
+        """message segment that shows the stats of the player"""
         desc = ""
         desc += f'Strength: {player.strength}'
         desc += f'Dexterity: {player.dexterity}\n'
@@ -118,6 +118,17 @@ class MessageTemplates:
         desc += f'Action Points: {player.action_points}\n'
 
         embed = nextcord.Embed(title="Your Stats:",
+                               description=desc)
+        return embed
+
+    @staticmethod
+    def skills_message_template(player):
+        """message segment that shows the skills of the player"""
+        desc = ""
+        for i, skill in enumerate(player.skills):
+            desc += f'{i+1}. {skill.name}\n'
+
+        embed = nextcord.Embed(title="Your Skills:",
                                description=desc)
         return embed
 

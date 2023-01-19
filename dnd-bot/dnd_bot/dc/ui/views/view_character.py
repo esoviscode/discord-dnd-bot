@@ -4,8 +4,8 @@ from nextcord.ui import View
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.dc.ui.views.view_attack import ViewAttack
-from dnd_bot.dc.ui.views.view_movement import ViewMovement
+from dnd_bot.dc.ui.views.view_equipment import ViewEquipment
+from dnd_bot.dc.ui.views.view_statsimport import ViewStats
 
 
 class ViewCharacter(View):
@@ -35,4 +35,15 @@ class ViewCharacter(View):
         stats_embed = MessageTemplates.equipment_message_template(player)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               embed=stats_embed, view=ViewStats(self.token))
+
+    @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple)
+    async def show_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for opening stats menu"""
+        player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
+        map_view_message = MessageTemplates.map_view_template(
+            self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
+
+        skills_embed = MessageTemplates.equipment_message_template(player)
+        await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
+                                              embed=skills_embed, view=ViewSkills(self.token))
 
