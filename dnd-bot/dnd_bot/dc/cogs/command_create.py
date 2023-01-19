@@ -80,7 +80,7 @@ class StartButton(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Start game", style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
         status, lobby_players_identities, error_message = await HandlerStart.start_game(self.token, interaction.user.id)
@@ -92,9 +92,16 @@ class StartButton(nextcord.ui.View):
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
 
-                map_view_message = MessageTemplates.map_view_template(self.token)
+                player = Multiverse.get_game(self.token).get_player_by_id_user(user)
 
-                await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                map_view_message = MessageTemplates. \
+                    map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
+                                      player.action_points)
+
+                if player.active:
+                    await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                else:
+                    await Messager.send_dm_message(user, map_view_message)
 
             HandlerGame.handle_game(self.token)
 
@@ -133,7 +140,8 @@ class HostButtons(nextcord.ui.View):
             if user[2]:
                 if user[1]:
                     if Multiverse.get_game(self.token).all_users_ready():
-                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=StartButton(self.token))
+                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed,
+                                                       view=StartButton(self.token))
                     else:
                         await Messager.send_dm_message(user[3], "", embed=lobby_view_embed,
                                                        view=HostButtonDisabled(self.token))

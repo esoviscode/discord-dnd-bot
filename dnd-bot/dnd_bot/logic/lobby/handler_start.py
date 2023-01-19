@@ -1,3 +1,4 @@
+from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.database.database_connection import DatabaseConnection
@@ -43,6 +44,9 @@ class HandlerStart:
                 DatabaseConnection.add_user(game_id, user.discord_id)
 
             GameStart.start(token)
+            GameLoop.prepare_queue(game)
+
+            game.creatures_queue[0].active = True
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
