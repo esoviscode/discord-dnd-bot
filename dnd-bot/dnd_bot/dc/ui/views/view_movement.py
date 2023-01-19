@@ -35,6 +35,7 @@ class ViewMovement(View):
 
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger)
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for ending turn"""
 
         status, error_message = await HandlerMovement.handle_end_turn(interaction.user.id, self.token)
         if not status:
