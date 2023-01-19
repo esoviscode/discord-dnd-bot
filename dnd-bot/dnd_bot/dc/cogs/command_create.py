@@ -133,17 +133,18 @@ class HostButtons(nextcord.ui.View):
             if user[2]:
                 if user[1]:
                     if Multiverse.get_game(self.token).all_users_ready():
-                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=StartButton(self.token))
+                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed, view=StartButton(self.token))
                     else:
-                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed,
-                                                       view=HostButtonDisabled(self.token))
+                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                              view=HostButtonDisabled(self.token))
                 else:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=HostButtons(self.token))
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                          view=HostButtons(self.token))
             else:
                 if user[1]:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=None)
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
                 else:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=ReadyButton(self.token))
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed, view=ReadyButton(self.token))
 
         self.value = False
 
@@ -164,18 +165,20 @@ class ReadyButton(nextcord.ui.View):
             if user[2]:
                 if user[1]:
                     if Multiverse.get_game(self.token).all_users_ready():
-                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed,
-                                                       view=StartButton(self.token))
+                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                              view=StartButton(self.token))
                     else:
-                        await Messager.send_dm_message(user[3], "", embed=lobby_view_embed,
-                                                       view=HostButtonDisabled(self.token))
+                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                              view=HostButtonDisabled(self.token))
                 else:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=HostButtons(self.token))
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                          view=HostButtons(self.token))
             else:
                 if user[1]:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=None)
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
                 else:
-                    await Messager.send_dm_message(user[3], "", embed=lobby_view_embed, view=ReadyButton(self.token))
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                          view=ReadyButton(self.token))
 
         self.value = False
 
