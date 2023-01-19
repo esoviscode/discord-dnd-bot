@@ -16,6 +16,9 @@
     <a href="https://github.com/esoviscode/discord-bot/actions/workflows/docker-publish.yml">
         <img src="https://github.com/esoviscode/discord-bot/actions/workflows/docker-publish.yml/badge.svg">
     </a>
+    <a href="https://github.com/esoviscode/discord-bot/actions/workflows/codeql.yml">
+        <img src="https://github.com/esoviscode/discord-bot/actions/workflows/codeql.yml/badge.svg?branch=main">
+    </a>
 </p>
 
 <h3 align="center">
