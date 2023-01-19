@@ -72,6 +72,7 @@ class ViewMovement(View):
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
             if player.active:
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(token))
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                      view=ViewMovement(token))
             else:
-                await Messager.send_dm_message(user.discord_id, map_view_message)
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)
