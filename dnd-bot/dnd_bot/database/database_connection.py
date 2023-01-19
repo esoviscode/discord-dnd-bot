@@ -54,19 +54,19 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
 
     @staticmethod
-    def add_game(token: str, id_host: int, id_campaign: int, game_state: str) -> int | None:
+    def add_game(token: str, id_host: int, game_state: str, campaign_name: str) -> int | None:
         """start game and add game to database
         :param token: lobby/game token (5 digit password)
         :param id_host: discord id of host
-        :param id_campaign: id of campaign
         :param game_state: string enum, initial value of added game is 'LOBBY'
+        :param campaign_name: campaign  name
         :return:
             on success: game id, on failure: None
         """
 
-        DatabaseConnection.cursor.execute('INSERT INTO public."Game" (token, id_host, id_campaign, game_state) VALUES '
+        DatabaseConnection.cursor.execute('INSERT INTO public."Game" (token, id_host, game_state, campaign_name) VALUES '
                                           '(%s, %s, %s, %s)',
-                                          (token, id_host, id_campaign, game_state))
+                                          (token, id_host, game_state, campaign_name))
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
 
         try:

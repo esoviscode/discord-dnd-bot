@@ -41,7 +41,7 @@ def bot_run():
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
     print('Loading extensions:')
-    for filename in os.listdir('./dnd_bot/dc/cogs')[1:]:
+    for filename in os.listdir('./dnd_bot/dc/cogs'):
         if filename.endswith('.py'):
             bot.load_extension(f'dnd_bot.dc.cogs.{filename[:-3]}')
             print(f'    {filename[:-3]}')
