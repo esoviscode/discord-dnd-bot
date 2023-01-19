@@ -17,7 +17,7 @@ class HandlerStart:
                 :return: status, (if start was successful, users list, optional error message)
                 """
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
+        game_id = DatabaseConnection.get_id_game_from_game_token(token)
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
@@ -35,7 +35,7 @@ class HandlerStart:
 
         if game.game_state == 'LOBBY':
             game.game_state = "STARTING"
-            game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
+            DatabaseConnection.update_game_state(game_id, 'STARTING')
 
             if game_id is None:
                 game.game_state = 'LOBBY'

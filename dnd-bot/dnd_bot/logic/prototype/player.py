@@ -32,3 +32,4 @@ class Player(Creature):
         self.backstory = backstory
         self.equipment = equipment
         self.active = False
+        self.initial_action_points = action_points

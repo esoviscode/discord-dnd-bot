@@ -65,12 +65,10 @@ class GameLoop:
     def players_turn(game, player):
         """one turn of a player"""
         player.active = True
-        initial_action_points = player.action_points
 
         while True:
             # player performs asynchronous actions via commands or buttons
             if not player.active:
-                player.action_points = initial_action_points
                 break
 
     @staticmethod

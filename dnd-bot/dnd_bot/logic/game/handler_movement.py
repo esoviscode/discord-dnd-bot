@@ -36,6 +36,7 @@ class HandlerMovement:
         game = Multiverse.get_game(token)
 
         player = game.get_player_by_id_user(id_user)
+        player.action_points = player.initial_action_points
 
         player.active = False
 

@@ -137,7 +137,7 @@ class DatabaseConnection:
     def update_game_state(id_game: int, game_state: str) -> None:
         """updates game state on the one provided
         """
-        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = %s WHERE id_game = %s',
+        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
                                           (game_state, id_game))
 
         DatabaseConnection.connection.commit()
@@ -156,7 +156,7 @@ class DatabaseConnection:
     def get_id_game_from_game_token(token: str) -> int | None:
         """returns database game id based on the token, None if the query fails
         """
-        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = %s', token)
+        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = (%s)', (token,))
         game_id = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
 
@@ -169,7 +169,7 @@ class DatabaseConnection:
     def get_game_token_from_id_game(id_game: int) -> str | None:
         """returns game token based on database game id, None if the query fails
         """
-        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = %s', id_game)
+        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = (%s)', (id_game,))
         game_token = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
 

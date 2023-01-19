@@ -1,7 +1,7 @@
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.cogs.command_create import HostButtons, HostButtonDisabled, StartButton, ReadyButton
+from dnd_bot.dc.ui.views.view_lobby import StartButton, HostButtonDisabled, HostButtons, ReadyButton
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.utils import get_user_name_by_id
