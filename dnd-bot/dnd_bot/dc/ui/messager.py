@@ -22,3 +22,12 @@ class Messager:
         message = await channel.fetch_message(message_id)
 
         await message.edit(content=new_content, embeds=message.embeds)
+
+    @staticmethod
+    async def edit_last_user_message(user_id: int, content="", embed=None, view=None):
+        channel_id, message_id = MessageHolder.read_last_message_data(user_id)
+
+        channel = Messager.bot.get_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+
+        await message.edit(content=content, embed=embed, view=view)
