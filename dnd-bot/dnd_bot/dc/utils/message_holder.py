@@ -12,7 +12,7 @@ class MessageHolder:
     @staticmethod
     def read_last_message_data(user_id):
         """read last message data for given discord user id"""
-        if str(user_id) in MessageHolder.user_last_message_data:
+        if not str(user_id) in MessageHolder.user_last_message_data:
             return None
         else:
             return MessageHolder.user_last_message_data[str(user_id)]

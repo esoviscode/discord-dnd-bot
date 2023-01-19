@@ -1,3 +1,6 @@
+from dnd_bot.dc.utils.message_holder import MessageHolder
+
+
 class Messager:
     """contains static methods to manage sending, editing and deleting messages on discord"""
     bot = None
@@ -9,7 +12,9 @@ class Messager:
 
     @staticmethod
     async def send_dm_message(user_id: int, content: str | None, embed=None, view=None):
-        await Messager.bot.get_user(user_id).send(content=content, embed=embed, view=view)
+        user = Messager.bot.get_user(user_id)
+        sent_message = await user.send(content=content, embed=embed, view=view)
+        MessageHolder.register_last_message_data(user_id, user.dm_channel.id, sent_message.id)
 
     @staticmethod
     async def edit_message(channel_id: int, message_id: int, new_content: str):
