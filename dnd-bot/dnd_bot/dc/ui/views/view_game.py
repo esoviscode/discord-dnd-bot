@@ -297,7 +297,7 @@ class ViewCharacter(View):
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """button for moving back to main manu"""
+        """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
         map_view_message = MessageTemplates.map_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
@@ -422,7 +422,7 @@ class ViewSkills(View):
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """button for moving back to main manu"""
+        """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
         map_view_message = MessageTemplates.map_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
