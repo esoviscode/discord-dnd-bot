@@ -1,4 +1,5 @@
 from collections import deque
+import cv2 as cv
 
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.player import Player
@@ -21,6 +22,7 @@ class Game:
         self.user_list = user_list
         self.entities = []
         self.game_loop_thread = None
+        self.sprite = cv.imread("dnd_bot/dc/ui/map1.png", cv.IMREAD_UNCHANGED)
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:

@@ -9,6 +9,7 @@ from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
 from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.dc.ui.player_view import get_player_view
 
 
 class JoinButton(nextcord.ui.View):
@@ -79,6 +80,8 @@ class StartButton(nextcord.ui.View):
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
 
+            player_view = get_player_view(Multiverse.get_game(self.token))
+
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
@@ -89,12 +92,13 @@ class StartButton(nextcord.ui.View):
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
                                           player.action_points, True)
-                    await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token))
+                    await Messager.send_dm_message(user, map_view_message, view=ViewMovement(self.token),
+                                                   files=[player_view])
                 else:
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
                                           player.action_points, False)
-                    await Messager.send_dm_message(user, map_view_message)
+                    await Messager.send_dm_message(user, map_view_message, files=[player_view])
 
             HandlerGame.handle_game(self.token)
 

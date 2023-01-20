@@ -5,6 +5,7 @@ from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.dc.ui.player_view import get_player_view
 
 
 class ViewMovement(View):
@@ -70,15 +71,19 @@ class ViewMovement(View):
             return
 
         lobby_players = Multiverse.get_game(token).user_list
+        player_view = get_player_view(Multiverse.get_game(token))
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
 
             if player.active:
                 map_view_message = MessageTemplates.map_view_template(
                     token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
+
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
-                                                      view=ViewMovement(token))
+                                                      view=ViewMovement(token), files=[player_view])
             else:
                 map_view_message = MessageTemplates.map_view_template(
-                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)
+                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points,
+                                   False)
+                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                      files=[player_view])

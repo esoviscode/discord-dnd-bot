@@ -21,8 +21,7 @@ class CommandStart(Cog):
 
             # send messages about successful start operation
             for user in lobby_players_identities:
-                await Messager.send_dm_message(user,
-                                               "Game has started successfully!\n")
+                await Messager.send_dm_message(user, "Game has started successfully!\n")
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 
