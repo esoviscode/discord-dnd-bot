@@ -13,6 +13,7 @@ class MessageTemplates:
 
     @staticmethod
     def lobby_view_message_template(lobby_token, players, campaign="📜 Storm King's Thunder\n\n"):
+        """message template that is sent to each player, showing the current state of the lobby"""
 
         desc = f'\nCampaign: {campaign}'
 
@@ -27,12 +28,16 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Dungeons&Dragons 🐉 Lobby #{lobby_token}',
                                description=desc)
 
-        embed.set_footer(text="The game will start when all the players are ready!")
+        if Multiverse.get_game(lobby_token).all_users_ready():
+            embed.set_footer(text='Ready to start the game!')
+        else:
+            embed.set_footer(text="The game can start when all the players are ready!")
 
         return embed
 
     @staticmethod
     def lobby_creation_message(token):
+        """message template that shows up when a host creates a game"""
         desc = f"A fresh game for you and your team has been created! \n" \
                f"Make sure that everyone who wants to play is in " \
                f"this server!\n\n" \

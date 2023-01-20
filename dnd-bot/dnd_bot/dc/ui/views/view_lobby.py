@@ -30,6 +30,7 @@ class JoinButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message("Check direct message!", ephemeral=True)
+            button.view.stop()
 
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
 
@@ -78,6 +79,7 @@ class StartButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
+            button.view.stop()
 
             # send messages about successful start operation
             for user in lobby_players_identities:
@@ -108,7 +110,7 @@ class HostButtonDisabled(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.gray, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
@@ -119,12 +121,13 @@ class HostButtons(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.gray, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """host ready button"""
 
         await ReadyButton.view_handle_ready(self.token, interaction)
 
@@ -139,12 +142,14 @@ class ReadyButton(nextcord.ui.View):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """ready button"""
         await ReadyButton.view_handle_ready(self.token, interaction)
 
         self.value = False
 
     @staticmethod
     async def view_handle_ready(token, interaction):
+        """shared function that handles showing current lobby state with appropriate buttons in lobby"""
         lobby_players = await HandlerReady.on_ready(token, interaction.user.id)
         lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
 

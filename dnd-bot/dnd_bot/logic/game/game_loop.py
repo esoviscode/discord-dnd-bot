@@ -11,11 +11,6 @@ class GameLoop:
     """
 
     @staticmethod
-    def begin_turn(game_token):
-        """does all the necessities to begin the turn"""
-        pass
-
-    @staticmethod
     def prepare_queue(game: Game):
         """puts all the creatures to the queue with order by initiative"""
 
@@ -46,7 +41,6 @@ class GameLoop:
     @staticmethod
     def game_loop(game_token):
         """loops over all creatures and lets them perform actions, each iteration is a move"""
-        # TODO game_token could be a static variable inside GameLoop
         game = GameLoop.get_game_object(game_token)
 
         while game.game_state == 'ACTIVE':

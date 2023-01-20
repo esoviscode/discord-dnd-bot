@@ -1,6 +1,5 @@
-from nextcord.ext import commands
-from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
+from nextcord.ext.commands import Cog, Bot
 
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
@@ -10,9 +9,10 @@ class ShutdownCommand(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @slash_command(name="shutdown", description="Shutdowns bot")
+    @slash_command(name="shutdown", description="Shutdowns the bot")
     async def shutdown(self, interaction):
         caller_id = interaction.user.id
+
         # only these users can shut down the bot
         if caller_id == 349553403229110274 \
                 or caller_id == 211188033968406530 \

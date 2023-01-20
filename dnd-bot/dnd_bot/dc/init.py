@@ -1,9 +1,8 @@
-import threading
+import os
 
 import nextcord
-from nextcord.ext import commands
 from nextcord import Intents
-import os
+from nextcord.ext import commands
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.messager import Messager
