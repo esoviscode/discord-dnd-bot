@@ -85,11 +85,11 @@ class ViewMain(View):
             if player.discord_identity == next_active_player.discord_identity:
                 map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
                                                                       player.action_points, True)
-                await Messager.send_dm_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
+                await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
             else:
                 map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
                                                                       player.action_points, False)
-                await Messager.send_dm_message(user.discord_id, map_view_message)
+                await Messager.edit_last_user_message(user.discord_id, map_view_message)
 
         return
 
@@ -158,7 +158,8 @@ class ViewMovement(View):
                                                       view=ViewMovement(token), files=[player_view])
             else:
                 map_view_message = MessageTemplates.map_view_template(
-                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points, False)
+                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points,
+                                   False)
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
                                                       files=[player_view])
 
@@ -301,7 +302,7 @@ class ViewCharacter(View):
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """button for moving back to main manu"""
+        """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
         map_view_message = MessageTemplates.map_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
