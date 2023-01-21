@@ -31,7 +31,6 @@ class JoinButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message("Check direct message!", ephemeral=True)
-            button.view.stop()
 
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
 
@@ -80,7 +79,6 @@ class StartButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
-            button.view.stop()
 
             # send messages about successful start operation
             for user in lobby_players_identities:
