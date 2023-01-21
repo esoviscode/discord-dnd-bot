@@ -1,6 +1,7 @@
 import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
@@ -51,7 +52,7 @@ class HandlerCreate:
         while token in tokens:
             token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY",  "Storm King's Thunder")
+        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
         if game_id is None:
             return False, -1, ":no_entry: Error creating game!"
 
@@ -62,7 +63,8 @@ class HandlerCreate:
         game = Game(token)
 
         Multiverse.add_game(game)
-        Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username)
+        Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username,
+                                            HandlerJoin.get_color_by_index(0))
 
         return True, token, ""
 

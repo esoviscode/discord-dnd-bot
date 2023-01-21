@@ -33,9 +33,9 @@ class InitializeWorld:
                         entities_row.append(None)
 
                     elif entity_types[str(entity)] == 'Rock':
-                        entities_row.append(Rock(x=x, y=y))
+                        entities_row.append(Rock(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Hole':
-                        entities_row.append(Hole(x=x, y=y))
+                        entities_row.append(Hole(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Player':
                         player_spawning_points.append((x, y))
                         entities_row.append(None)
@@ -47,7 +47,8 @@ class InitializeWorld:
                 entities[player_pos[1]].pop(player_pos[0])
                 entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
                                                                      name=game.user_list[i].username,
-                                                                     discord_identity=game.user_list[i].discord_id))
+                                                                     discord_identity=game.user_list[i].discord_id,
+                                                                     game_token=game.token))
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image

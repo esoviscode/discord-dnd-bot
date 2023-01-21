@@ -2,15 +2,17 @@ import random
 
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.equipment import Equipment
+from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class Player(Creature):
     """represents a player (which is controlled by a user)"""
 
-    def __init__(self, entity_id=0, x=0, y=0, sprite="dnd_bot/assets/gfx/entities/player.png", name='Player', hp=0, strength=0, dexterity=0,
+    def __init__(self, entity_id=0, x=0, y=0, sprite="dnd_bot/assets/gfx/entities/player.png", name='Player', hp=0,
+                 strength=0, dexterity=0,
                  intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
-                 action_points: int = 0, level: int = 1,
-                 discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None):
+                 action_points: int = 0, level: int = 1, discord_identity: int = 0, alignment: str = '',
+                 backstory: str = '', equipment: Equipment = None, game_token=''):
 
         # TODO remove this - it generates some random values for now
         hp = random.randint(15, 30)
@@ -23,9 +25,12 @@ class Player(Creature):
         action_points = random.randint(5, 10)
         # TODO remove above
 
-        super().__init__(x=x, y=y, sprite=sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
+        self.sprite = Player.get_sprite_path_by_color(Multiverse.get_game(game_token).
+                                                      get_user_by_id(discord_identity).color)
+
+        super().__init__(x=x, y=y, sprite=self.sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
                          intelligence=intelligence, charisma=charisma, perception=perception, initiative=initiative,
-                         action_points=action_points, level=level)
+                         action_points=action_points, level=level, game_token=game_token)
 
         self.discord_identity = discord_identity
         self.alignment = alignment
@@ -33,3 +38,20 @@ class Player(Creature):
         self.equipment = equipment
         self.active = False
         self.initial_action_points = action_points
+
+    @staticmethod
+    def get_sprite_path_by_color(color: str):
+        if color == 'red':
+            return 'dnd_bot/assets/gfx/entities/ranger_sprite_red.png'
+        elif color == 'blue':
+            return 'dnd_bot/assets/gfx/entities/wizard_sprite_blue.png'
+        elif color == 'green':
+            return 'dnd_bot/assets/gfx/entities/ranger_sprite_green.png'
+        elif color == 'orange':
+            return 'dnd_bot/assets/gfx/entities/warrior_sprite_orange.png'
+        elif color == 'yellow':
+            return 'dnd_bot/assets/gfx/entities/warrior_sprite_yellow.png'
+        elif color == 'purple':
+            return 'dnd_bot/assets/gfx/entities/wizard_sprite_purple.png'
+        else:
+            return 'dnd_bot/assets/gfx/entities/player.png'
