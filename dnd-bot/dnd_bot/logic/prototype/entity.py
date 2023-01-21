@@ -4,6 +4,7 @@ import cv2 as cv
 class Entity:
     """This class is the base class for all entities in the game like creatures and elements on the map"""
     def __init__(self, x=0, y=0, sprite=None, name='Entity', id_game=0, skills=None, fragile=False):
+        """":param fragile: if entity can be moved or destroyed from its position"""
         if skills is None:
             skills = []
         self.x = x
@@ -12,7 +13,7 @@ class Entity:
         self.name = name
         self.id_game = id_game
         self.skills = skills
-        self.fragile = fragile  # bool: if entity can be moved or destroyed from its position
+        self.fragile = fragile
         if sprite:
             self.sprite = cv.imread(sprite, cv.IMREAD_UNCHANGED)
             self.sprite = cv.resize(self.sprite, (50, 50), interpolation=cv.INTER_AREA)

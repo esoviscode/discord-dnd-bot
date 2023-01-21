@@ -6,8 +6,12 @@ from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 
 
-def generate_filled_circle_points(radius):
-    """returns list of points of filled circle (centered at 0,0) for given radius"""
+def generate_filled_circle_points(radius: int) -> list:
+    """
+    returns list of points of filled circle (centered at 0,0) for given radius
+    :param radius: circle radius
+    :return points: list of tuples (x, y)
+    """
     def belongs_to_circle(x, y):
         return x**2 + y**2 <= radius**2 + 1
 
@@ -22,6 +26,13 @@ def generate_filled_circle_points(radius):
 
 
 def paste_image(src: np.ndarray, dest: np.ndarray, x_offset: int, y_offset: int):
+    """
+    pastes src on dest with x,y offsets
+    :param src: source image
+    :param dest: destination image
+    :param x_offset: x offset in dest
+    :param y_offset: y offset in dest
+    """
     y1, y2 = y_offset, y_offset + src.shape[0]
     x1, x2 = x_offset, x_offset + src.shape[1]
 
@@ -32,8 +43,12 @@ def paste_image(src: np.ndarray, dest: np.ndarray, x_offset: int, y_offset: int)
         dest[y1:y2, x1:x2, c] = (alpha_src * src[:, :, c] + alpha_dest * dest[y1:y2, x1:x2, c])
 
 
-# returns path to game view file
 def get_game_view(game: Game) -> str:
+    """
+    generates image and returns its path
+    :param game: game object
+    :return filename: path to game view image
+    """
     map_margin = 100
     square_size = 50
     whole_map = cv.imread(game.sprite, cv.IMREAD_UNCHANGED)
@@ -56,6 +71,12 @@ def get_game_view(game: Game) -> str:
 
 
 def get_player_view(game: Game, player: Player):
+    """
+    generates image and returns its path
+    :param game: game object
+    :param player: player
+    :return filename: path to game view image with player's POV
+    """
     view_range = 2
     map_margin = 100
     square_size = 50
