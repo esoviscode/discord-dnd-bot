@@ -80,13 +80,12 @@ class StartButton(nextcord.ui.View):
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
 
-            player_view = get_player_view(Multiverse.get_game(self.token))
-
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
 
                 player = Multiverse.get_game(self.token).get_player_by_id_user(user)
+                player_view = get_player_view(Multiverse.get_game(self.token), player)
 
                 if player.active:
                     map_view_message = MessageTemplates. \

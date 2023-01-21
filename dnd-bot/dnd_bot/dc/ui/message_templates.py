@@ -108,7 +108,7 @@ class MessageTemplates:
     def stats_message_template(player):
         """message segment that shows the stats of the player"""
         desc = ""
-        desc += f'Strength: {player.strength}'
+        desc += f'Strength: {player.strength}\n'
         desc += f'Dexterity: {player.dexterity}\n'
         desc += f'Max HP: {player.hp}\n'
         desc += f'Intelligence: {player.intelligence}\n'

@@ -85,7 +85,7 @@ class ViewMain(View):
             if player.discord_identity == next_active_player.discord_identity:
                 map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
                                                                       player.action_points, True)
-                await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMovement(self.token))
+                await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMain(self.token))
             else:
                 map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
                                                                       player.action_points, False)
@@ -147,9 +147,10 @@ class ViewMovement(View):
             return
 
         lobby_players = Multiverse.get_game(token).user_list
-        player_view = get_player_view(Multiverse.get_game(token))
+
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+            player_view = get_player_view(Multiverse.get_game(token), player)
 
             if player.active:
                 map_view_message = MessageTemplates.map_view_template(
@@ -248,10 +249,13 @@ class ViewAttack(View):
 
         map_view_message = MessageTemplates.map_view_template(token)
         enemies_list_embed = MessageTemplates.attack_view_message_template(new_enemies)
+
         lobby_players = Multiverse.get_game(token).user_list
-        player_view = get_player_view(Multiverse.get_game(token))
+
         for user in lobby_players:
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+            player_view = get_player_view(Multiverse.get_game(token), player)
+
             if player.active:
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
                                                       embed=enemies_list_embed, view=ViewAttack(token, new_enemies),
@@ -285,7 +289,7 @@ class ViewCharacter(View):
         map_view_message = MessageTemplates.map_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
-        stats_embed = MessageTemplates.equipment_message_template(player)
+        stats_embed = MessageTemplates.stats_message_template(player)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               embed=stats_embed, view=ViewStats(self.token))
 
@@ -296,7 +300,7 @@ class ViewCharacter(View):
         map_view_message = MessageTemplates.map_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
-        skills_embed = MessageTemplates.equipment_message_template(player)
+        skills_embed = MessageTemplates.skills_message_template(player)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               embed=skills_embed, view=ViewCharacterSkills(self.token))
 
