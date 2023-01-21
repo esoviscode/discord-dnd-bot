@@ -4,5 +4,5 @@ dnd-bot/dnd_bot/__pycache__
 dnd-bot/devpass.cfg
 .env
 *__pycache__/
-dnd-bot/dnd_bot/assets/tmp/pov*
-dnd-bot/dnd_bot/assets/tmp/map*
+dnd-bot/dnd_bot/assets/tmp/game_images/pov*
+dnd-bot/dnd_bot/assets/tmp/game_images/map*
