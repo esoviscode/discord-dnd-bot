@@ -4,7 +4,7 @@ from dnd_bot.logic.prototype.game import Game
 
 
 class Multiverse:
-
+    """contains the list of all the games (objects of Game class) that are being played"""
     games = dict()
 
     @staticmethod
@@ -14,7 +14,3 @@ class Multiverse:
     @staticmethod
     def add_game(game) -> None:
         Multiverse.games[game.token] = copy.deepcopy(game)
-
-
-
-

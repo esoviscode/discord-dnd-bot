@@ -1,7 +1,8 @@
-import nextcord
-from nextcord.ext import commands
-from nextcord import Intents
 import os
+
+import nextcord
+from nextcord import Intents
+from nextcord.ext import commands
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.messager import Messager
@@ -19,17 +20,21 @@ async def on_ready():
 
 @bot.command()
 async def load(ctx, extension):
+    """loads nextcord cogs"""
     bot.load_extension(f'dnd_bot.dc.cogs.{extension}')
     await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was loaded.')
 
 
 @bot.command()
 async def unload(ctx, extension):
+    """unloads nextcord cogs"""
     bot.unload_extension(f'dnd_bot.dc.cogs.{extension}')
     await ctx.send(f'`dnd_bot.dc.cogs.{extension}` was unloaded. You can no longer use it until it is reloaded.')
 
 
 def bot_run():
+    """starts basic bot configuration like setting commands, establishing connection to the database and setting
+    crucial variables """
     env_token = "BOT_TOKEN"
     token = os.getenv(env_token)
 
@@ -37,7 +42,7 @@ def bot_run():
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
     print('Loading extensions:')
-    for filename in os.listdir('./dnd_bot/dc/cogs')[1:]:
+    for filename in os.listdir('./dnd_bot/dc/cogs'):
         if filename.endswith('.py'):
             bot.load_extension(f'dnd_bot.dc.cogs.{filename[:-3]}')
             print(f'    {filename[:-3]}')
@@ -51,6 +56,7 @@ def bot_run():
 # Error handling
 @bot.event
 async def on_command_error(interaction, error):
+    """handles errors"""
     error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
                                  description="😞 We are sorry for any inconveniences",
                                  color=0xFF5733)

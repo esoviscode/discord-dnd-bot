@@ -1,7 +1,7 @@
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.cogs.command_create import HostButtons, HostButtonDisabled, StartButton, ReadyButton
+from dnd_bot.dc.ui.views.view_lobby import StartButton, HostButtonDisabled, HostButtons, ReadyButton
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.utils import get_user_name_by_id
@@ -10,7 +10,7 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class CommandJoin(Cog):
-
+    """handles join command"""
     def __init__(self, bot: Bot):
         self.bot = bot
 
@@ -31,7 +31,7 @@ class CommandJoin(Cog):
             # send messages about successful join operation
             await Messager.send_dm_message(interaction.user.id,
                                            f"Welcome to lobby of game {token}.\nNumber of players in lobby: "
-                                           f"**{len(lobby_players)}**", embed=lobby_view_embed)
+                                           f"**{len(lobby_players)}**", embed=lobby_view_embed, view=ReadyButton(token))
             for user in lobby_players:
                 if interaction.user.name != user[0]:
                     if user[2]:

@@ -2,15 +2,21 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class HandlerJoin:
+    """handles joining the lobby """
 
     @staticmethod
     async def join_lobby(token, user_id, user_dm_channel, username) -> (bool, list, str):
-        """join_lobby
-            returns true if everything went correctly
-                - second argument is an empty string
-            returns false if an error happened
-                - players in lobby is the third argument (list consisting of (player name, readiness, is_host, id_player) tuple)
-                - error message is the fourth argument
+        """ tries to join the player to the lobby
+        :param token: token of the lobby/game
+        :param user_id: user discord id
+        :param user_dm_channel: user's private channel
+        :param username: username
+        :return:
+            true if everything went correctly
+                  - third argument is an empty string (no error);
+            false if an error happened
+                  - players in lobby is the second argument (list consisting of (player name, readiness, is_host, id_player) tuple),
+                  - error message is the third argument
         """
 
         try:

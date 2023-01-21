@@ -1,4 +1,5 @@
 class User:
+    """defines discord user"""
 
     def __init__(self, id_game, discord_id, channel_id, username):
         self.id_game = id_game
@@ -8,3 +9,5 @@ class User:
         self.is_host = False
         self.is_ready = False
 
+    def __repr__(self):
+        return f'<{self.username} id={self.discord_id} host={self.is_host}>'

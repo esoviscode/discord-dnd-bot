@@ -1,16 +1,23 @@
+from dnd_bot.logic.game.game_loop import GameLoop
+from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.database.database_connection import DatabaseConnection
 
 
 class HandlerStart:
-
+    """handles starting of the game when all players in lobby are ready"""
     def __init__(self):
         pass
 
     @staticmethod
     async def start_game(token, user_id) -> (bool, list, str):
+        """in lobby, starts a game; has an effect when used by the host of the lobby
+                :param token: game token
+                :param user_id: id of the user who ran the command or the host that pressed the start button
+                :return: status, (if start was successful, users list, optional error message)
+                """
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
+        game_id = DatabaseConnection.get_id_game_from_game_token(token)
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
@@ -28,13 +35,18 @@ class HandlerStart:
 
         if game.game_state == 'LOBBY':
             game.game_state = "STARTING"
-            game_id = DatabaseConnection.add_game(token, game.id_host, 0, "STARTING")
+            DatabaseConnection.update_game_state(game_id, 'STARTING')
 
             if game_id is None:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
                 DatabaseConnection.add_user(game_id, user.discord_id)
+
+            GameStart.start(token)
+            GameLoop.prepare_queue(game)
+
+            game.creatures_queue[0].active = True
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
