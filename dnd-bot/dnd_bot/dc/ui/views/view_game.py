@@ -163,6 +163,7 @@ class ViewMovement(View):
 
     @staticmethod
     async def display_movement_for_player(token, user):
+        """sends message to a player that another player moved"""
         player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
         player_view = get_player_view(Multiverse.get_game(token), player)
 
