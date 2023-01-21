@@ -6,7 +6,7 @@ import cv2 as cv
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.player import Player
-from dnd_bot.dc.ui.player_view import get_game_view
+from dnd_bot.logic.utils.utils import get_game_view
 
 
 class InitializeWorld:

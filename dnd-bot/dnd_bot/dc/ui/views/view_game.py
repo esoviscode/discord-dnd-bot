@@ -8,7 +8,7 @@ from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.dc.ui.player_view import get_player_view
+from dnd_bot.logic.utils.utils import get_player_view
 
 
 class ViewMain(View):

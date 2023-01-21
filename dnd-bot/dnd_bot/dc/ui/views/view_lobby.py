@@ -9,7 +9,7 @@ from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
 from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.dc.ui.player_view import get_player_view
+from dnd_bot.logic.utils.utils import get_player_view
 
 
 class JoinButton(nextcord.ui.View):
