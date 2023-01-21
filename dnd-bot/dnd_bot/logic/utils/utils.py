@@ -5,6 +5,8 @@ import numpy as np
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 
+TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
+
 
 def generate_filled_circle_points(radius: int) -> list:
     """
@@ -12,8 +14,9 @@ def generate_filled_circle_points(radius: int) -> list:
     :param radius: circle radius
     :return points: list of tuples (x, y)
     """
+
     def belongs_to_circle(x, y):
-        return x**2 + y**2 <= radius**2 + 1
+        return x ** 2 + y ** 2 <= radius ** 2 + 1
 
     points = []
 
@@ -57,9 +60,9 @@ def get_game_view(game: Game) -> str:
     for obj in objects:
         paste_image(obj.sprite, whole_map, map_margin + obj.x * square_size, map_margin + obj.y * square_size)
 
-    file_name = "dnd_bot/logic/utils/game_images/map%s.png" % game.token
+    file_name = "%s/game_images/map%s.png" % (TMP_IMAGES_PATH, game.token)
 
-    cv.imwrite(file_name, whole_map)
+    cv.imwrite(file_name, whole_map, [cv.IMWRITE_PNG_COMPRESSION, 9])
     del whole_map
 
     return file_name
@@ -87,9 +90,9 @@ def get_player_view(game: Game, player: Player):
                               map_margin + (player.x - view_range) * square_size:
                               map_margin + (player.x + view_range + 1) * square_size, :]
 
-    file_name = "dnd_bot/logic/utils/game_images/pov%s_%s.png" % (game.token, player.discord_identity)
+    file_name = "%s/game_images/pov%s_%s.png" % (TMP_IMAGES_PATH, game.token, player.discord_identity)
 
-    cv.imwrite(file_name, player_view)
+    cv.imwrite(file_name, player_view, [cv.IMWRITE_PNG_COMPRESSION, 9])
     del player_view
 
     return file_name
