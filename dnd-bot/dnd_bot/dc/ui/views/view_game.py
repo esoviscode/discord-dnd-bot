@@ -102,6 +102,7 @@ class ViewMovement(View):
 
     @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
     async def empty_button_1(self):
+        """placeholder button to create space"""
         pass
 
     @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple, row=0)
@@ -111,6 +112,7 @@ class ViewMovement(View):
 
     @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
     async def empty_button_2(self):
+        """placeholder button to create space"""
         pass
 
     @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple, row=1)
@@ -140,7 +142,7 @@ class ViewMovement(View):
 
     @staticmethod
     async def move_one_tile(direction, id_user, token, interaction: nextcord.Interaction):
-        """shared movement by one tile function for all directions"""
+        """shared function to move by one tile for all directions"""
         status, error_message = await HandlerMovement.handle_movement(direction, 1, id_user, token)
 
         if not status:

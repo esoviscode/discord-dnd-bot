@@ -42,8 +42,7 @@ class CommandCreate(Cog):
                 return
 
         else:
-            # TODO error message
-            await interaction.response.send_message(f"Something went wrong while creating the lobby! :(")
+            await interaction.response.send_message(error_message, ephemeral=True)
 
 
 def setup(bot):
