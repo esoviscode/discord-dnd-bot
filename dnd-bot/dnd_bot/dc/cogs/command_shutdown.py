@@ -25,7 +25,8 @@ class ShutdownCommand(Cog):
             for game in Multiverse.games.values():
                 game.game_state = "INACTIVE"
                 game.get_active_player().active = False
-                game.game_loop_thread.join()
+                if game.game_loop_thread:
+                    game.game_loop_thread.join()
 
             await self.bot.close()
         else:

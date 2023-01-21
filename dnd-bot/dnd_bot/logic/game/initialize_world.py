@@ -50,7 +50,8 @@ class InitializeWorld:
                                                                      discord_identity=game.user_list[i].discord_id))
 
             game.entities = copy.deepcopy(entities)
-            game.sprite = str(map_json['map']['img_file'])
+            game.sprite = str(map_json['map']['img_file'])  # path to raw map image
+            # generated image of map with not fragile entities
             game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
 
     @staticmethod

@@ -12,7 +12,7 @@ class Entity:
         self.name = name
         self.id_game = id_game
         self.skills = skills
-        self.fragile = fragile
+        self.fragile = fragile  # bool: if entity can be moved or destroyed from its position
         if sprite:
             self.sprite = cv.imread(sprite, cv.IMREAD_UNCHANGED)
             self.sprite = cv.resize(self.sprite, (50, 50), interpolation=cv.INTER_AREA)

@@ -14,6 +14,8 @@ class Messager:
     @staticmethod
     async def send_dm_message(user_id: int, content: str | None, embed=None, view=None, files=None):
         user = Messager.bot.get_user(user_id)
+
+        # includes files; parameter files is a list of string file paths
         if files:
             sent_message = await user.send(content=content, embed=embed, view=view,
                                            files=[nextcord.File(f) for f in files])
@@ -35,6 +37,7 @@ class Messager:
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
 
+        # includes files
         if files:
             await message.edit(content=content, embed=embed, view=view, files=[nextcord.File(f) for f in files])
         else:
