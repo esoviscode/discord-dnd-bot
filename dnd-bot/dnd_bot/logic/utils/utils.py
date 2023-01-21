@@ -53,14 +53,9 @@ def get_game_view(game: Game) -> str:
     square_size = 50
     whole_map = cv.imread(game.sprite, cv.IMREAD_UNCHANGED)
 
-    # e1 = cv.getTickCount()
     objects = [o for o in sum(game.entities, []) if o and not o.fragile]
     for obj in objects:
         paste_image(obj.sprite, whole_map, map_margin + obj.x * square_size, map_margin + obj.y * square_size)
-
-    # e2 = cv.getTickCount()
-    # t = (e2 - e1) / cv.getTickFrequency()
-    # print(f"game view processing time: {t} s")
 
     file_name = "dnd_bot/logic/utils/game_images/map%s.png" % game.token
 
@@ -82,7 +77,6 @@ def get_player_view(game: Game, player: Player):
     square_size = 50
     player_view = copy.deepcopy(game.sprite)
 
-    # e1 = cv.getTickCount()
     entities = [e for e in sum(game.entities, []) if e and e.fragile]
     for entity in entities:
         paste_image(entity.sprite, player_view, map_margin + entity.x * square_size,
@@ -92,10 +86,6 @@ def get_player_view(game: Game, player: Player):
                               map_margin + (player.y + view_range + 1) * square_size,
                               map_margin + (player.x - view_range) * square_size:
                               map_margin + (player.x + view_range + 1) * square_size, :]
-
-    # e2 = cv.getTickCount()
-    # t = (e2 - e1) / cv.getTickFrequency()
-    # print(f"player view processing time: {t} s")
 
     file_name = "dnd_bot/logic/utils/game_images/pov%s_%s.png" % (game.token, player.discord_identity)
 
