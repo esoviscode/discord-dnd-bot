@@ -1,10 +1,12 @@
 import copy
 import json
 import random
+import cv2 as cv
 
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.utils.utils import get_game_view
 
 
 class InitializeWorld:
@@ -43,10 +45,14 @@ class InitializeWorld:
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
                 entities[player_pos[1]].pop(player_pos[0])
-                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1], name=game.user_list[i].username,
+                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
+                                                                     name=game.user_list[i].username,
                                                                      discord_identity=game.user_list[i].discord_id))
 
             game.entities = copy.deepcopy(entities)
+            game.sprite = str(map_json['map']['img_file'])  # path to raw map image
+            # generated image of map with not fragile entities
+            game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
 
     @staticmethod
     def spawn_players(spawning_points, num_players):
