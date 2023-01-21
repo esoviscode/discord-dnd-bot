@@ -31,7 +31,7 @@ class CommandJoin(Cog):
             # send messages about successful join operation
             await Messager.send_dm_message(interaction.user.id,
                                            f"Welcome to lobby of game {token}.\nNumber of players in lobby: "
-                                           f"**{len(lobby_players)}**", embed=lobby_view_embed)
+                                           f"**{len(lobby_players)}**", embed=lobby_view_embed, view=ReadyButton(token))
             for user in lobby_players:
                 if interaction.user.name != user[0]:
                     if user[2]:

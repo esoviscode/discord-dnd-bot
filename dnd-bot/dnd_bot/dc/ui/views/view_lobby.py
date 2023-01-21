@@ -9,6 +9,7 @@ from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
 from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.utils import get_player_view
 
 
 class JoinButton(nextcord.ui.View):
@@ -30,6 +31,7 @@ class JoinButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message("Check direct message!", ephemeral=True)
+            button.view.stop()
 
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
 
@@ -78,23 +80,26 @@ class StartButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
+            button.view.stop()
 
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
 
                 player = Multiverse.get_game(self.token).get_player_by_id_user(user)
+                player_view = get_player_view(Multiverse.get_game(self.token), player)
 
                 if player.active:
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
                                           player.action_points, True)
-                    await Messager.send_dm_message(user, map_view_message, view=ViewMain(self.token))
+                    await Messager.send_dm_message(user, map_view_message, view=ViewMain(self.token),
+                                                   files=[player_view])
                 else:
                     map_view_message = MessageTemplates. \
                         map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
                                           player.action_points, False)
-                    await Messager.send_dm_message(user, map_view_message)
+                    await Messager.send_dm_message(user, map_view_message, files=[player_view])
 
             HandlerGame.handle_game(self.token)
 
@@ -108,7 +113,7 @@ class HostButtonDisabled(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.gray, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
@@ -119,12 +124,13 @@ class HostButtons(nextcord.ui.View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.gray, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """host ready button"""
 
         await ReadyButton.view_handle_ready(self.token, interaction)
 
@@ -139,12 +145,14 @@ class ReadyButton(nextcord.ui.View):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """ready button"""
         await ReadyButton.view_handle_ready(self.token, interaction)
 
         self.value = False
 
     @staticmethod
     async def view_handle_ready(token, interaction):
+        """shared function that handles showing current lobby state with appropriate buttons in lobby"""
         lobby_players = await HandlerReady.on_ready(token, interaction.user.id)
         lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
 

@@ -13,6 +13,7 @@ class MessageTemplates:
 
     @staticmethod
     def lobby_view_message_template(lobby_token, players, campaign="📜 Storm King's Thunder\n\n"):
+        """message template that is sent to each player, showing the current state of the lobby"""
 
         desc = f'\nCampaign: {campaign}'
 
@@ -27,12 +28,16 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Dungeons&Dragons 🐉 Lobby #{lobby_token}',
                                description=desc)
 
-        embed.set_footer(text="The game will start when all the players are ready!")
+        if Multiverse.get_game(lobby_token).all_users_ready():
+            embed.set_footer(text='Ready to start the game!')
+        else:
+            embed.set_footer(text="The game can start when all the players are ready!")
 
         return embed
 
     @staticmethod
     def lobby_creation_message(token):
+        """message template that shows up when a host creates a game"""
         desc = f"A fresh game for you and your team has been created! \n" \
                f"Make sure that everyone who wants to play is in " \
                f"this server!\n\n" \
@@ -47,26 +52,26 @@ class MessageTemplates:
     @staticmethod
     def map_view_template(token, active_player_name, action_points, is_players_turn):
         """message segment that shows the current state of the map"""
-        map_view = '```'
+        # map_view = '```'
         game = Multiverse.get_game(token)
-        for entity_row in game.entities:
-            for entity in entity_row:
-                if entity is None:
-                    map_view += '⬜'
-                else:
-                    if isinstance(entity, Rock):
-                        map_view += '🪨'
-                    elif isinstance(entity, Hole):
-                        map_view += '🕳️'
-                    elif isinstance(entity, Player):
-                        map_view += '👨‍🦯'
-            map_view += '\n'
-        map_view += '```'
+        # for entity_row in game.entities:
+        #     for entity in entity_row:
+        #         if entity is None:
+        #             map_view += '⬜'
+        #         else:
+        #             if isinstance(entity, Rock):
+        #                 map_view += '🪨'
+        #             elif isinstance(entity, Hole):
+        #                 map_view += '🕳️'
+        #             elif isinstance(entity, Player):
+        #                 map_view += '👨‍🦯'
+        #     map_view += '\n'
+        # map_view += '```'
 
         if is_players_turn:
-            map_view += f'{active_player_name}\'s turn | your action points: {action_points}\n'
+            map_view = f'{active_player_name}\'s turn | your action points: {action_points}\n'
         else:
-            map_view += f'{active_player_name}\'s turn'
+            map_view = f'{active_player_name}\'s turn'
 
         return map_view
 
@@ -108,7 +113,7 @@ class MessageTemplates:
     def stats_message_template(player):
         """message segment that shows the stats of the player"""
         desc = ""
-        desc += f'Strength: {player.strength}'
+        desc += f'Strength: {player.strength}\n'
         desc += f'Dexterity: {player.dexterity}\n'
         desc += f'Max HP: {player.hp}\n'
         desc += f'Intelligence: {player.intelligence}\n'
