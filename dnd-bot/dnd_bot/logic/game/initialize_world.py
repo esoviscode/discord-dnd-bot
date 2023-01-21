@@ -6,6 +6,7 @@ import cv2 as cv
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.dc.ui.player_view import get_game_view
 
 
 class InitializeWorld:
@@ -49,7 +50,8 @@ class InitializeWorld:
                                                                      discord_identity=game.user_list[i].discord_id))
 
             game.entities = copy.deepcopy(entities)
-            game.sprite = cv.imread(map_json['map']['img_file'], cv.IMREAD_UNCHANGED)
+            game.sprite = str(map_json['map']['img_file'])
+            game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
 
     @staticmethod
     def spawn_players(spawning_points, num_players):
