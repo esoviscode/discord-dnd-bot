@@ -17,9 +17,9 @@ class MultiverseStartupLoad:
             for player_tuple in game_tuple['players']:
                 username = get_user_name_by_id(player_tuple['discord_id'])
                 dm_channel_id = get_user_dm_channel_by_id(player_tuple['discord_id'])
-                if player_tuple['user_id'] == game_tuple['host_id']:
-                    game.add_host(user_id=player_tuple['user_id'], username=username,user_channel_id=dm_channel_id)
+                if player_tuple['id_user'] == game_tuple['id_host']:
+                    game.add_host(user_id=player_tuple['id_user'], username=username,user_channel_id=dm_channel_id)
                 else:
-                    game.add_player(user_id=player_tuple['user_id'], username=username,user_channel_id=dm_channel_id)
+                    game.add_player(user_id=player_tuple['id_user'], username=username,user_channel_id=dm_channel_id)
 
             Multiverse.add_game(game)
