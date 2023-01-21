@@ -8,7 +8,7 @@ from dnd_bot.logic.prototype.user import User
 class Game:
     """class represents particular games and lobbies"""
 
-    def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None, events=None,
+    def __init__(self, token, id_host=None, campaign_name=None, game_state="LOBBY", user_list=None, events=None,
                  queue=None):
         if user_list is None:
             user_list = []
@@ -16,7 +16,7 @@ class Game:
             events = []
         self.id_host = id_host
         self.token = token
-        self.id_campaign = id_campaign
+        self.campaign_name = campaign_name
         self.game_state = game_state
         self.user_list = user_list
         self.entities = []

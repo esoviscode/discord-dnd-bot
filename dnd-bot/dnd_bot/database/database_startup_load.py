@@ -8,15 +8,17 @@ from dnd_bot.dc.utils.utils import get_user_dm_channel_by_id
 class MultiverseStartupLoad:
 
     @staticmethod
-    def load_data():
+    async def load_data():
         game_tokens = DatabaseConnection.get_all_game_tokens()
         for token in game_tokens:
             game_tuple = DatabaseConnection.find_game_by_token(token)
-            game = Game(token=game_tuple['token'], id_host=game_tuple['id_host'], id_campaign=game_tuple['id_campaign'],
+            game = Game(token=game_tuple['token'], id_host=game_tuple['id_host'], campaign_name=game_tuple['campaign_name'],
                         game_state=game_tuple['game_state'])
             for player_tuple in game_tuple['players']:
-                username = get_user_name_by_id(player_tuple['discord_id'])
-                dm_channel_id = get_user_dm_channel_by_id(player_tuple['discord_id'])
+                username = await get_user_name_by_id(player_tuple['discord_id'])
+                dm_channel_id = await get_user_dm_channel_by_id(player_tuple['discord_id'])
+                if dm_channel_id is None:
+                    continue
                 if player_tuple['id_user'] == game_tuple['id_host']:
                     game.add_host(user_id=player_tuple['id_user'], username=username,user_channel_id=dm_channel_id)
                 else:

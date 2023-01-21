@@ -14,7 +14,7 @@ bot = commands.Bot(command_prefix='$', intents=Intents().all(), activity=activit
 
 @bot.event
 async def on_ready():
-    MultiverseStartupLoad.load_data()
+    await MultiverseStartupLoad.load_data()
     print('\nBot started successfully')
 
 

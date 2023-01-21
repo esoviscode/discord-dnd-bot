@@ -17,6 +17,11 @@ async def get_user_name_by_id(user_id: int) -> str | None:
 async def get_user_dm_channel_by_id(user_id: int):
     bot = Messager.bot
 
-    user: User = await bot.fetch_user(user_id)
+    try:
+        user: User = await bot.fetch_user(user_id)
+    except NotFound:
+        return None
+    if user.dm_channel is None:
+        return None
 
     return user.dm_channel.id
