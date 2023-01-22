@@ -1,3 +1,5 @@
+import asyncio
+
 import nextcord
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
@@ -40,30 +42,36 @@ class JoinButton(nextcord.ui.View):
                                            f"by: **{len(lobby_players)}**", embed=lobby_view_embed,
                                            view=ReadyButton(self.token))
             for user in lobby_players:
-                if interaction.user.name != user[0]:
-                    if user[2]:
-                        if user[1]:
-                            if Multiverse.get_game(self.token).all_users_ready():
-                                view = StartButton(self.token)
-                            else:
-                                view = HostButtonDisabled(self.token)
-                        else:
-                            view = HostButtons(self.token)
-                    else:
-                        if user[1]:
-                            view = None
-                        else:
-                            view = ReadyButton(self.token)
+                asyncio.create_task(JoinButton.send_lobby_message(self.token, user, interaction,
+                                                                  lobby_view_embed, len(lobby_players)))
 
-                    await Messager.send_dm_message(user[3],
-                                                   f"\n**{await get_user_name_by_id(interaction.user.id)}** has "
-                                                   f"joined the lobby! Current number of "
-                                                   f"players: **{len(lobby_players)}**",
-                                                   embed=lobby_view_embed, view=view)
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 
         self.value = False
+
+    @staticmethod
+    async def send_lobby_message(token, user, interaction, lobby_view_embed, num_of_players):
+        if interaction.user.name != user[0]:
+            if user[2]:
+                if user[1]:
+                    if Multiverse.get_game(token).all_users_ready():
+                        view = StartButton(token)
+                    else:
+                        view = HostButtonDisabled(token)
+                else:
+                    view = HostButtons(token)
+            else:
+                if user[1]:
+                    view = None
+                else:
+                    view = ReadyButton(token)
+
+            await Messager.send_dm_message(user[3],
+                                           f"\n**{await get_user_name_by_id(interaction.user.id)}** has "
+                                           f"joined the lobby! Current number of "
+                                           f"players: **{num_of_players}**",
+                                           embed=lobby_view_embed, view=view)
 
 
 class StartButton(nextcord.ui.View):
@@ -79,30 +87,35 @@ class StartButton(nextcord.ui.View):
 
         if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
+            button.view.stop()
 
             # send messages about successful start operation
             for user in lobby_players_identities:
-                await Messager.send_dm_message(user, "Game has started successfully!\n")
-
-                player = Multiverse.get_game(self.token).get_player_by_id_user(user)
-                player_view = get_player_view(Multiverse.get_game(self.token), player)
-
-                if player.active:
-                    map_view_message = MessageTemplates. \
-                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
-                                          player.action_points, True)
-                    await Messager.send_dm_message(user, map_view_message, view=ViewMain(self.token),
-                                                   files=[player_view])
-                else:
-                    map_view_message = MessageTemplates. \
-                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
-                                          player.action_points, False)
-                    await Messager.send_dm_message(user, map_view_message, files=[player_view])
+                asyncio.create_task(StartButton.send_start_message(self.token, user))
 
             HandlerGame.handle_game(self.token)
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
+
+    @staticmethod
+    async def send_start_message(token, user):
+        await Messager.send_dm_message(user, "Game has started successfully!\n")
+
+        player = Multiverse.get_game(token).get_player_by_id_user(user)
+        player_view = get_player_view(Multiverse.get_game(token), player)
+
+        if player.active:
+            map_view_message = MessageTemplates. \
+                map_view_template(token, Multiverse.get_game(token).get_active_player().name,
+                                  player.action_points, True)
+            await Messager.send_dm_message(user, map_view_message, view=ViewMain(token),
+                                           files=[player_view])
+        else:
+            map_view_message = MessageTemplates. \
+                map_view_template(token, Multiverse.get_game(token).get_active_player().name,
+                                  player.action_points, False)
+            await Messager.send_dm_message(user, map_view_message, files=[player_view])
 
 
 class HostButtonDisabled(nextcord.ui.View):
@@ -155,20 +168,24 @@ class ReadyButton(nextcord.ui.View):
         lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
 
         for user in lobby_players:
-            if user[2]:
-                if user[1]:
-                    if Multiverse.get_game(token).all_users_ready():
-                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                              view=StartButton(token))
-                    else:
-                        await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                              view=HostButtonDisabled(token))
+            asyncio.create_task(ReadyButton.send_lobby_ready_message(token, user, lobby_view_embed))
+
+    @staticmethod
+    async def send_lobby_ready_message(token, user, lobby_view_embed):
+        if user[2]:
+            if user[1]:
+                if Multiverse.get_game(token).all_users_ready():
+                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                          view=StartButton(token))
                 else:
                     await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                          view=HostButtons(token))
+                                                          view=HostButtonDisabled(token))
             else:
-                if user[1]:
-                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
-                else:
-                    await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
-                                                          view=ReadyButton(token))
+                await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                      view=HostButtons(token))
+        else:
+            if user[1]:
+                await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed)
+            else:
+                await Messager.edit_last_user_message(user_id=user[3], embed=lobby_view_embed,
+                                                      view=ReadyButton(token))
