@@ -12,7 +12,7 @@ class Messager:
         await channel.send(content=content)
 
     @staticmethod
-    async def send_dm_message(user_id: int, content: str | None, embed=None, view=None, files=None):
+    async def send_dm_message(user_id: int, content: str | None, embed=None, view=None, files=None, error=False):
         user = Messager.bot.get_user(user_id)
 
         # includes files; parameter files is a list of string file paths
@@ -21,7 +21,10 @@ class Messager:
                                            files=[nextcord.File(f) for f in files])
         else:
             sent_message = await user.send(content=content, embed=embed, view=view)
-        MessageHolder.register_last_message_data(user_id, user.dm_channel.id, sent_message.id)
+        if not error:
+            MessageHolder.register_last_message_data(user_id, user.dm_channel.id, sent_message.id)
+        else:
+            MessageHolder.register_last_error_data(user_id, user.dm_channel.id, sent_message.id)
 
     @staticmethod
     async def edit_message(channel_id: int, message_id: int, new_content: str):
