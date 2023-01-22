@@ -20,7 +20,7 @@ class Player(Creature):
         dexterity = random.randint(1, 5)
         intelligence = random.randint(1, 5)
         charisma = random.randint(1, 5)
-        perception = random.randint(1, 5)
+        perception = random.randint(2, 4)
         initiative = random.randint(1, 5)
         action_points = random.randint(5, 10)
         # TODO remove above
