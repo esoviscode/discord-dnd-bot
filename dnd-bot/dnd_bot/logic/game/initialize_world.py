@@ -5,6 +5,7 @@ import cv2 as cv
 
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
+from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_game_view
 
@@ -36,6 +37,8 @@ class InitializeWorld:
                         entities_row.append(Rock(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Hole':
                         entities_row.append(Hole(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Mushrooms':
+                        entities_row.append(Mushrooms(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Player':
                         player_spawning_points.append((x, y))
                         entities_row.append(None)
