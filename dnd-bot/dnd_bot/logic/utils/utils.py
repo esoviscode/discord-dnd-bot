@@ -84,7 +84,7 @@ def get_player_view(game: Game, player: Player):
         sprite = copy.deepcopy(entity.sprite)
         sprite = rotate_image_to_direction(sprite, entity.look_direction)
 
-        paste_image(entity.sprite, player_view, entity.x * square_size, entity.y * square_size)
+        paste_image(sprite, player_view, entity.x * square_size, entity.y * square_size)
 
     blind_spot = np.zeros((square_size, square_size, 3), np.uint8)
     for point in generate_superset_circle_points(player.perception, view_range):
