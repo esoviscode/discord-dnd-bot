@@ -33,15 +33,15 @@ class InitializeWorld:
                     if str(entity) not in entity_types.keys():
                         entities_row.append(None)
 
+                    elif entity_types[str(entity)] == 'Player':
+                        player_spawning_points.append((x, y))
+                        entities_row.append(None)
                     elif entity_types[str(entity)] == 'Rock':
                         entities_row.append(Rock(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Hole':
                         entities_row.append(Hole(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Mushrooms':
                         entities_row.append(Mushrooms(x=x, y=y, game_token=game.token))
-                    elif entity_types[str(entity)] == 'Player':
-                        player_spawning_points.append((x, y))
-                        entities_row.append(None)
                 entities.append(entities_row)
 
             # handle random spawning points
