@@ -58,7 +58,8 @@ def get_game_view(game: Game) -> str:
 
     objects = [o for o in sum(game.entities, []) if o and not o.fragile]
     for obj in objects:
-        paste_image(obj.sprite, whole_map, obj.x * square_size, obj.y * square_size)
+        sprite = rotate_image_to_direction(obj.sprite, obj.look_direction)
+        paste_image(sprite, whole_map, obj.x * square_size, obj.y * square_size)
 
     file_name = "%s/game_images/map%s.png" % (TMP_IMAGES_PATH, game.token)
 
