@@ -52,13 +52,12 @@ def get_game_view(game: Game) -> str:
     :param game: game object
     :return filename: path to game view image
     """
-    map_margin = 100
     square_size = 50
     whole_map = cv.imread(game.sprite, cv.IMREAD_UNCHANGED)
 
     objects = [o for o in sum(game.entities, []) if o and not o.fragile]
     for obj in objects:
-        paste_image(obj.sprite, whole_map, map_margin + obj.x * square_size, map_margin + obj.y * square_size)
+        paste_image(obj.sprite, whole_map, obj.x * square_size, obj.y * square_size)
 
     file_name = "%s/game_images/map%s.png" % (TMP_IMAGES_PATH, game.token)
 
@@ -75,20 +74,18 @@ def get_player_view(game: Game, player: Player):
     :param player: player
     :return filename: path to game view image with player's POV
     """
-    view_range = 2
-    map_margin = 100
+    view_range = 4
     square_size = 50
     player_view = copy.deepcopy(game.sprite)
 
     entities = [e for e in sum(game.entities, []) if e and e.fragile]
     for entity in entities:
-        paste_image(entity.sprite, player_view, map_margin + entity.x * square_size,
-                    map_margin + entity.y * square_size)
+        paste_image(entity.sprite, player_view, entity.x * square_size, entity.y * square_size)
 
-    player_view = player_view[map_margin + (player.y - view_range) * square_size:
-                              map_margin + (player.y + view_range + 1) * square_size,
-                              map_margin + (player.x - view_range) * square_size:
-                              map_margin + (player.x + view_range + 1) * square_size, :]
+    player_view = player_view[max(0, player.y - view_range) * square_size:
+                              min(player_view.shape[0], (player.y + view_range + 1) * square_size),
+                              max(0, player.x - view_range) * square_size:
+                              min(player_view.shape[1], (player.x + view_range + 1) * square_size)]
 
     file_name = "%s/game_images/pov%s_%s.png" % (TMP_IMAGES_PATH, game.token, player.discord_identity)
 
