@@ -1,3 +1,5 @@
+import os
+
 from nextcord import slash_command
 from nextcord.ext.commands import Cog, Bot
 
@@ -28,6 +30,13 @@ class ShutdownCommand(Cog):
                     game.get_active_player().active = False
                 if game.game_loop_thread:
                     game.game_loop_thread.join()
+
+            # delete unusable images
+            print("\nDeleting old images...")
+            tmp_img_path = 'dnd_bot/assets/tmp/game_images'
+            for filename in os.listdir(tmp_img_path):
+                if filename.startswith('pov'):
+                    os.remove('%s/%s' % (tmp_img_path, filename))
 
             await self.bot.close()
         else:
