@@ -344,7 +344,7 @@ class ViewEquipment(View):
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
-                                              view=ViewMain(self.token))
+                                              view=ViewCharacter(self.token))
 
 
 class ViewStats(View):
@@ -361,7 +361,7 @@ class ViewStats(View):
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
-                                              view=ViewMain(self.token))
+                                              view=ViewCharacter(self.token))
 
 
 class ViewCharacterSkills(View):
@@ -378,7 +378,7 @@ class ViewCharacterSkills(View):
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
-                                              view=ViewMain(self.token))
+                                              view=ViewCharacter(self.token))
 
 
 class ViewSkills(View):
