@@ -8,10 +8,11 @@ from dnd_bot.logic.prototype.player import Player
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
 
-def generate_filled_circle_points(radius: int) -> list:
+def generate_superset_circle_points(radius: int, range_length: int) -> list:
     """
     returns list of points of filled circle (centered at 0,0) for given radius
     :param radius: circle radius
+    :param range_length: outer square range
     :return points: list of tuples (x, y)
     """
 
@@ -20,9 +21,9 @@ def generate_filled_circle_points(radius: int) -> list:
 
     points = []
 
-    for y in range(-radius, radius + 1):
-        for x in range(-radius, radius + 1):
-            if belongs_to_circle(x, y):
+    for y in range(-range_length, range_length + 1):
+        for x in range(-range_length, range_length + 1):
+            if not belongs_to_circle(x, y):
                 points.append((x, y))
 
     return points
@@ -81,6 +82,14 @@ def get_player_view(game: Game, player: Player):
     entities = [e for e in sum(game.entities, []) if e and e.fragile]
     for entity in entities:
         paste_image(entity.sprite, player_view, entity.x * square_size, entity.y * square_size)
+
+    blind_spot = np.zeros((square_size, square_size, 3), np.uint8)
+    for point in generate_superset_circle_points(player.perception, view_range):
+        if player.x + point[0] >= 0 and (player.x + point[0] + 1) * square_size < player_view.shape[1] \
+                and player.y + point[1] >= 0 and (player.y + point[1] + 1) * square_size <= player_view.shape[0]:
+            player_view[(player.y + point[1]) * square_size:(player.y + point[1] + 1) * square_size,
+                        (player.x + point[0]) * square_size:(player.x + point[0] + 1) * square_size, :] \
+                = blind_spot
 
     player_view = player_view[max(0, player.y - view_range) * square_size:
                               min(player_view.shape[0], (player.y + view_range + 1) * square_size),
