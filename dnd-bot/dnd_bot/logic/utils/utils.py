@@ -82,7 +82,9 @@ def get_player_view(game: Game, player: Player):
 
     entities = [e for e in sum(game.entities, []) if e and e.fragile]
     for entity in entities:
-        paste_image(entity.sprite, player_view, map_margin + entity.x * square_size,
+        sprite = copy.deepcopy(entity.sprite)
+        sprite = rotate_image_to_direction(sprite, entity.look_direction)
+        paste_image(sprite, player_view, map_margin + entity.x * square_size,
                     map_margin + entity.y * square_size)
 
     player_view = player_view[map_margin + (player.y - view_range) * square_size:
@@ -96,3 +98,16 @@ def get_player_view(game: Game, player: Player):
     del player_view
 
     return file_name
+
+
+def rotate_image_to_direction(img, direction):
+    print(direction)
+    if direction == 'down':
+        return img
+    if direction == 'right':
+        image = cv.rotate(img, cv.ROTATE_90_COUNTERCLOCKWISE)
+    elif direction == 'left':
+        image = cv.rotate(img, cv.ROTATE_90_CLOCKWISE)
+    elif direction == 'up':
+        image = cv.rotate(img, cv.ROTATE_180)
+    return image
