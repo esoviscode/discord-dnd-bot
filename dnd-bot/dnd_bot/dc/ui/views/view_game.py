@@ -1,3 +1,6 @@
+import asyncio
+import multiprocessing
+
 import nextcord
 from nextcord.ui import View
 from nextcord.ui import Button
@@ -9,6 +12,11 @@ from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.utils import get_player_view
+from multiprocessing.pool import Pool
+
+from threading import Lock
+
+s_print_lock = Lock()
 
 
 class ViewMain(View):
@@ -151,20 +159,25 @@ class ViewMovement(View):
         lobby_players = Multiverse.get_game(token).user_list
 
         for user in lobby_players:
-            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
-            player_view = get_player_view(Multiverse.get_game(token), player)
+            asyncio.create_task(ViewMovement.display_movement_for_player(token, user))
 
-            if player.active:
-                map_view_message = MessageTemplates.map_view_template(
-                    token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
-                                                      view=ViewMovement(token), files=[player_view])
-            else:
-                map_view_message = MessageTemplates.map_view_template(
-                                   token, Multiverse.get_game(token).get_active_player().name, player.action_points,
-                                   False)
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
-                                                      files=[player_view])
+    @staticmethod
+    async def display_movement_for_player(token, user):
+        """sends message to a player that another player moved"""
+        player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+        player_view = get_player_view(Multiverse.get_game(token), player)
+
+        if player.active:
+            map_view_message = MessageTemplates.map_view_template(
+                token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
+            await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                  view=ViewMovement(token), files=[player_view])
+        else:
+            map_view_message = MessageTemplates.map_view_template(
+                token, Multiverse.get_game(token).get_active_player().name, player.action_points,
+                False)
+            await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
+                                                  files=[player_view])
 
 
 class ViewAttack(View):
@@ -173,7 +186,7 @@ class ViewAttack(View):
         self.value = None
         self.token = token
         self.enemies = enemies
-        self.attack_enemy_buttons = [Button(label=str(x+1), style=nextcord.ButtonStyle.blurple)
+        self.attack_enemy_buttons = [Button(label=str(x + 1), style=nextcord.ButtonStyle.blurple)
                                      for x in range(10)]
 
         async def attack_enemy1(interaction: nextcord.Interaction):
@@ -374,8 +387,8 @@ class ViewSkills(View):
         self.value = None
         self.token = token
         self.skills = skills
-        self.use_skill_buttons = [Button(label=str(x+1), style=nextcord.ButtonStyle.blurple)
-                                     for x in range(10)]
+        self.use_skill_buttons = [Button(label=str(x + 1), style=nextcord.ButtonStyle.blurple)
+                                  for x in range(10)]
 
         async def use_skill1(interaction: nextcord.Interaction):
             """callback function for button for using skill number 1"""
@@ -444,7 +457,7 @@ class ViewSkills(View):
     @staticmethod
     async def use_skill(skill, id_user, token, interaction: nextcord.Interaction):
         """attack enemy nr enemy_number from the available enemy list with the main weapon"""
-        status,  error_message = await HandlerSkills.handle_use_skill(skill, id_user, token)
+        status, error_message = await HandlerSkills.handle_use_skill(skill, id_user, token)
 
         if not status:
             await interaction.response.send_message(error_message)
@@ -462,4 +475,3 @@ class ViewSkills(View):
                                                       embed=skills_list_embed, view=ViewSkills(token, player.skills))
             else:
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message)
-

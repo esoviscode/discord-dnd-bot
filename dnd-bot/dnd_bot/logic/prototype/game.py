@@ -28,24 +28,26 @@ class Game:
             self.creatures_queue = deque()
         self.events = events
 
-    def add_player(self, user_id, user_channel_id, username):
+    def add_player(self, user_id, user_channel_id, username, color):
         """adds player to the game
         :param user_id: users discord id
         :param user_channel_id: private discord channel id
         :param username: username
+        :param color: string representing color
         :return: None
         """
-        self.user_list.append(User(self.token, user_id, user_channel_id, username))
+        self.user_list.append(User(self.token, user_id, user_channel_id, username, color))
 
-    def add_host(self, user_id, user_channel_id, username):
+    def add_host(self, user_id, user_channel_id, username, color):
         """ adds player as the host to the game
         :param user_id: users discord id
         :param user_channel_id: private discord channel id
         :param username: username
+        :param color: string representing color
         :return: None
         """
         self.id_host = user_id
-        user = User(self.token, user_id, user_channel_id, username)
+        user = User(self.token, user_id, user_channel_id, username, color)
         user.is_host = True
         self.user_list.append(user)
 
@@ -72,6 +74,14 @@ class Game:
                 if isinstance(entity, Player):
                     if entity.discord_identity == id_user:
                         return entity
+        return None
+
+    def get_user_by_id(self, id_user) -> User | None:
+        """finds user by his id"""
+        for user in self.user_list:
+            if user.discord_id == id_user:
+                return user
+
         return None
 
     def get_movable_entities(self):

@@ -31,7 +31,7 @@ class HandlerJoin:
         if game.game_state != 'LOBBY':
             return False, [], f':no_entry: This game has already started!'
 
-        game.add_player(user_id, user_dm_channel, username)
+        game.add_player(user_id, user_dm_channel, username, HandlerJoin.get_color_by_index(len(game.user_list)))
 
         users = game.user_list
         lobby_players = []
@@ -40,3 +40,13 @@ class HandlerJoin:
             lobby_players.append((user.username, user.is_ready, user.is_host, user.discord_id))
 
         return True, lobby_players, ""
+
+    @staticmethod
+    def get_color_by_index(player_lobby_index):
+        """returns string representing color by index of player in lobby"""
+        if player_lobby_index == 0: return 'red'
+        if player_lobby_index == 1: return 'blue'
+        if player_lobby_index == 2: return 'green'
+        if player_lobby_index == 3: return 'yellow'
+        if player_lobby_index == 4: return 'orange'
+        if player_lobby_index == 5: return 'purple'
