@@ -3,6 +3,13 @@ import json
 import random
 import cv2 as cv
 
+from dnd_bot.logic.prototype.entities.creatures.frost_mage import FrostMage
+from dnd_bot.logic.prototype.entities.creatures.half_dragon_assassin import HalfDragonAssassin
+from dnd_bot.logic.prototype.entities.creatures.half_dragon_warrior import HalfDragonWarrior
+from dnd_bot.logic.prototype.entities.creatures.lizardfolk_archer import LizardfolkArcher
+from dnd_bot.logic.prototype.entities.creatures.nothic import Nothic
+from dnd_bot.logic.prototype.entities.creatures.skeleton_morningstar import SkeletonMorningstar
+from dnd_bot.logic.prototype.entities.creatures.skeleton_warrior import SkeletonWarrior
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
@@ -51,6 +58,20 @@ class InitializeWorld:
                         entities_row.append(Hole(x=x, y=y, game_token=game.token))
                     elif entity_types[str(entity)] == 'Mushrooms':
                         entities_row.append(Mushrooms(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Frost mage':
+                        entities_row.append(FrostMage(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Half dragon assassin':
+                        entities_row.append(HalfDragonAssassin(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Half dragon warrior':
+                        entities_row.append(HalfDragonWarrior(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Lizardfolk archer':
+                        entities_row.append(LizardfolkArcher(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Nothic':
+                        entities_row.append(Nothic(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Skeleton morningstar':
+                        entities_row.append(SkeletonMorningstar(x=x, y=y, game_token=game.token))
+                    elif entity_types[str(entity)] == 'Skeleton warrior':
+                        entities_row.append(SkeletonWarrior(x=x, y=y, game_token=game.token))
 
                     # walls
                     elif entity_types[str(entity)] == 'Dungeon connector':
@@ -91,6 +112,7 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
+                print(f'spawning player at {player_pos}')
                 entities[player_pos[1]].pop(player_pos[0])
                 entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
                                                                      name=game.user_list[i].username,

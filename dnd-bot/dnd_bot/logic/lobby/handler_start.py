@@ -2,6 +2,7 @@ from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.logic.prototype.player import Player
 
 
 class HandlerStart:
@@ -46,7 +47,10 @@ class HandlerStart:
             GameStart.start(token)
             GameLoop.prepare_queue(game)
 
-            game.creatures_queue[0].active = True
+            for creature in game.creatures_queue:
+                if isinstance(creature, Player):
+                    creature.active = True
+                    break
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
