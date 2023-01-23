@@ -110,7 +110,7 @@ class ViewMain(View):
 
 class ViewMovement(View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
@@ -172,9 +172,13 @@ class ViewMovement(View):
 
         lobby_players = Multiverse.get_game(token).user_list
 
-        for user in lobby_players:
-            asyncio.create_task(ViewMovement.display_movement_for_player(token, user))
+        q = asyncio.Queue()
 
+        tasks = [asyncio.create_task(ViewMovement.display_movement_for_player(token, user)) for user in lobby_players]
+        await asyncio.gather(*tasks)
+        await q.join()
+
+            # await ViewMovement.display_movement_for_player(token, user)
     @staticmethod
     async def display_movement_for_player(token, user):
         """sends message to a player that another player moved"""
