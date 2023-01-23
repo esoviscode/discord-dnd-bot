@@ -30,7 +30,7 @@ class ViewMain(View):
     async def attack(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening attack menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         # TODO adding enemies in players range to the list
@@ -44,7 +44,7 @@ class ViewMain(View):
     async def move(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening move menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               view=ViewMovement(self.token))
@@ -53,7 +53,7 @@ class ViewMain(View):
     async def skill(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening skill menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         skills_list_embed = MessageTemplates.skills_message_template(player)
@@ -64,7 +64,7 @@ class ViewMain(View):
     async def character(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening character menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -92,12 +92,12 @@ class ViewMain(View):
             player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
 
             if player.discord_identity == next_active_player.discord_identity:
-                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
-                                                                      player.action_points, True)
+                map_view_message = MessageTemplates.turn_view_template(self.token, next_active_player.name,
+                                                                       player.action_points, True)
                 await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMain(self.token))
             else:
-                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
-                                                                      player.action_points, False)
+                map_view_message = MessageTemplates.turn_view_template(self.token, next_active_player.name,
+                                                                       player.action_points, False)
                 await Messager.edit_last_user_message(user.discord_id, map_view_message)
 
             error_data = MessageHolder.read_last_error_data(user.discord_id)
@@ -148,7 +148,7 @@ class ViewMovement(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
                                               view=ViewMain(self.token))
@@ -182,12 +182,12 @@ class ViewMovement(View):
         player_view = get_player_view(Multiverse.get_game(token), player)
 
         if player.active:
-            map_view_message = MessageTemplates.map_view_template(
+            map_view_message = MessageTemplates.turn_view_template(
                 token, Multiverse.get_game(token).get_active_player().name, player.action_points, True)
             await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
                                                   view=ViewMovement(token), files=[player_view])
         else:
-            map_view_message = MessageTemplates.map_view_template(
+            map_view_message = MessageTemplates.turn_view_template(
                 token, Multiverse.get_game(token).get_active_player().name, player.action_points,
                 False)
             await Messager.edit_last_user_message(user_id=user.discord_id, content=map_view_message,
@@ -261,7 +261,7 @@ class ViewAttack(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main manu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -276,7 +276,7 @@ class ViewAttack(View):
             await interaction.response.send_message(error_message)
             return
 
-        map_view_message = MessageTemplates.map_view_template(token)
+        map_view_message = MessageTemplates.turn_view_template(token)
         enemies_list_embed = MessageTemplates.attack_view_message_template(new_enemies)
 
         lobby_players = Multiverse.get_game(token).user_list
@@ -304,7 +304,7 @@ class ViewCharacter(View):
     async def show_equipment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening equipment menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         equipment_embed = MessageTemplates.equipment_message_template(player)
@@ -315,7 +315,7 @@ class ViewCharacter(View):
     async def show_stats(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         stats_embed = MessageTemplates.stats_message_template(player)
@@ -326,7 +326,7 @@ class ViewCharacter(View):
     async def show_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         skills_embed = MessageTemplates.skills_message_template(player)
@@ -337,7 +337,7 @@ class ViewCharacter(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -354,7 +354,7 @@ class ViewEquipment(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -371,7 +371,7 @@ class ViewStats(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -388,7 +388,7 @@ class ViewCharacterSkills(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -462,7 +462,7 @@ class ViewSkills(View):
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
-        map_view_message = MessageTemplates.map_view_template(
+        map_view_message = MessageTemplates.turn_view_template(
             self.token, Multiverse.get_game(self.token).get_active_player().name, player.action_points, True)
 
         await Messager.edit_last_user_message(user_id=interaction.user.id, content=map_view_message,
@@ -477,7 +477,7 @@ class ViewSkills(View):
             await interaction.response.send_message(error_message)
             return
 
-        map_view_message = MessageTemplates.map_view_template(token)
+        map_view_message = MessageTemplates.turn_view_template(token)
 
         player = Multiverse.get_game(token).get_player_by_id_user(interaction.user.id)
         skills_list_embed = MessageTemplates.skills_message_template(player)
