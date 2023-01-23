@@ -112,7 +112,6 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
-                print(f'spawning player at {player_pos}')
                 entities[player_pos[1]].pop(player_pos[0])
                 entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
                                                                      name=game.user_list[i].username,

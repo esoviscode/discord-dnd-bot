@@ -47,6 +47,7 @@ class HandlerStart:
             GameStart.start(token)
             GameLoop.prepare_queue(game)
 
+            print(game.creatures_queue)
             for creature in game.creatures_queue:
                 if isinstance(creature, Player):
                     creature.active = True

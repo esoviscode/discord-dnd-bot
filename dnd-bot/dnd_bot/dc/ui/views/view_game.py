@@ -84,25 +84,33 @@ class ViewMain(View):
         if not status:
             await interaction.response.send_message(error_message)
 
-        lobby_players = Multiverse.get_game(self.token).user_list
-
         # determine the next player to take a turn
         next_active_player = None
-        for creature in Multiverse.get_game(self.token).creatures_queue:
+        for i, creature in enumerate(Multiverse.get_game(self.token).creatures_queue):
             if isinstance(creature, Player):
-                next_active_player = creature
+                next_active_player = Multiverse.get_game(self.token).creatures_queue[i]
                 break
+        if next_active_player is None:
+            return
 
-        # send messages about successful start operation
+        await ViewMain.send_new_round_messages(self.token, next_active_player)
+
+        return
+
+    @staticmethod
+    async def send_new_round_messages(token, next_active_player):
+        lobby_players = Multiverse.get_game(token).user_list
+
+        # send messages about successful next round operation
         for user in lobby_players:
-            player = Multiverse.get_game(self.token).get_player_by_id_user(user.discord_id)
+            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
 
             if player.discord_identity == next_active_player.discord_identity:
-                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                map_view_message = MessageTemplates.map_view_template(token, next_active_player.name,
                                                                       player.action_points, True)
-                await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMain(self.token))
+                await Messager.edit_last_user_message(user.discord_id, map_view_message, view=ViewMain(token))
             else:
-                map_view_message = MessageTemplates.map_view_template(self.token, next_active_player.name,
+                map_view_message = MessageTemplates.map_view_template(token, next_active_player.name,
                                                                       player.action_points, False)
                 await Messager.edit_last_user_message(user.discord_id, map_view_message)
 
@@ -110,8 +118,6 @@ class ViewMain(View):
             if error_data is not None:
                 MessageHolder.delete_last_error_data(user.discord_id)
                 await Messager.delete_message(error_data[0], error_data[1])
-
-        return
 
 
 class ViewMovement(View):
