@@ -55,11 +55,11 @@ class MessageTemplates:
         is active"""
         game = Multiverse.get_game(token)
         if is_players_turn:
-            map_view = f'{active_player_name}\'s turn | your action points: {action_points}\n'
+            turn_view = f'{active_player_name}\'s turn | your action points: {action_points}\n'
         else:
-            map_view = f'{active_player_name}\'s turn'
+            turn_view = f'{active_player_name}\'s turn'
 
-        return map_view
+        return turn_view
 
     @staticmethod
     def attack_view_message_template(enemies):
