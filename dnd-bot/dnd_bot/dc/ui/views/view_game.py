@@ -12,6 +12,7 @@ from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_player_view
 from multiprocessing.pool import Pool
 
@@ -85,7 +86,12 @@ class ViewMain(View):
 
         lobby_players = Multiverse.get_game(self.token).user_list
 
-        next_active_player = Multiverse.get_game(self.token).creatures_queue[0]
+        # determine the next player to take a turn
+        next_active_player = None
+        for creature in Multiverse.get_game(self.token).creatures_queue:
+            if isinstance(creature, Player):
+                next_active_player = creature
+                break
 
         # send messages about successful start operation
         for user in lobby_players:
