@@ -34,7 +34,9 @@ class Messager:
         await message.edit(content=new_content, embeds=message.embeds)
 
     @staticmethod
-    async def edit_last_user_message(user_id: int, content="", embed=None, view=None, files=None):
+    async def edit_last_user_message(user_id: int, content="", embed=None, embeds=None, view=None, files=None):
+        if embeds is None:
+            embeds = []
         channel_id, message_id = MessageHolder.read_last_message_data(user_id)
 
         channel = Messager.bot.get_channel(channel_id)
@@ -42,9 +44,15 @@ class Messager:
 
         # includes files
         if files:
-            await message.edit(content=content, embed=embed, view=view, files=[nextcord.File(f) for f in files])
+            if len(embeds) > 0:
+                await message.edit(content=content, embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
+            else:
+                await message.edit(content=content, embed=embed, view=view, files=[nextcord.File(f) for f in files])
         else:
-            await message.edit(content=content, embed=embed, view=view)
+            if len(embeds) > 0:
+                await message.edit(content=content, embeds=embeds, view=view)
+            else:
+                await message.edit(content=content, embed=embed, view=view)
 
     @staticmethod
     async def delete_last_user_message(user_id: int):
