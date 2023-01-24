@@ -26,6 +26,8 @@ class Game:
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:
             self.creatures_queue = deque()
+        else:
+            self.creatures_queue = queue
         self.events = events
 
     def add_player(self, user_id, user_channel_id, username, color):
