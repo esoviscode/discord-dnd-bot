@@ -92,6 +92,7 @@ class MessageTemplates:
 
     @staticmethod
     def equipment_message_template(player):
+        # TODO uncomment when player equipment is ready
         """message segment that shows the equipment of the player"""
         # desc = "Equipped items:\n"
         # desc += f'Helmet: {player.equipment.helmet}\n'
