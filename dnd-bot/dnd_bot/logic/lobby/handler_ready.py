@@ -10,10 +10,15 @@ class HandlerReady:
                 - list consisting of (player name, readiness, is_host, id_player) tuple
         """
 
-        Multiverse.get_game(token).find_user(user_id).is_ready = True
+        try:
+            game = Multiverse.get_game(token)
+        except KeyError:
+            return False, [], f':warning: No game found using this token!'
+
+        game.find_user(user_id).is_ready = True
         users = Multiverse.get_game(token).user_list
         lobby_players = []
         for user in users:
             lobby_players.append((user.username, user.is_ready, user.is_host, user.discord_id))
 
-        return lobby_players
+        return True, lobby_players, ""
