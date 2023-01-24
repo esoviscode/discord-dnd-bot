@@ -141,6 +141,7 @@ class MessageTemplates:
 
     @staticmethod
     def player_turn_embed(player: Player, active_player: Player, active_user_icon=None, recent_action=''):
+        """message embed representing the active player actions and the player's stats"""
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | '
                                      f'HP: {player.hp}/{player.hp}', description=recent_action)
