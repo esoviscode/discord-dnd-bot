@@ -4,6 +4,7 @@ from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.prototype.user import User
 
 
 class MessageTemplates:
@@ -137,4 +138,12 @@ class MessageTemplates:
                                description=desc)
         return embed
 
+    @staticmethod
+    def player_turn_embed(player: Player, active_player: Player, active_user_icon=None, recent_action=''):
+        embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
+                                     f'{player.initial_action_points} | '
+                                     f'HP: {player.hp}/{player.hp}', description=recent_action)
+        embed.set_footer(text=f'{active_player.name}\'s turn', icon_url=active_user_icon)
+
+        return embed
 
