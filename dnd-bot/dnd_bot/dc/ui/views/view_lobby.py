@@ -88,9 +88,6 @@ class StartButton(nextcord.ui.View):
                 player_view = get_player_view(Multiverse.get_game(self.token), player)
 
                 if player.active:
-                    map_view_message = MessageTemplates. \
-                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
-                                          player.action_points, True)
                     active_player = Multiverse.get_game(self.token).get_active_player()
                     active_user = await get_user_by_id(active_player.discord_identity)
                     map_view_embed = MessageTemplates.player_turn_embed(
@@ -99,9 +96,6 @@ class StartButton(nextcord.ui.View):
                     await Messager.send_dm_message(user, content='', embed=map_view_embed, view=ViewMain(self.token),
                                                    files=[player_view])
                 else:
-                    map_view_message = MessageTemplates. \
-                        map_view_template(self.token, Multiverse.get_game(self.token).get_active_player().name,
-                                          player.action_points, False)
                     active_player = Multiverse.get_game(self.token).get_active_player()
                     active_user = await get_user_by_id(active_player.discord_identity)
                     map_view_embed = MessageTemplates.player_turn_embed(
