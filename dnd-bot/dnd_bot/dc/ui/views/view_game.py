@@ -7,6 +7,7 @@ from nextcord.ui import Button
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
@@ -99,12 +100,17 @@ class ViewMain(View):
                                                                       player.action_points, False)
                 await Messager.edit_last_user_message(user.discord_id, map_view_message)
 
+            error_data = MessageHolder.read_last_error_data(user.discord_id)
+            if error_data is not None:
+                MessageHolder.delete_last_error_data(user.discord_id)
+                await Messager.delete_message(error_data[0], error_data[1])
+
         return
 
 
 class ViewMovement(View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
@@ -152,15 +158,27 @@ class ViewMovement(View):
         """shared function to move by one tile for all directions"""
         status, error_message = await HandlerMovement.handle_movement(direction, 1, id_user, token)
 
+        error_data = MessageHolder.read_last_error_data(id_user)
         if not status:
-            await interaction.response.send_message(error_message)
+            if error_data is not None:
+                await Messager.edit_message(error_data[0], error_data[1], f"**{error_message}**")
+            else:
+                await Messager.send_dm_message(id_user, f"**{error_message}**", error=True)
             return
+
+        if error_data is not None:
+            MessageHolder.delete_last_error_data(id_user)
+            await Messager.delete_message(error_data[0], error_data[1])
 
         lobby_players = Multiverse.get_game(token).user_list
 
-        for user in lobby_players:
-            asyncio.create_task(ViewMovement.display_movement_for_player(token, user))
+        q = asyncio.Queue()
 
+        tasks = [asyncio.create_task(ViewMovement.display_movement_for_player(token, user)) for user in lobby_players]
+        await asyncio.gather(*tasks)
+        await q.join()
+
+            # await ViewMovement.display_movement_for_player(token, user)
     @staticmethod
     async def display_movement_for_player(token, user):
         """sends message to a player that another player moved"""

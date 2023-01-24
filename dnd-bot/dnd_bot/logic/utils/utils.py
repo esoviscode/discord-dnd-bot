@@ -58,7 +58,8 @@ def get_game_view(game: Game) -> str:
 
     objects = [o for o in sum(game.entities, []) if o and not o.fragile]
     for obj in objects:
-        paste_image(obj.sprite, whole_map, obj.x * square_size, obj.y * square_size)
+        sprite = rotate_image_to_direction(obj.sprite, obj.look_direction)
+        paste_image(sprite, whole_map, obj.x * square_size, obj.y * square_size)
 
     file_name = "%s/game_images/map%s.png" % (TMP_IMAGES_PATH, game.token)
 
@@ -84,7 +85,7 @@ def get_player_view(game: Game, player: Player):
         sprite = copy.deepcopy(entity.sprite)
         sprite = rotate_image_to_direction(sprite, entity.look_direction)
 
-        paste_image(entity.sprite, player_view, entity.x * square_size, entity.y * square_size)
+        paste_image(sprite, player_view, entity.x * square_size, entity.y * square_size)
 
     blind_spot = np.zeros((square_size, square_size, 3), np.uint8)
     for point in generate_superset_circle_points(player.perception, view_range):
@@ -108,7 +109,7 @@ def get_player_view(game: Game, player: Player):
 
 
 def rotate_image_to_direction(img, direction):
-    print(direction)
+    """rotates image by given direction"""
     if direction == 'down':
         return img
     if direction == 'right':
