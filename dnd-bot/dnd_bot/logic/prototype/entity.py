@@ -3,7 +3,8 @@ import cv2 as cv
 
 class Entity:
     """This class is the base class for all entities in the game like creatures and elements on the map"""
-    def __init__(self, x=0, y=0, sprite=None, name='Entity', id_game=0, skills=None, fragile=False):
+    def __init__(self, x=0, y=0, sprite=None, name='Entity', id_game=0, game_token='', skills=None, fragile=False,
+                 look_direction='down'):
         """":param fragile: if entity can be moved or destroyed from its position"""
         if skills is None:
             skills = []
@@ -12,8 +13,10 @@ class Entity:
         self.sprite = sprite
         self.name = name
         self.id_game = id_game
+        self.game_token = game_token
         self.skills = skills
         self.fragile = fragile
+        self.look_direction = look_direction
         if sprite:
             self.sprite = cv.imread(sprite, cv.IMREAD_UNCHANGED)
             self.sprite = cv.resize(self.sprite, (50, 50), interpolation=cv.INTER_AREA)
@@ -38,6 +41,7 @@ class Entity:
             game.entities[self.y].insert(self.x + 1, this)
 
             self.x += 1
+            self.look_direction = direction
             return True, ''
 
         elif direction == 'left':
@@ -51,6 +55,7 @@ class Entity:
             game.entities[self.y].insert(self.x, tmp)
 
             self.x -= 1
+            self.look_direction = direction
             return True, ''
 
         elif direction == 'up':
@@ -64,6 +69,7 @@ class Entity:
             game.entities[self.y - 1].insert(self.x, this)
 
             self.y -= 1
+            self.look_direction = direction
             return True, ''
         elif direction == 'down':
             if game.entities[self.y + 1][self.x] is not None:
@@ -76,6 +82,7 @@ class Entity:
             game.entities[self.y + 1].insert(self.x, this)
 
             self.y += 1
+            self.look_direction = direction
             return True, ''
         else:
             return False, 'Severe: this direction doesn\'t exist!'

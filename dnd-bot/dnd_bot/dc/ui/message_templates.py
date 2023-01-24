@@ -4,6 +4,7 @@ from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.prototype.user import User
 
 
 class MessageTemplates:
@@ -50,30 +51,14 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def map_view_template(token, active_player_name, action_points, is_players_turn):
-        """message segment that shows the current state of the map"""
-        # map_view = '```'
-        game = Multiverse.get_game(token)
-        # for entity_row in game.entities:
-        #     for entity in entity_row:
-        #         if entity is None:
-        #             map_view += '⬜'
-        #         else:
-        #             if isinstance(entity, Rock):
-        #                 map_view += '🪨'
-        #             elif isinstance(entity, Hole):
-        #                 map_view += '🕳️'
-        #             elif isinstance(entity, Player):
-        #                 map_view += '👨‍🦯'
-        #     map_view += '\n'
-        # map_view += '```'
-
+    def turn_view_template(token, active_player_name, action_points, is_players_turn):
+        """message segment that shows the current state of players turn"""
         if is_players_turn:
-            map_view = f'{active_player_name}\'s turn | your action points: {action_points}\n'
+            turn_view = f'{active_player_name}\'s turn | your action points: {action_points}\n'
         else:
-            map_view = f'{active_player_name}\'s turn'
+            turn_view = f'{active_player_name}\'s turn'
 
-        return map_view
+        return turn_view
 
     @staticmethod
     def attack_view_message_template(enemies):
@@ -91,22 +76,24 @@ class MessageTemplates:
 
     @staticmethod
     def equipment_message_template(player):
+        # TODO uncomment when player equipment is ready
         """message segment that shows the equipment of the player"""
-        desc = "Equipped items:\n"
-        desc += f'Helmet: {player.equipment.helmet}\n'
-        desc += f'Chest: {player.equipment.chest}\n'
-        desc += f'Leg Armor: {player.equipment.leg_armor}\n'
-        desc += f'Boots: {player.equipment.boots}\n'
-        desc += f'Left Hand: {player.equipment.left_hand}\n'
-        desc += f'Right Hand: {player.equipment.right_hand}\n'
-        desc += f'Accessory: {player.equipment.accessory}\n'
-
-        desc = "\n\n Your Items:\n"
-        for i, item in enumerate(player.items):
-            desc += f'{i+1}. {item.name}'
-
-        embed = nextcord.Embed(title="Your equipment:",
-                               description=desc)
+        # desc = "Equipped items:\n"
+        # desc += f'Helmet: {player.equipment.helmet}\n'
+        # desc += f'Chest: {player.equipment.chest}\n'
+        # desc += f'Leg Armor: {player.equipment.leg_armor}\n'
+        # desc += f'Boots: {player.equipment.boots}\n'
+        # desc += f'Left Hand: {player.equipment.left_hand}\n'
+        # desc += f'Right Hand: {player.equipment.right_hand}\n'
+        # desc += f'Accessory: {player.equipment.accessory}\n'
+        #
+        # desc = "\n\n Your Items:\n"
+        # for i, item in enumerate(player.items):
+        #     desc += f'{i+1}. {item.name}'
+        #
+        # embed = nextcord.Embed(title="Your equipment:",
+        #                        description=desc)
+        embed = nextcord.Embed(title='Your equipment:', description='')
         return embed
 
     @staticmethod
@@ -137,4 +124,13 @@ class MessageTemplates:
                                description=desc)
         return embed
 
+    @staticmethod
+    def player_turn_embed(player: Player, active_player: Player, active_user_icon=None, recent_action=''):
+        """message embed representing the active player actions and the player's stats"""
+        embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
+                                     f'{player.initial_action_points} | '
+                                     f'HP: {player.hp}/{player.hp}', description=recent_action)
+        embed.set_footer(text=f'{active_player.name}\'s turn', icon_url=active_user_icon)
+
+        return embed
 
