@@ -45,14 +45,14 @@ class Messager:
         # includes files
         if files:
             if len(embeds) > 0:
-                await message.edit(content=content, embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
+                await message.edit(content=str(content), embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
             else:
-                await message.edit(content=content, embed=embed, view=view, files=[nextcord.File(f) for f in files])
+                await message.edit(content=str(content), embed=embed, view=view, files=[nextcord.File(f) for f in files])
         else:
             if len(embeds) > 0:
-                await message.edit(content=content, embeds=embeds, view=view)
+                await message.edit(content=str(content), embeds=embeds, view=view)
             else:
-                await message.edit(content=content, embed=embed, view=view)
+                await message.edit(content=str(content), embed=embed, view=view)
 
     @staticmethod
     async def delete_last_user_message(user_id: int):
