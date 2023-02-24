@@ -135,7 +135,7 @@ class ViewMovement(View):
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
     async def empty_button_1(self):
         """placeholder button to create space"""
         pass
@@ -145,7 +145,7 @@ class ViewMovement(View):
         """button for moving one tile up"""
         await ViewMovement.move_one_tile('up', interaction.user.id, self.token, interaction)
 
-    @nextcord.ui.button(label=' ', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
     async def empty_button_2(self):
         """placeholder button to create space"""
         pass
