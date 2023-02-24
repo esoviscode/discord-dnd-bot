@@ -31,9 +31,6 @@ class InitializeWorld:
             # load entity types dict
             entity_types = map_json['entity_types']
 
-            map_size_x = map_json['map']['size']['x']
-            map_size_y = map_json['map']['size']['y']
-
             entities = []
             player_spawning_points = []
             for y, row in enumerate(entities_json):
@@ -101,6 +98,8 @@ class InitializeWorld:
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
             # generated image of map with not fragile entities
             game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
+            game.world_width = map_json['map']['size']['x']
+            game.world_height = map_json['map']['size']['y']
 
     @staticmethod
     def spawn_players(spawning_points, num_players):

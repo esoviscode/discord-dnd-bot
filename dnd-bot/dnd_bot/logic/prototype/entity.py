@@ -31,6 +31,9 @@ class Entity:
         """moves entity one tile in set direction"""
 
         if direction == 'right':
+            if self.x + 1 >= game.world_width:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y][self.x + 1] is not None:
                 return False, 'This field is taken!'
 
@@ -45,6 +48,9 @@ class Entity:
             return True, ''
 
         elif direction == 'left':
+            if self.x - 1 < 0:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y][self.x - 1] is not None:
                 return False, 'This field is taken!'
 
@@ -59,6 +65,9 @@ class Entity:
             return True, ''
 
         elif direction == 'up':
+            if self.y - 1 < 0:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y - 1][self.x] is not None:
                 return False, 'This field is taken!'
 
@@ -72,6 +81,9 @@ class Entity:
             self.look_direction = direction
             return True, ''
         elif direction == 'down':
+            if self.y + 1 >= game.world_width:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y + 1][self.x] is not None:
                 return False, 'This field is taken!'
 

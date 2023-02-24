@@ -9,7 +9,7 @@ class Game:
     """class represents particular games and lobbies"""
 
     def __init__(self, token, id_host=None, id_campaign=None, game_state="LOBBY", user_list=None, events=None,
-                 queue=None):
+                 queue=None, world_width=0, world_height=0):
         if user_list is None:
             user_list = []
         if events is None:
@@ -22,6 +22,8 @@ class Game:
         self.entities = []
         self.game_loop_thread = None
         self.sprite = None
+        self.world_width = world_width
+        self.world_height = world_height
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:

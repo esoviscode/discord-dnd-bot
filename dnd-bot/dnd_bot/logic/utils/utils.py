@@ -89,7 +89,7 @@ def get_player_view(game: Game, player: Player):
 
     blind_spot = np.zeros((square_size, square_size, 3), np.uint8)
     for point in generate_superset_circle_points(player.perception, view_range):
-        if player.x + point[0] >= 0 and (player.x + point[0] + 1) * square_size < player_view.shape[1] \
+        if player.x + point[0] >= 0 and (player.x + point[0] + 1) * square_size <= player_view.shape[1] \
                 and player.y + point[1] >= 0 and (player.y + point[1] + 1) * square_size <= player_view.shape[0]:
             player_view[(player.y + point[1]) * square_size:(player.y + point[1] + 1) * square_size,
                         (player.x + point[0]) * square_size:(player.x + point[0] + 1) * square_size, :] \
