@@ -1,22 +1,19 @@
 import asyncio
-import multiprocessing
+from threading import Lock
 
 import nextcord
-from nextcord.ui import View
 from nextcord.ui import Button
+from nextcord.ui import View
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
-from dnd_bot.dc.utils.utils import get_user_name_by_id, get_user_by_id
-from dnd_bot.logic.game.handler_skills import HandlerSkills
+from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
+from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.utils import get_player_view
-from multiprocessing.pool import Pool
-
-from threading import Lock
 
 s_print_lock = Lock()
 
@@ -40,7 +37,8 @@ class ViewGame(View):
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
                                               view=ViewMain(self.token))
 
-    async def character_options(self, interaction: nextcord.Interaction):
+    async def character_view_options(self, interaction: nextcord.Interaction):
+        """shared handler for character view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
         active_player = Multiverse.get_game(self.token).get_active_player()
@@ -57,6 +55,7 @@ class ViewGame(View):
                                                   view=ViewCharacterNonActive(self.token))
 
     async def character_view_equipment(self, interaction: nextcord.Interaction):
+        """shared handler for equipment view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
         active_player = Multiverse.get_game(self.token).get_active_player()
@@ -71,6 +70,7 @@ class ViewGame(View):
                                               view=ViewEquipment(self.token))
 
     async def character_view_stats(self, interaction: nextcord.Interaction):
+        """shared handler for stats view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
         active_player = Multiverse.get_game(self.token).get_active_player()
@@ -85,6 +85,7 @@ class ViewGame(View):
                                               view=ViewStats(self.token))
 
     async def character_view_skills(self, interaction: nextcord.Interaction):
+        """shared handler for character view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
         active_player = Multiverse.get_game(self.token).get_active_player()
@@ -146,7 +147,7 @@ class ViewMain(ViewGame):
     @nextcord.ui.button(label='Character', style=nextcord.ButtonStyle.blurple)
     async def character(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening character menu"""
-        await super().character_options(interaction)
+        await super().character_view_options(interaction)
 
     @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger)
     async def more_actions(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -435,7 +436,7 @@ class ViewEquipment(ViewGame):
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
-        await super().character_options(interaction)
+        await super().character_view_options(interaction)
 
 
 class ViewStats(ViewGame):
@@ -446,7 +447,7 @@ class ViewStats(ViewGame):
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to character view"""
-        await super().character_options(interaction)
+        await super().character_view_options(interaction)
 
 
 class ViewCharacterSkills(ViewGame):
@@ -457,7 +458,7 @@ class ViewCharacterSkills(ViewGame):
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
-        await super().character_options(interaction)
+        await super().character_view_options(interaction)
 
 
 class ViewSkills(ViewGame):
