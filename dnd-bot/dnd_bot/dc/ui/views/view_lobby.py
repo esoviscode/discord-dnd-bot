@@ -13,6 +13,7 @@ from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.utils import get_player_view
 
+
 class ViewLobby:
     @staticmethod
     async def join_button_handler(token, interaction: nextcord.Interaction):
@@ -176,8 +177,6 @@ class ReadyButton(nextcord.ui.View):
             await asyncio.gather(*tasks)
             await q.join()
 
-            # for user in lobby_players:
-            #     await ViewLobby.lobby_readiness_handler(self.token, user, lobby_view_embed)
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 
