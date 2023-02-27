@@ -22,7 +22,7 @@ services:
       timeout: 5s
       retries: 5
   pgadmin:
-    container_name: pgadmin4
+    container_name: pgadmin-discord-bot
     image: dpage/pgadmin4:6.20
     environment:
       PGADMIN_DEFAULT_EMAIL: esovisco@pg.edu.pl
