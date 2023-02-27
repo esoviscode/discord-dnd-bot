@@ -39,6 +39,30 @@ class GameLoop:
         return Multiverse.get_game(game_token)
 
     @staticmethod
+    def start_loop(game_token):
+        """prepares the queue for the game and begins turns of the creatures"""
+        game = GameLoop.get_game_object(game_token)
+
+        GameLoop.prepare_queue(game)
+
+
+
+    @staticmethod
+    def handle_turn(game_token):
+        game = GameLoop.get_game_object(game_token)
+
+        if len(game.creatures_queue) == 0:
+            pass #TODO
+        else:
+            current_creature = game.creatures_queue.popleft()
+            while not isinstance(current_creature, Player):
+                GameLoop.creature_turn(game, current_creature)
+                current_creature = game.creatures_queue.popleft()
+
+
+
+
+    @staticmethod
     def game_loop(game_token):
         """loops over all creatures and lets them perform actions, each iteration is a move"""
         game = GameLoop.get_game_object(game_token)
@@ -46,6 +70,7 @@ class GameLoop:
         while game.game_state == 'ACTIVE':
             # each iteration is a creature's move
             current_creature: Creature = game.creatures_queue.popleft()
+            print("t")
 
             if len(game.creatures_queue) == 0:
                 GameLoop.prepare_queue(game)
