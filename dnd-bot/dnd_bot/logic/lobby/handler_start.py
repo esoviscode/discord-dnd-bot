@@ -44,9 +44,7 @@ class HandlerStart:
                 DatabaseConnection.add_user(game_id, user.discord_id)
 
             GameStart.start(token)
-            GameLoop.prepare_queue(game)
-
-            game.creatures_queue[0].active = True
+            await GameLoop.start_loop(token)
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''

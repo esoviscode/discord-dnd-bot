@@ -1,11 +1,8 @@
 import nextcord
 
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.entities.hole import Hole
-from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
-from dnd_bot.logic.prototype.user import User
 
 
 class MessageTemplates:
@@ -145,4 +142,8 @@ class MessageTemplates:
         embed.set_footer(text=f'{active_player.name}\'s turn', icon_url=active_user_icon)
 
         return embed
+
+    @staticmethod
+    def end_turn_recent_action_message(ending_creature):
+        return f"{ending_creature.name} has ended their turn"
 

@@ -163,16 +163,19 @@ class ViewMain(ViewGame):
         if not status:
             await interaction.response.send_message(error_message)
 
-        lobby_players = Multiverse.get_game(self.token).user_list
+        from dnd_bot.logic.game.handler_game import HandlerGame
+        HandlerGame.end_turn(self.token)
 
-        next_active_player = Multiverse.get_game(self.token).creatures_queue[0]
-
-        # send messages about successful start operation
-        q = asyncio.Queue()
-        tasks = [asyncio.create_task(ViewMain.display_end_turn_for_user(self.token, user, next_active_player,
-                                                                        interaction)) for user in lobby_players]
-        await asyncio.gather(*tasks)
-        await q.join()
+        # lobby_players = Multiverse.get_game(self.token).user_list
+        #
+        # next_active_player = Multiverse.get_game(self.token).creatures_queue[0]
+        #
+        # # send messages about successful start operation
+        # q = asyncio.Queue()
+        # tasks = [asyncio.create_task(ViewMain.display_end_turn_for_user(self.token, user, next_active_player,
+        #                                                                 interaction)) for user in lobby_players]
+        # await asyncio.gather(*tasks)
+        # await q.join()
 
     """ This function is based on display_end_turn_for_user which will be probably removed"""
 
