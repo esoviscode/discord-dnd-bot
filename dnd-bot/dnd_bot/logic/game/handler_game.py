@@ -19,7 +19,7 @@ class HandlerGame:
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
         await ViewMain.display_views_for_users(game_token, next_creature, recent_action_message)
 
-        # reset creature's stats
+        # reset creature's action points to the initial value
         game.active_creature.action_points = game.active_creature.initial_action_points
 
         game.active_creature = next_creature
