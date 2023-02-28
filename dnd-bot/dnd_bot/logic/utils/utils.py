@@ -8,11 +8,12 @@ from dnd_bot.logic.prototype.player import Player
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
 
-def generate_superset_circle_points(radius: int, range_length: int) -> list:
+def generate_circle_points(radius: int, range_length: int, outer=False) -> list:
     """
     returns list of points of filled circle (centered at 0,0) for given radius
     :param radius: circle radius
     :param range_length: outer square range
+    :param outer: if to generate the outer points or inner
     :return points: list of tuples (x, y)
     """
 
@@ -21,10 +22,16 @@ def generate_superset_circle_points(radius: int, range_length: int) -> list:
 
     points = []
 
-    for y in range(-range_length, range_length + 1):
-        for x in range(-range_length, range_length + 1):
-            if not belongs_to_circle(x, y):
-                points.append((x, y))
+    if outer:
+        for y in range(-range_length, range_length + 1):
+            for x in range(-range_length, range_length + 1):
+                if not belongs_to_circle(x, y):
+                    points.append((x, y))
+    else:
+        for y in range(-range_length, range_length + 1):
+            for x in range(-range_length, range_length + 1):
+                if belongs_to_circle(x, y):
+                    points.append((x, y))
 
     return points
 
@@ -80,7 +87,10 @@ def get_player_view(game: Game, player: Player):
     square_size = 50
     player_view = copy.deepcopy(game.sprite)
 
-    entities = [e for e in sum(game.entities, []) if e and e.fragile]
+    points_in_range = generate_circle_points(player.perception, view_range)
+    entities = [e for e in sum(game.entities, []) if e and e.fragile
+                and (e.x - player.x, e.y - player.y) in points_in_range]
+
     for entity in entities:
         sprite = copy.deepcopy(entity.sprite)
         sprite = rotate_image_to_direction(sprite, entity.look_direction)
@@ -88,7 +98,7 @@ def get_player_view(game: Game, player: Player):
         paste_image(sprite, player_view, entity.x * square_size, entity.y * square_size)
 
     blind_spot = np.zeros((square_size, square_size, 3), np.uint8)
-    for point in generate_superset_circle_points(player.perception, view_range):
+    for point in generate_circle_points(player.perception, view_range):
         if player.x + point[0] >= 0 and (player.x + point[0] + 1) * square_size <= player_view.shape[1] \
                 and player.y + point[1] >= 0 and (player.y + point[1] + 1) * square_size <= player_view.shape[0]:
             player_view[(player.y + point[1]) * square_size:(player.y + point[1] + 1) * square_size,
