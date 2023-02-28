@@ -91,7 +91,6 @@ class StartButton(nextcord.ui.View):
         super().__init__()
         self.value = None
         self.token = token
-        self.auto_defer = True
 
     @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
