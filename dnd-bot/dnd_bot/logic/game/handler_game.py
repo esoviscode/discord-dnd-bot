@@ -11,10 +11,10 @@ class HandlerGame:
     async def end_turn(game_token):
         game = Multiverse.get_game(game_token)
 
-        next_creature = game.creatures_queue.popleft()
-
         if len(game.creatures_queue) == 0:
             GameLoop.prepare_queue(game)
+
+        next_creature = game.creatures_queue.popleft()
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
         await ViewMain.display_views_for_users(game_token, next_creature, recent_action_message)
