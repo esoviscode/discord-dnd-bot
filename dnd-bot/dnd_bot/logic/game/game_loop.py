@@ -1,3 +1,4 @@
+from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
@@ -40,12 +41,18 @@ class GameLoop:
         return Multiverse.get_game(game_token)
 
     @staticmethod
-    def start_loop(game_token):
+    async def start_loop(game_token):
         """prepares the queue for the game and begins turns of the creatures"""
         game = GameLoop.get_game_object(game_token)
 
         GameLoop.prepare_queue(game)
 
+        first_creature = game.creatures_queue.popleft()
+        await ViewMain.display_views_for_users(game_token, first_creature, "Let the adventure begin!")
+
+        # move of non player creature
+        if not isinstance(first_creature, Player):
+            GameLoop.creature_turn(game, first_creature)
 
     @staticmethod
     def game_loop(game_token):
