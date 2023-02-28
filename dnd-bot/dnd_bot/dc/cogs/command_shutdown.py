@@ -26,8 +26,8 @@ class ShutdownCommand(Cog):
             # stop all running game threads
             for game in Multiverse.games.values():
                 game.game_state = "INACTIVE"
-                if game.get_active_player():
-                    game.get_active_player().active = False
+                if game.get_active_creature():
+                    game.get_active_creature().active = False
                 if game.game_loop_thread:
                     game.game_loop_thread.join()
 
