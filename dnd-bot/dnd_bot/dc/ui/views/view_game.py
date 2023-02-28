@@ -13,6 +13,7 @@ from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_player_view
 
 s_print_lock = Lock()
@@ -172,6 +173,31 @@ class ViewMain(ViewGame):
                                                                         interaction)) for user in lobby_players]
         await asyncio.gather(*tasks)
         await q.join()
+
+    """ This function is based on display_end_turn_for_user which will be probably removed"""
+
+    @staticmethod
+    async def display_views_for_users(game_token, creature_next_turn, recent_action_message):
+        game = Multiverse.get_game(game_token)
+
+        id_user_next_turn = None
+        player_icon = None
+        if isinstance(creature_next_turn, Player):
+            id_user_next_turn = creature_next_turn.discord_identity
+            player_icon = (await get_user_by_id(creature_next_turn.discord_identity)).display_avatar.url
+
+        for user in game.user_list:
+            if user.discord_id == id_user_next_turn:
+                # MainView for this player
+                view_to_show = ViewMain(game_token)
+            else:
+                view_to_show = ViewCharacterNonActive(game_token)
+
+            player = game.get_player_by_id_user(user.discord_id)
+            turn_view_embed = MessageTemplates.creature_turn_embed(player,
+                                                                   creature_next_turn, active_user_icon=player_icon,
+                                                                   recent_action=recent_action_message)
+            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed, view=view_to_show)
 
     @staticmethod
     async def display_end_turn_for_user(token, user, next_active_player, interaction):

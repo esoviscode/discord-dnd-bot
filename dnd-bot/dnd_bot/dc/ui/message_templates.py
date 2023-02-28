@@ -1,5 +1,6 @@
 import nextcord
 
+from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -122,6 +123,17 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title="Your Skills:",
                                description=desc)
+        return embed
+
+    """this method is based on player_turn_embed which will be probably removed"""
+    @staticmethod
+    def creature_turn_embed(player: Player, active_creature: Creature, active_user_icon=None, recent_action=''):
+        """message embed representing the active player actions and the player's stats"""
+        embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
+                                     f'{player.initial_action_points} | '
+                                     f'HP: {player.hp}/{player.hp}', description=recent_action)
+        embed.set_footer(text=f'{active_creature.name}\'s turn', icon_url=active_user_icon)
+
         return embed
 
     @staticmethod
