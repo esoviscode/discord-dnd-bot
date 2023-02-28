@@ -3,8 +3,8 @@ import cv2 as cv
 
 class Entity:
     """This class is the base class for all entities in the game like creatures and elements on the map"""
-    def __init__(self, x=0, y=0, sprite=None, name='Entity', id_game=0, game_token='', skills=None, fragile=False,
-                 look_direction='down'):
+    def __init__(self, x: int = 0, y: int = 0, sprite=None, name: str = 'Entity', id_game: int = 0, game_token: str = '',
+                 skills=None, fragile: bool = False, look_direction: str = 'down'):
         """":param fragile: if entity can be moved or destroyed from its position"""
         if skills is None:
             skills = []
