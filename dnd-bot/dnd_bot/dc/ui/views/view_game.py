@@ -13,6 +13,7 @@ from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_player_view
 
 s_print_lock = Lock()
@@ -28,7 +29,7 @@ class ViewGame(View):
         """button for moving back to main menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -41,7 +42,7 @@ class ViewGame(View):
         """shared handler for character view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -58,7 +59,7 @@ class ViewGame(View):
         """shared handler for equipment view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -73,7 +74,7 @@ class ViewGame(View):
         """shared handler for stats view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -88,7 +89,7 @@ class ViewGame(View):
         """shared handler for character view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -112,7 +113,7 @@ class ViewMain(ViewGame):
         # TODO adding enemies in players range to the list
         enemies = []
 
-        active_player = Multiverse.get_game(self.token).get_active_player()
+        active_player = Multiverse.get_game(self.token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
@@ -162,45 +163,41 @@ class ViewMain(ViewGame):
         if not status:
             await interaction.response.send_message(error_message)
 
-        lobby_players = Multiverse.get_game(self.token).user_list
-
-        next_active_player = Multiverse.get_game(self.token).creatures_queue[0]
-
-        # send messages about successful start operation
-        q = asyncio.Queue()
-        tasks = [asyncio.create_task(ViewMain.display_end_turn_for_user(self.token, user, next_active_player,
-                                                                        interaction)) for user in lobby_players]
-        await asyncio.gather(*tasks)
-        await q.join()
+        from dnd_bot.logic.game.handler_game import HandlerGame
+        await HandlerGame.end_turn(self.token)
 
     @staticmethod
-    async def display_end_turn_for_user(token, user, next_active_player, interaction):
-        player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
+    async def display_views_for_users(game_token, creature_next_turn, recent_action_message):
+        game = Multiverse.get_game(game_token)
 
-        if player.discord_identity == next_active_player.discord_identity:
+        id_user_next_turn = None
+        player_icon = None
+        if isinstance(creature_next_turn, Player):
+            id_user_next_turn = creature_next_turn.discord_identity
+            player_icon = (await get_user_by_id(creature_next_turn.discord_identity)).display_avatar.url
 
-            turn_view_embed = MessageTemplates.player_turn_embed(
-                player, player,
-                active_user_icon=interaction.user.display_avatar.url,
-                recent_action=f'{interaction.user.name} has ended his turn')
+        async def send_view(user):
+            if user.discord_id == id_user_next_turn:
+                # MainView for this player
+                view_to_show = ViewMain(game_token)
+            else:
+                view_to_show = ViewCharacterNonActive(game_token)
 
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed,
-                                                  view=ViewMain(token))
-        else:
+            player = game.get_player_by_id_user(user.discord_id)
+            player_view = get_player_view(Multiverse.get_game(game_token), player)
+            turn_view_embed = MessageTemplates.creature_turn_embed(player,
+                                                                   creature_next_turn, active_user_icon=player_icon,
+                                                                   recent_action=recent_action_message)
+            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed, view=view_to_show,
+                                                  files=[player_view])
 
-            next_active_user = await get_user_by_id(next_active_player.discord_identity)
-            turn_view_embed = MessageTemplates.player_turn_embed(
-                player, next_active_player,
-                active_user_icon=next_active_user.display_avatar.url,
-                recent_action=f'{interaction.user.name} has ended his turn')
+        q = asyncio.Queue()
+        tasks = []
+        for u in game.user_list:
+            tasks.append(asyncio.create_task(send_view(u)))
 
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed,
-                                                  view=ViewCharacterNonActive(token))
-
-        error_data = MessageHolder.read_last_error_data(user.discord_id)
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(user.discord_id)
-            await Messager.delete_message(error_data[0], error_data[1])
+        await asyncio.gather(*tasks)
+        await q.join()
 
 
 class ViewMovement(ViewGame):
@@ -272,10 +269,10 @@ class ViewMovement(ViewGame):
         """sends message to a player that another player moved"""
         player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
         player_view = get_player_view(Multiverse.get_game(token), player)
-        active_player = Multiverse.get_game(token).get_active_player()
+        active_player = Multiverse.get_game(token).get_active_creature()
         active_user = await get_user_by_id(active_player.discord_identity)
 
-        if player.active:
+        if player == Multiverse.get_game(token).active_creature:
             turn_view_embed = MessageTemplates.player_turn_embed(
                 player, active_player,
                 active_user_icon=active_user.display_avatar.url,

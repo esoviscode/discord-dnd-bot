@@ -4,8 +4,7 @@ import nextcord
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.ui.views.view_game import ViewMain, ViewCharacter, ViewCharacterNonActive
-from dnd_bot.dc.utils.utils import get_user_name_by_id, get_user_by_id
+from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.handler_game import HandlerGame
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
@@ -99,33 +98,7 @@ class StartButton(nextcord.ui.View):
         status, lobby_players_identities, error_message = await HandlerStart.start_game(self.token, interaction.user.id)
 
         if status:
-            await interaction.response.send_message('Starting the game!', ephemeral=True)
-
-            # send messages about successful start operation
-            for user in lobby_players_identities:
-                await Messager.send_dm_message(user, "Game has started successfully!\n")
-
-                player = Multiverse.get_game(self.token).get_player_by_id_user(user)
-                player_view = get_player_view(Multiverse.get_game(self.token), player)
-
-                if player.active:
-                    active_player = Multiverse.get_game(self.token).get_active_player()
-                    active_user = await get_user_by_id(active_player.discord_identity)
-                    turn_view_embed = MessageTemplates.player_turn_embed(
-                        player, active_player,
-                        active_user_icon=active_user.display_avatar.url)
-                    await Messager.send_dm_message(user, content='', embed=turn_view_embed, view=ViewMain(self.token),
-                                                   files=[player_view])
-                else:
-                    active_player = Multiverse.get_game(self.token).get_active_player()
-                    active_user = await get_user_by_id(active_player.discord_identity)
-                    turn_view_embed = MessageTemplates.player_turn_embed(
-                        player, active_player,
-                        active_user_icon=active_user.display_avatar.url)
-                    await Messager.send_dm_message(user, content='', embed=turn_view_embed, files=[player_view],
-                                                   view=ViewCharacterNonActive(self.token))
-
-            HandlerGame.handle_game(self.token)
+            await GameLoop.start_loop(self.token)
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)

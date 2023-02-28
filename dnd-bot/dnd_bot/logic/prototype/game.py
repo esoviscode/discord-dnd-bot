@@ -24,6 +24,7 @@ class Game:
         self.sprite = None
         self.world_width = world_width
         self.world_height = world_height
+        self.active_creature = None
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:
@@ -97,9 +98,6 @@ class Game:
                     movable_entities.append(entity)
         return movable_entities
 
-    def get_active_player(self):
+    def get_active_creature(self):
         """returns current active player"""
-        for entity_row in self.entities:
-            for entity in entity_row:
-                if isinstance(entity, Player) and entity.active:
-                    return entity
+        return self.active_creature
