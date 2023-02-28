@@ -166,19 +166,6 @@ class ViewMain(ViewGame):
         from dnd_bot.logic.game.handler_game import HandlerGame
         await HandlerGame.end_turn(self.token)
 
-        # lobby_players = Multiverse.get_game(self.token).user_list
-        #
-        # next_active_player = Multiverse.get_game(self.token).creatures_queue[0]
-        #
-        # # send messages about successful start operation
-        # q = asyncio.Queue()
-        # tasks = [asyncio.create_task(ViewMain.display_end_turn_for_user(self.token, user, next_active_player,
-        #                                                                 interaction)) for user in lobby_players]
-        # await asyncio.gather(*tasks)
-        # await q.join()
-
-    """ This function is based on display_end_turn_for_user which will be probably removed"""
-
     @staticmethod
     async def display_views_for_users(game_token, creature_next_turn, recent_action_message):
         game = Multiverse.get_game(game_token)
@@ -201,7 +188,8 @@ class ViewMain(ViewGame):
             turn_view_embed = MessageTemplates.creature_turn_embed(player,
                                                                    creature_next_turn, active_user_icon=player_icon,
                                                                    recent_action=recent_action_message)
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed, view=view_to_show, files=[player_view])
+            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed, view=view_to_show,
+                                                  files=[player_view])
 
         q = asyncio.Queue()
         tasks = []
@@ -210,36 +198,6 @@ class ViewMain(ViewGame):
 
         await asyncio.gather(*tasks)
         await q.join()
-
-
-    @staticmethod
-    async def display_end_turn_for_user(token, user, next_active_player, interaction):
-        player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
-
-        if player.discord_identity == next_active_player.discord_identity:
-
-            turn_view_embed = MessageTemplates.player_turn_embed(
-                player, player,
-                active_user_icon=interaction.user.display_avatar.url,
-                recent_action=f'{interaction.user.name} has ended his turn')
-
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed,
-                                                  view=ViewMain(token))
-        else:
-
-            next_active_user = await get_user_by_id(next_active_player.discord_identity)
-            turn_view_embed = MessageTemplates.player_turn_embed(
-                player, next_active_player,
-                active_user_icon=next_active_user.display_avatar.url,
-                recent_action=f'{interaction.user.name} has ended his turn')
-
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed,
-                                                  view=ViewCharacterNonActive(token))
-
-        error_data = MessageHolder.read_last_error_data(user.discord_id)
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(user.discord_id)
-            await Messager.delete_message(error_data[0], error_data[1])
 
 
 class ViewMovement(ViewGame):

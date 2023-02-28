@@ -122,7 +122,6 @@ class MessageTemplates:
                                description=desc)
         return embed
 
-    """this method is based on player_turn_embed which will be probably removed"""
     @staticmethod
     def creature_turn_embed(player: Player, active_creature: Creature, active_user_icon=None, recent_action=''):
         """message embed representing the active player actions and the player's stats"""
