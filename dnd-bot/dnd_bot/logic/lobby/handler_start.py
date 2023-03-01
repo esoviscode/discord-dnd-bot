@@ -1,3 +1,4 @@
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -17,7 +18,7 @@ class HandlerStart:
                 :return: status, (if start was successful, users list, optional error message)
                 """
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.get_id_game_from_game_token(token)
+        game_id = DatabaseGame.get_id_game_from_game_token(token)
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
@@ -35,7 +36,7 @@ class HandlerStart:
 
         if game.game_state == 'LOBBY':
             game.game_state = "STARTING"
-            DatabaseConnection.update_game_state(game_id, 'STARTING')
+            DatabaseGame.update_game_state(game_id, 'STARTING')
 
             if game_id is None:
                 game.game_state = 'LOBBY'

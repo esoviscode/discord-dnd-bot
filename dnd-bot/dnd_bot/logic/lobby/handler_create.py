@@ -1,6 +1,7 @@
 import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -47,12 +48,12 @@ class HandlerCreate:
         :param host_username: discord username
         :return: status, (if creation was successful, new game token, optional error message)
         """
-        tokens = DatabaseConnection.get_all_game_tokens()
+        tokens = DatabaseGame.get_all_game_tokens()
         token = await HandlerCreate.generate_token()
         while token in tokens:
             token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
+        game_id = DatabaseGame.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
         if game_id is None:
             return False, -1, ":no_entry: Error creating game!"
 
