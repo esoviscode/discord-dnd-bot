@@ -62,6 +62,8 @@ class HandlerCreate:
 
         game = Game(token)
 
+        if not Multiverse.masks:
+            Multiverse.generate_masks()
         Multiverse.add_game(game)
         Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username,
                                             HandlerJoin.get_color_by_index(0))
