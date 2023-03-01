@@ -18,8 +18,15 @@ def generate_circle_points(radius: int, range_length: int, outer=False) -> list:
     :return points: list of tuples (x, y)
     """
 
+    # mod is conditional variable which defines proper circles
+    mod = 1
+    if 3 < radius < 6:
+        mod = 4
+    elif radius >= 6:
+        mod = 5
+
     def belongs_to_circle(x, y):
-        return x ** 2 + y ** 2 <= radius ** 2 + 1
+        return x ** 2 + y ** 2 <= radius ** 2 + mod
 
     points = []
 
