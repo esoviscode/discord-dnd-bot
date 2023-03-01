@@ -8,11 +8,11 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 class Player(Creature):
     """represents a player (which is controlled by a user)"""
 
-    def __init__(self, entity_id=0, x=0, y=0, sprite="dnd_bot/assets/gfx/entities/player.png", name='Player', hp=0,
-                 strength=0, dexterity=0,
-                 intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
-                 action_points: int = 0, level: int = 1, discord_identity: int = 0, alignment: str = '',
-                 backstory: str = '', equipment: Equipment = None, game_token=''):
+    def __init__(self, entity_id=0, x=0, y=0, sprite="dnd_bot/assets/gfx/entities/player.png", name: str = 'Player',
+                 hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
+                 perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
+                 discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
+                 game_token: str = ''):
 
         # TODO remove this - it generates some random values for now
         hp = random.randint(15, 30)
