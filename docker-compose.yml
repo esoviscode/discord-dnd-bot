@@ -31,7 +31,7 @@ services:
       - "5555:80"
     volumes:
       - pgadmin:/root/.pgadmin
-      - ./servers.json:/pgadmin4/servers.json
+      - ./database/servers.json:/pgadmin4/servers.json
     restart: unless-stopped
     networks:
       - discord_bot_network
