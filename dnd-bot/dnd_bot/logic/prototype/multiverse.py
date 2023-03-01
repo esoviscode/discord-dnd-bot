@@ -19,6 +19,7 @@ class Multiverse:
 
     @staticmethod
     def generate_masks():
+        """generates masks for every player's perception to overlap povs"""
         from dnd_bot.logic.utils.utils import generate_circle_points
         import cv2 as cv
 
