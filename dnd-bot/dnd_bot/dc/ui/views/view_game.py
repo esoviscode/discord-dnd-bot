@@ -72,6 +72,7 @@ class ViewGame(View):
             player, active_player,
             active_user_icon=active_user.display_avatar.url)
 
+        self.game.players_views[self.user_discord_id] = (ViewMain, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
                                               view=ViewMain(self.token, interaction.user.id))
 
@@ -84,6 +85,8 @@ class ViewGame(View):
         turn_view_embed = MessageTemplates.player_turn_embed(
             player, active_player,
             active_user_icon=active_user.display_avatar.url)
+
+        self.game.players_views[self.user_discord_id] = (ViewCharacterNonActive, [])
 
         if player.discord_identity == active_player.discord_identity:
             await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
@@ -157,6 +160,7 @@ class ViewMain(ViewGame):
             player, active_player,
             active_user_icon=active_user.display_avatar.url)
         enemies_list_embed = MessageTemplates.attack_view_message_template(enemies)
+        self.game.players_views[self.user_discord_id] = (ViewAttack, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, enemies_list_embed],
                                               view=ViewAttack(self.token, enemies))
