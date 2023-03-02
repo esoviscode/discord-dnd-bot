@@ -25,6 +25,8 @@ class Game:
         self.world_width = world_width
         self.world_height = world_height
         self.active_creature = None
+        self.players_views = dict()  # this dict is to save the view non-active player is looking at;
+        # key values are stringified discord ids and values are particular views
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:
@@ -42,6 +44,8 @@ class Game:
         :return: None
         """
         self.user_list.append(User(self.token, user_id, user_channel_id, username, color))
+        from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
+        self.players_views[str(user_id)] = ViewCharacterNonActive
 
     def add_host(self, user_id, user_channel_id, username, color):
         """ adds player as the host to the game
@@ -55,6 +59,8 @@ class Game:
         user = User(self.token, user_id, user_channel_id, username, color)
         user.is_host = True
         self.user_list.append(user)
+        from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
+        self.players_views[str(user_id)] = ViewCharacterNonActive
 
     def find_user(self, discord_id):
         """returns user by discord id, returns None if not successful"""

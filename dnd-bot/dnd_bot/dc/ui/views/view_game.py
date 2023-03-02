@@ -53,7 +53,7 @@ class ViewGame(View):
                                                   view=ViewCharacter(self.token))
         else:
             await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                                  view=ViewCharacterNonActive(self.token))
+                                                  view=ViewCharacterNonActive(self.token, interaction.user.id))
 
     async def character_view_equipment(self, interaction: nextcord.Interaction):
         """shared handler for equipment view"""
@@ -181,7 +181,11 @@ class ViewMain(ViewGame):
                 # MainView for this player
                 view_to_show = ViewMain(game_token)
             else:
-                view_to_show = ViewCharacterNonActive(game_token)
+                view_class = game.players_views[str(user.discord_id)]
+                if view_class is ViewCharacterNonActive:
+                    view_to_show = ViewCharacterNonActive(game_token, user.discord_id)
+                else:
+                    view_to_show = view_class(game_token)
 
             player = game.get_player_by_id_user(user.discord_id)
             player_view = get_player_view(Multiverse.get_game(game_token), player)
@@ -285,7 +289,7 @@ class ViewMovement(ViewGame):
                 active_user_icon=active_user.display_avatar.url,
                 recent_action=f'{active_player.name} has moved to ({active_player.x},{active_player.y})')
             await Messager.edit_last_user_message(user_id=user.discord_id, embed=turn_view_embed,
-                                                  files=[player_view], view=ViewCharacterNonActive(token))
+                                                  files=[player_view], view=ViewCharacterNonActive(token, user.discord_id))
 
 
 class ViewAttack(ViewGame):
@@ -406,22 +410,28 @@ class ViewCharacter(ViewGame):
 
 
 class ViewCharacterNonActive(ViewGame):
-    def __init__(self, token):
+    def __init__(self, token, user_id):
         super().__init__(token)
+        self.game = Multiverse.get_game(self.token)
+        self.user_id = user_id
+        self.game.players_views[user_id] = ViewCharacterNonActive
 
     @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple)
     async def character_view_equipment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening equipment menu"""
+        self.game.players_views[str(self.user_id)] = ViewEquipment
         await super().character_view_equipment(interaction)
 
     @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple)
     async def character_view_stats(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
+        self.game.players_views[str(self.user_id)] = ViewStats
         await super().character_view_stats(interaction)
 
     @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple)
     async def character_view_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening skills menu"""
+        self.game.players_views[str(self.user_id)] = ViewSkills
         await super().character_view_skills(interaction)
 
 
