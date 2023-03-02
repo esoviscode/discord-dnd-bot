@@ -33,17 +33,17 @@ class ViewGame(View):
 
     @staticmethod
     async def display_views_for_users(game_token, recent_action_message):
+        """sends views for users and makes sure that the displayed view is correct"""
         game = Multiverse.get_game(game_token)
         active_creature = game.active_creature
 
         player_icon = None
         if isinstance(active_creature, Player):
-            id_user_active = active_creature.discord_identity
             player_icon = (await get_user_by_id(active_creature.discord_identity)).display_avatar.url
 
         async def send_view(user):
+            # get current view from player and resend it in case someone made an action
             player_current_view, player_current_embeds = game.players_views[user.discord_id]
-
             view_to_show = player_current_view(game_token, user.discord_id)
 
             player = game.get_player_by_id_user(user.discord_id)
