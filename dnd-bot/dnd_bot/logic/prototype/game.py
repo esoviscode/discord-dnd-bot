@@ -44,8 +44,6 @@ class Game:
         :return: None
         """
         self.user_list.append(User(self.token, user_id, user_channel_id, username, color))
-        from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
-        self.players_views[str(user_id)] = ViewCharacterNonActive
 
     def add_host(self, user_id, user_channel_id, username, color):
         """ adds player as the host to the game
@@ -59,8 +57,6 @@ class Game:
         user = User(self.token, user_id, user_channel_id, username, color)
         user.is_host = True
         self.user_list.append(user)
-        from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
-        self.players_views[str(user_id)] = ViewCharacterNonActive
 
     def find_user(self, discord_id):
         """returns user by discord id, returns None if not successful"""

@@ -16,10 +16,10 @@ class HandlerGame:
         next_creature = game.creatures_queue.popleft()
 
         if isinstance(next_creature, Player):
-            game.players_views[next_creature.discord_identity] = ViewMain
+            game.players_views[next_creature.discord_identity] = (ViewMain, [])
 
         if isinstance(game.active_creature, Player):
-            game.players_views[game.active_creature.discord_identity] = ViewCharacterNonActive
+            game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
         game.active_creature = next_creature
 

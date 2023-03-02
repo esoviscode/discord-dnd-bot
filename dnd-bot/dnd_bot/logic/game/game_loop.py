@@ -50,9 +50,9 @@ class GameLoop:
         game.active_creature = first_creature
 
         for user in game.user_list:
-            game.players_views[user.discord_id] = ViewCharacterNonActive
+            game.players_views[user.discord_id] = (ViewCharacterNonActive, [])
         if isinstance(first_creature, Player):
-            game.players_views[first_creature.discord_identity] = ViewMain
+            game.players_views[first_creature.discord_identity] = (ViewMain, [])
 
         await ViewGame.display_views_for_users(game_token, "Let the adventure begin!")
 

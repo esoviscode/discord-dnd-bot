@@ -42,7 +42,7 @@ class ViewGame(View):
             player_icon = (await get_user_by_id(active_creature.discord_identity)).display_avatar.url
 
         async def send_view(user):
-            player_current_view = game.players_views[user.discord_id]
+            player_current_view, player_current_embeds = game.players_views[user.discord_id]
 
             view_to_show = player_current_view(game_token, user.discord_id)
 
@@ -51,8 +51,8 @@ class ViewGame(View):
             turn_view_embed = MessageTemplates.creature_turn_embed(player,
                                                                    active_creature, active_user_icon=player_icon,
                                                                    recent_action=recent_action_message)
-            await Messager.edit_last_user_message(user.discord_id, embed=turn_view_embed, view=view_to_show,
-                                                  files=[player_view])
+            await Messager.edit_last_user_message(user.discord_id, embeds=[turn_view_embed] + player_current_embeds,
+                                                  view=view_to_show, files=[player_view])
 
         q = asyncio.Queue()
         tasks = []
@@ -103,6 +103,7 @@ class ViewGame(View):
             active_user_icon=active_user.display_avatar.url)
 
         equipment_embed = MessageTemplates.equipment_message_template(player)
+        self.game.players_views[self.user_discord_id] = (ViewEquipment, [equipment_embed])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, equipment_embed],
                                               view=ViewEquipment(self.token, interaction.user.id))
@@ -118,6 +119,7 @@ class ViewGame(View):
             active_user_icon=active_user.display_avatar.url)
 
         stats_embed = MessageTemplates.stats_message_template(player)
+        self.game.players_views[self.user_discord_id] = (ViewStats, [stats_embed])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, stats_embed],
                                               view=ViewStats(self.token, interaction.user.id))
@@ -133,6 +135,7 @@ class ViewGame(View):
             active_user_icon=active_user.display_avatar.url)
 
         skills_embed = MessageTemplates.skills_message_template(player)
+        self.game.players_views[self.user_discord_id] = (ViewSkills, [skills_embed])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, skills_embed],
                                               view=ViewCharacterSkills(self.token, interaction.user.id))
@@ -168,7 +171,7 @@ class ViewMain(ViewGame):
                                                              active_user_icon=interaction.user.display_avatar.url)
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
                                               view=ViewMovement(self.token, interaction.user.id))
-        game.players_views[str(interaction.user.id)] = ViewMovement
+        game.players_views[str(interaction.user.id)] = (ViewMovement, [])
 
     @nextcord.ui.button(label='Skill', style=nextcord.ButtonStyle.blurple)
     async def skill(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -246,7 +249,7 @@ class ViewMovement(ViewGame):
         """shared function to move by one tile for all directions"""
         status, error_message = await HandlerMovement.handle_movement(direction, 1, id_user, token)
 
-        Multiverse.get_game(token).players_views[id_user] = ViewMovement
+        Multiverse.get_game(token).players_views[id_user] = (ViewMovement, [])
 
         error_data = MessageHolder.read_last_error_data(id_user)
         if not status:
@@ -385,19 +388,16 @@ class ViewCharacterNonActive(ViewGame):
     @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple)
     async def character_view_equipment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening equipment menu"""
-        self.game.players_views[self.user_discord_id] = ViewEquipment
         await super().character_view_equipment(interaction)
 
     @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple)
     async def character_view_stats(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
-        self.game.players_views[self.user_discord_id] = ViewStats
         await super().character_view_stats(interaction)
 
     @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple)
     async def character_view_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening skills menu"""
-        self.game.players_views[self.user_discord_id] = ViewSkills
         await super().character_view_skills(interaction)
 
 
