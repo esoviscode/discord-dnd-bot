@@ -15,3 +15,7 @@ class DatabaseCreature:
     @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
         pass
+
+    @staticmethod
+    def get_creature_items(id_creature) -> list | None:
+        pass
