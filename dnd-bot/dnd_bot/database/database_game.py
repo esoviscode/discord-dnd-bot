@@ -82,3 +82,28 @@ class DatabaseGame:
             return None
 
         return game_token
+
+    @staticmethod
+    def find_game_by_token(token: str) -> dict | None:
+        """find game by token/password
+        :param token: game token/password to find the game by
+        :return: on success: dictionary containing game data - it's keys: 'id game' - database game id, 'token' - game token, 'id_host' -
+        discord host id, 'id_campaign' - campaign id, 'game_state' - string enum, 'players' - list of players
+        """
+
+        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state != %s',
+                                          (token, 'FINISHED'))
+        game_tuple = DatabaseConnection.cursor.fetchone()
+
+        if not game_tuple:
+            return None
+
+        DatabaseConnection.cursor.execute(f'SELECT * FROM public."User" WHERE id_game = {game_tuple[0]}')
+        users_tuples = DatabaseConnection.cursor.fetchall()
+
+        users = [{'id_user': user_tuple[0], 'id_game': user_tuple[1], 'discord_id': user_tuple[2]}
+                 for user_tuple in users_tuples]
+
+        return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2],
+                'id_campaign': game_tuple[3],
+                'game_state': game_tuple[4], 'players': users}
