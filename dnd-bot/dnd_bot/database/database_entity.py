@@ -1,10 +1,13 @@
 class DatabaseEntity:
 
-    def add_entity(self) -> int | None:
+    @staticmethod
+    def add_entity(name: str = "", x: int = 0, y: int = 0, sprite=None, id_game: int = 0) -> int | None:
         pass
 
-    def update_entity(self, x: int = 0, y: int = 0) -> None:
+    @staticmethod
+    def update_entity(id_entity: int = 0, x: int = 0, y: int = 0) -> None:
         pass
 
-    def get_entity(self, id_entity: int) -> dict | None:
+    @staticmethod
+    def get_entity(id_entity: int) -> dict | None:
         pass

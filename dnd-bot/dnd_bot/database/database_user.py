@@ -24,3 +24,7 @@ class DatabaseUser:
 
         DatabaseConnection.connection.commit()
         return user_id
+
+    @staticmethod
+    def get_user(discord_id: int = 0) -> dict | None:
+        pass
