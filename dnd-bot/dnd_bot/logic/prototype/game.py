@@ -1,15 +1,18 @@
 from collections import deque
 
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.database_object import DatabaseObject
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
 
-class Game:
+class Game(DatabaseObject):
     """class represents particular games and lobbies"""
 
     def __init__(self, token: str = None, id_host: int = None, id_campaign: int = None, game_state: str = "LOBBY",
                  user_list=None, events=None, queue=None, world_width: int = 0, world_height: int = 0):
+        ## TODO super().__init__(DatabaseGame.add_game(token, id_host, game_state, id_campaign))
         if user_list is None:
             user_list = []
         if events is None:
