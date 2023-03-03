@@ -11,3 +11,7 @@ class DatabaseEntity:
     @staticmethod
     def get_entity(id_entity: int) -> dict | None:
         pass
+
+    @staticmethod
+    def get_entity_skills(id_entity: int = 0) -> list | None:
+        pass
