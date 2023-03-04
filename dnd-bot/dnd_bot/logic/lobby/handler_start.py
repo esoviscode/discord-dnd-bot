@@ -1,4 +1,5 @@
 from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -23,7 +24,7 @@ class HandlerStart:
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
         for user in game.user_list:
-            DatabaseConnection.add_user(game_id, user.discord_id)
+            DatabaseUser.add_user(game_id, user.discord_id)
 
         if game is None:
             return False, [], f':warning: Game of provided token doesn\'t exist!'
@@ -42,7 +43,7 @@ class HandlerStart:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
-                DatabaseConnection.add_user(game_id, user.discord_id)
+                DatabaseUser.add_user(game_id, user.discord_id)
 
             GameStart.start(token)
             await GameLoop.start_loop(token)

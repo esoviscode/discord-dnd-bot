@@ -15,21 +15,8 @@ class DatabaseGame:
         :return:
             on success: game id, on failure: None
         """
-
-        DatabaseConnection.cursor.execute(
-            'INSERT INTO public."Game" (token, id_host, game_state, campaign_name) VALUES '
-            '(%s, %s, %s, %s)',
-            (token, id_host, game_state, campaign_name))
-        DatabaseConnection.cursor.execute('SELECT LASTVAL()')
-
-        try:
-            game_id = DatabaseConnection.cursor.fetchone()[0]
-        except ProgrammingError as err:
-            print(f"db: error adding game {err}")
-            return None
-
-        DatabaseConnection.connection.commit()
-        return game_id
+        return DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name)'
+        'VALUES (%s, %s, %s, %s)', (token, id_host, game_state, campaign_name))
 
     @staticmethod
     def start_game(id_game: int) -> None:

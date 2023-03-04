@@ -10,16 +10,16 @@ from dnd_bot.logic.prototype.user import User
 class Game(DatabaseObject):
     """class represents particular games and lobbies"""
 
-    def __init__(self, token: str = None, id_host: int = None, id_campaign: int = None, game_state: str = "LOBBY",
+    def __init__(self, token: str = None, id_host: int = None, campaign_name: str = "", game_state: str = "LOBBY",
                  user_list=None, events=None, queue=None, world_width: int = 0, world_height: int = 0):
-        ## TODO super().__init__(DatabaseGame.add_game(token, id_host, game_state, id_campaign))
+        super().__init__(DatabaseGame.add_game(token, id_host, game_state, campaign_name))
         if user_list is None:
             user_list = []
         if events is None:
             events = []
         self.id_host = id_host
         self.token = token
-        self.id_campaign = id_campaign
+        self.campaign_name = campaign_name
         self.game_state = game_state
         self.user_list = user_list
         self.entities = []
