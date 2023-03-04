@@ -23,8 +23,6 @@ class HandlerStart:
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
-        for user in game.user_list:
-            DatabaseUser.add_user(game_id, user.discord_id)
 
         if game is None:
             return False, [], f':warning: Game of provided token doesn\'t exist!'
@@ -42,8 +40,6 @@ class HandlerStart:
             if game_id is None:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
-            for user in game.user_list:
-                DatabaseUser.add_user(game_id, user.discord_id)
 
             GameStart.start(token)
             await GameLoop.start_loop(token)

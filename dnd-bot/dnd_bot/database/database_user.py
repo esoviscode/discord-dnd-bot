@@ -11,20 +11,22 @@ class DatabaseUser:
         :param id_game: database game id
         :param discord_id: user discord id
         """
-
-        DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
-                                          (id_game, discord_id))
-        DatabaseConnection.cursor.execute('SELECT LASTVAL()')
-
-        try:
-            user_id = DatabaseConnection.cursor.fetchone()[0]
-        except ProgrammingError as err:
-            print(f"db: error adding user {err}")
-            return None
-
-        DatabaseConnection.connection.commit()
-        return user_id
+        return DatabaseConnection.add_to_db('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
+                                            (id_game, discord_id), "user")
 
     @staticmethod
     def get_user(discord_id: int = 0) -> dict | None:
         pass
+
+    @staticmethod
+    def get_user_id_from_discord_id(discord_id: int = 0, id_game: int = 0) -> int | None:
+        DatabaseConnection.cursor.execute(f'SELECT id_user FROM public."User" WHERE discord_id = (%s) AND id_game = (%s)',
+                                          (discord_id, id_game))
+        id_user = DatabaseConnection.cursor.fetchone()
+        DatabaseConnection.connection.commit()
+
+        if not id_user:
+            return None
+
+        return id_user
+

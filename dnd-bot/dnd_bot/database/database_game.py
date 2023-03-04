@@ -16,7 +16,7 @@ class DatabaseGame:
             on success: game id, on failure: None
         """
         return DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name)'
-        'VALUES (%s, %s, %s, %s)', (token, id_host, game_state, campaign_name))
+        'VALUES (%s, %s, %s, %s)', (token, id_host, game_state, campaign_name), "game")
 
     @staticmethod
     def start_game(id_game: int) -> None:

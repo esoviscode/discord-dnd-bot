@@ -12,7 +12,7 @@ class Game(DatabaseObject):
 
     def __init__(self, token: str = None, id_host: int = None, campaign_name: str = "", game_state: str = "LOBBY",
                  user_list=None, events=None, queue=None, world_width: int = 0, world_height: int = 0):
-        super().__init__(DatabaseGame.add_game(token, id_host, game_state, campaign_name))
+        super().__init__(DatabaseGame.get_id_game_from_game_token(token))
         if user_list is None:
             user_list = []
         if events is None:
@@ -46,17 +46,12 @@ class Game(DatabaseObject):
         """
         self.user_list.append(User(self.token, user_id, user_channel_id, username, color))
 
-    def add_host(self, user_id, user_channel_id, username, color):
+    def add_host(self, user: User):
         """ adds player as the host to the game
-        :param user_id: users discord id
-        :param user_channel_id: private discord channel id
-        :param username: username
-        :param color: string representing color
+        :param user: user that is the host of the game
         :return: None
         """
-        self.id_host = user_id
-        user = User(self.token, user_id, user_channel_id, username, color)
-        user.is_host = True
+        self.id_host = user.discord_id
         self.user_list.append(user)
 
     def find_user(self, discord_id):
