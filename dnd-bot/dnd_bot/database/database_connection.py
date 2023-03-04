@@ -59,4 +59,18 @@ class DatabaseConnection:
         DatabaseConnection.cursor.execute(query)
         DatabaseConnection.connection.commit()
 
+    @staticmethod
+    def add_to_db(query: str = "", parameters: tuple = None) -> int | None:
+        DatabaseConnection.cursor.execute(query, parameters)
+        DatabaseConnection.cursor.execute('SELECT LASTVAL()')
+
+        try:
+            id = DatabaseConnection.cursor.fetchone()[0]
+        except ProgrammingError as err:
+            print(f"db: error adding element {err}")
+            return None
+
+        DatabaseConnection.connection.commit()
+        return id
+
 
