@@ -1,3 +1,6 @@
+from dnd_bot.database.database_connection import DatabaseConnection
+
+
 class DatabasePlayer:
 
     @staticmethod

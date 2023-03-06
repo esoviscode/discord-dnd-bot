@@ -6,11 +6,11 @@ from dnd_bot.logic.prototype.database_object import DatabaseObject
 class Entity(DatabaseObject):
     """This class is the base class for all entities in the game like creatures and elements on the map"""
 
-    def __init__(self, x: int = 0, y: int = 0, sprite=None, name: str = 'Entity', id_game: int = 0,
+    def __init__(self, id: int = 0, x: int = 0, y: int = 0, sprite=None, name: str = 'Entity', id_game: int = 0,
                  game_token: str = '',
                  skills=None, fragile: bool = False, look_direction: str = 'down'):
         """":param fragile: if entity can be moved or destroyed from its position"""
-        ## TODO super().__init__(DatabaseEntity.add_entity(name, x, y, sprite, id_game))
+        super().__init__(id)
         if skills is None:
             skills = []
         self.x = x
