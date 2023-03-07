@@ -80,3 +80,40 @@ class ViewAlignmentForm(nextcord.ui.View):
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=2)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
+    
+
+class ViewClassForm(nextcord.ui.View):
+    """View with dropdown for selecting a class"""
+    def __init__(self):
+        super().__init__()
+
+        class_option1 = nextcord.SelectOption(
+            label="Warrior",
+            description="You like close encounters with your enemies.",
+            emoji="⚔")
+
+        class_option2 = nextcord.SelectOption(
+            label="Mage",
+            description="You're a magic freak.",
+            emoji="🧙")
+
+        class_option3 = nextcord.SelectOption(
+            label="Ranger",
+            description="Bow is your closest friend.",
+            emoji="🏹")
+
+        self.lawfulness_axis_dropdown = nextcord.ui.Select(
+            placeholder="Select a class.",
+            options=[class_option1, class_option2, class_option3],
+            row=0)
+
+        self.add_item(self.lawfulness_axis_dropdown)
+
+    @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=1)
+    async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+    # TODO handle next and back buttons callbacks
+    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
+    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
