@@ -46,7 +46,8 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         self.lawfulness_axis_dropdown = nextcord.ui.Select(
             placeholder="Law VS Chaos",
-            options=[lawfulness_option1, lawfulness_option2, lawfulness_option3])
+            options=[lawfulness_option1, lawfulness_option2, lawfulness_option3],
+            row=0)
 
         goodness_option1 = nextcord.SelectOption(
             label="Good",
@@ -65,16 +66,17 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         self.goodness_axis_dropdown = nextcord.ui.Select(
             placeholder="Good VS Evil",
-            options=[goodness_option1, goodness_option2, goodness_option3])
+            options=[goodness_option1, goodness_option2, goodness_option3],
+            row=1)
 
         self.add_item(self.lawfulness_axis_dropdown)
         self.add_item(self.goodness_axis_dropdown)
 
-    # TODO handle next and back buttons callbacks
-    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green)
-    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=2)
+    async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
-    @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red)
-    async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    # TODO handle next and back buttons callbacks
+    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=2)
+    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
