@@ -117,3 +117,40 @@ class ViewClassForm(nextcord.ui.View):
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
+
+
+class ViewRaceForm(nextcord.ui.View):
+    """View with dropdown for selecting a race"""
+    def __init__(self):
+        super().__init__()
+
+        race_option1 = nextcord.SelectOption(
+            label="Human",
+            description="Just ordinary Adam's offspring.",
+            emoji="👨")
+
+        race_option2 = nextcord.SelectOption(
+            label="Elf",
+            description="You have a lot of grace.",
+            emoji="🧝")
+
+        race_option3 = nextcord.SelectOption(
+            label="Dwarf",
+            description="You're a rough hard worker.",
+            emoji="🤏")
+
+        self.race_dropdown = nextcord.ui.Select(
+            placeholder="Select a race.",
+            options=[race_option1, race_option2, race_option3],
+            row=0)
+
+        self.add_item(self.race_dropdown)
+
+    @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=1)
+    async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+    # TODO handle next and back buttons callbacks
+    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
+    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
