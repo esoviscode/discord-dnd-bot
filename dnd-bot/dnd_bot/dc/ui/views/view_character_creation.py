@@ -32,17 +32,17 @@ class ViewAlignmentForm(nextcord.ui.View):
         lawfulness_option1 = nextcord.SelectOption(
             label="Lawful",
             description="You're honorable man and you like to follow the rules.",
-            emoji=":man_judge:")
+            emoji="📜")
 
         lawfulness_option2 = nextcord.SelectOption(
             label="Neutral",
-            description="You're not a rebel but not a completely trustworthy person either.",
-            emoji=":scales:")
+            description="You're not a rebel but rules are not sacred to you.",
+            emoji="⚖")
 
         lawfulness_option3 = nextcord.SelectOption(
             label="Chaotic",
             description="You are a free man and you bow to no one.",
-            emoji=":zany_face:")
+            emoji="🤪")
 
         self.lawfulness_axis_dropdown = nextcord.ui.Select(
             placeholder="Law VS Chaos",
@@ -51,21 +51,24 @@ class ViewAlignmentForm(nextcord.ui.View):
         goodness_option1 = nextcord.SelectOption(
             label="Good",
             description="Your altruism is beyond the scale.",
-            emoji=":angel:")
+            emoji="👼")
 
         goodness_option2 = nextcord.SelectOption(
             label="Neutral",
-            description="You don't kill the innocent neither you risk your life for them.",
-            emoji=":neutral_face:")
+            description="You don't kill the innocent neither you risk life for them.",
+            emoji="😐")
 
         goodness_option3 = nextcord.SelectOption(
             label="Evil",
             description="You would sell your own mother with a smile on your face.",
-            emoji=":lying_face:")
+            emoji="😈")
 
         self.goodness_axis_dropdown = nextcord.ui.Select(
             placeholder="Good VS Evil",
             options=[goodness_option1, goodness_option2, goodness_option3])
+
+        self.add_item(self.lawfulness_axis_dropdown)
+        self.add_item(self.goodness_axis_dropdown)
 
     # TODO handle next and back buttons callbacks
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green)
