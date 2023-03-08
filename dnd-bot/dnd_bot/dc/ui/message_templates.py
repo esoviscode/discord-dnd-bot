@@ -240,3 +240,36 @@ class MessageTemplates:
 
         return embed
 
+    @staticmethod
+    def race_form_view_message_template():
+        """embed in character creation explaining races"""
+
+        desc = "Each race has a distinct appearance, behavior and often range of statistics associated with it.\n\n "
+
+        desc += "Available races are described below: \n"
+
+        embed = nextcord.Embed(title=f'Race Form', description=desc)
+
+        embed.add_field(name="Human",
+                        value="In the reckonings of most worlds, humans are the youngest of the common races, "
+                              "late to arrive on the world scene and short-lived in comparison to dwarves, elves, "
+                              "and dragons. Perhaps it is because of their shorter lives that they strive to achieve "
+                              "as much as they can in the years they are given. Or maybe they feel they have "
+                              "something to prove to the elder races, and that's why they build their mighty empires "
+                              "on the foundation of conquest and trade. Whatever drives them, humans are the "
+                              "innovators, the achievers, and the pioneers of the worlds.")
+
+        embed.add_field(name="Elf",
+                        value="Elves are a magical people of otherworldly grace, living in places of ethereal beauty, "
+                              "in the midst of ancient forests or in silvery spires glittering with faerie light, "
+                              "where soft music drifts through the air and gentle fragrances waft on the breeze. Elves "
+                              "love nature and magic, art and artistry, music and poetry.")
+
+        embed.add_field(name="Dwarf",
+                        value="Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, "
+                              "the echoing of picks and hammers in deep mines and blazing forges, a commitment to "
+                              "clan and tradition, and a burning hatred of goblins and orcs – these common threads "
+                              "unite all dwarves.") 
+
+        return embed
+
