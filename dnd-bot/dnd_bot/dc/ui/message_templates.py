@@ -273,3 +273,42 @@ class MessageTemplates:
 
         return embed
 
+    @staticmethod
+    def stats_retrospective_form_view_message_template():
+        """embed showing created character and his stats"""
+
+        # TODO fill this embed with actual values from handler
+        embed = nextcord.Embed(title=f'Created Character')
+
+        embed.add_field(name="Name",
+                        value="",
+                        inline=False)
+
+        embed.add_field(name="Backstory",
+                        value="",
+                        inline=False)
+
+        embed.add_field(name="Alignment",
+                        value="",
+                        inline=False)
+
+        embed.add_field(name="Class",
+                        value="",
+                        inline=False)
+
+        embed.add_field(name="Race",
+                        value="",
+                        inline=False)
+
+        embed.add_field(name="Stats",
+                        value=f"HP: \n"
+                              f"Strength: \n"
+                              f"Dexterity: \n"
+                              f"Intelligence: \n"
+                              f"Charisma: \n"
+                              f"Perception: \n"
+                              f"Initiative: \n",
+                        inline=False)
+
+        return embed
+

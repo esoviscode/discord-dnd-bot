@@ -154,3 +154,33 @@ class ViewRaceForm(nextcord.ui.View):
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
+
+
+class ViewStatsRetrospectiveForm(nextcord.ui.View):
+    """View that allows to see stats and re-roll them once in a character creation process"""
+    def __init__(self):
+        super().__init__()
+
+    @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1)
+    async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+    # TODO handle reroll and confirm buttons callbacks
+    @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+
+class ViewStatsRetrospectiveFormDisabledReroll(nextcord.ui.View):
+    """View that allows to see stats in a character creation process after one re-roll"""
+    def __init__(self):
+        super().__init__()
+
+    @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1, disabled=True)
+    async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+    # TODO handle reroll and confirm buttons callbacks
+    @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
