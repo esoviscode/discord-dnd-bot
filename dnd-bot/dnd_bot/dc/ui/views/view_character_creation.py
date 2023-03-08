@@ -150,7 +150,7 @@ class ViewRaceForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
-    # TODO handle next and back buttons callbacks
-    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
-    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    # TODO handle confirm and back buttons callbacks
+    @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
