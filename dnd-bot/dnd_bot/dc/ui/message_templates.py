@@ -207,7 +207,36 @@ class MessageTemplates:
                               "high value on personal freedom, but do not have much regard for the lives or freedom "
                               "of other people. Chaotic evil characters do not work well in groups because they "
                               "resent being given orders and usually do not behave themselves unless there is no "
-                              "alternative.") 
+                              "alternative.")
+
+        return embed
+
+    @staticmethod
+    def class_form_view_message_template():
+        """embed in character creation explaining classes"""
+
+        desc = "A character class is a fundamental part of the identity and nature of characters.\n" \
+               "Their capabilities, strengths, and weaknesses are largely defined by their class\n\n "
+
+        desc += "Available classes are described below: \n"
+
+        embed = nextcord.Embed(title=f'Class Form', description=desc)
+
+        embed.add_field(name="Warrior",
+                        value="Warriors share an unparalleled mastery with weapons and armor, and a thorough "
+                              "knowledge of the skills of combat. They are well acquainted with death, both meting it "
+                              "out and staring it defiantly in the face.")
+
+        embed.add_field(name="Mage",
+                        value="Mages are supreme magic-users, defined and united as a class by the spells they cast. "
+                              "Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of "
+                              "explosive fire, arcing lightning, subtle deception, brute-force mind control, "
+                              "and much more.")
+
+        embed.add_field(name="Ranger",
+                        value="Far from the bustle of cities and towns, past the hedges that shelter the most distant "
+                              "farms from the terrors of the wild, amid the dense-packed trees of trackless forests "
+                              "and across wide and empty plains, rangers keep their unending watch.")
 
         return embed
 
