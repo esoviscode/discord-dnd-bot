@@ -1,6 +1,18 @@
 import nextcord
 
 
+class ViewCharacterCreationStart(nextcord.ui.View):
+    """View shown at the beginning of character creation process"""
+
+    def __init__(self):
+        super().__init__()
+
+    # TODO handle next button callback
+    @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green)
+    async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
+
+
 class ModalNameForm(nextcord.ui.Modal):
     """First form in character creation process"""
     def __init__(self):

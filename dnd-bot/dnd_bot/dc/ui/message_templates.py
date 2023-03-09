@@ -147,6 +147,19 @@ class MessageTemplates:
         return f"{ending_creature.name} has ended their turn"
 
     @staticmethod
+    def character_creation_start_message_template():
+        """embed at the beginning of character creation process"""
+
+        desc = "In the following forms you will be able to create the character for this game." \
+               " Some of the attributes like name, backstory and alignment are just for you in order to immerse" \
+               " better with your character. The other ones: especially race and class can have a direct impact on" \
+               " your future interactions and attributes "
+
+        embed = nextcord.Embed(title=f'Character Creation', description=desc)
+
+        return embed
+
+    @staticmethod
     def alignment_form_view_message_template():
         """embed in character creation explaining alignment"""
 
