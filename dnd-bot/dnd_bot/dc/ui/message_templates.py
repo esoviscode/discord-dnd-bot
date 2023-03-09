@@ -1,5 +1,7 @@
 import nextcord
 
+from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -287,30 +289,32 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def stats_retrospective_form_view_message_template():
+    def stats_retrospective_form_view_message_template(user_id):
         """embed showing created character and his stats"""
 
-        # TODO fill this embed with actual values from handler
+        character = ChosenAttributes.chosen_attributes[user_id]
+        HandlerCharacterCreation.assign_attribute_values(user_id)
+
         embed = nextcord.Embed(title=f'Created Character')
 
         embed.add_field(name="Name",
-                        value="",
+                        value=character['name'],
                         inline=False)
 
         embed.add_field(name="Backstory",
-                        value="",
+                        value=character['backstory'],
                         inline=False)
 
         embed.add_field(name="Alignment",
-                        value="",
+                        value='-'.join(character['alignment']),
                         inline=False)
 
         embed.add_field(name="Class",
-                        value="",
+                        value=character['class'],
                         inline=False)
 
         embed.add_field(name="Race",
-                        value="",
+                        value=character['race'],
                         inline=False)
 
         embed.add_field(name="Stats",
