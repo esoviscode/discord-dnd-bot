@@ -7,13 +7,16 @@ from dnd_bot.logic.prototype.player import Player
 class DatabasePlayer:
 
     @staticmethod
-    def add_player(p: Player) -> int | None:
-        id_creature = DatabaseCreature.add_creature(p)
-        id_user = DatabaseUser.get_user_id_from_discord_id(p.discord_identity, p.id_game)
+    def add_player(x: int = 0, y: int = 0, sprite: str = '', name: str = 'Creature', hp: int = 0, strength: int = 0,
+                   dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
+                   initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
+                   alignment: str = '', backstory: str = '', id_game: int = 1) -> int | None:
+        id_creature = DatabaseCreature.add_creature(x, y, sprite, name, hp, strength, dexterity, intelligence, charisma,
+                                                    perception, initiative, action_points, level, id_game)
+        id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '
                                                  'id_creature) VALUES (%s, %s, %s, %s)',
-                                                 (id_user, p.alignment, p.backstory, id_creature))
-        p.id = id_player
+                                                 (id_user, alignment, backstory, id_creature))
         return id_player
 
     @staticmethod
@@ -21,8 +24,9 @@ class DatabasePlayer:
         player_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Player" WHERE id_player = (%s)',
                                                              (id_player))
 
-        creature_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Creature" WHERE id_creature = (%s)',
-                                                               (player_tuple[5]))
+        creature_tuple = DatabaseConnection.get_object_from_db(
+            'SELECT * FROM public."Creature" WHERE id_creature = (%s)',
+            (player_tuple[5]))
 
         entity_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Entity" WHERE id_entity = (%s)',
                                                              (creature_tuple[11]))
@@ -39,6 +43,3 @@ class DatabasePlayer:
         player.id = player_tuple[0]
 
         return player
-
-
-

@@ -103,13 +103,10 @@ class InitializeWorld:
             players_positions = InitializeWorld.spawn_players_positions(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
                 entities[player_pos[1]].pop(player_pos[0])
-                player = Player(x=player_pos[0], y=player_pos[1],
-                                name=game.user_list[i].username,
-                                discord_identity=game.user_list[i].discord_id,
-                                game_token=game.token)
-                player.id_game = game.id
-                DatabasePlayer.add_player(player)
-                entities[player_pos[1]].insert(player_pos[0], player)
+                entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
+                                                      name=game.user_list[i].username,
+                                                      discord_identity=game.user_list[i].discord_id,
+                                                      game_token=game.token, entities=entities)
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
@@ -130,12 +127,18 @@ class InitializeWorld:
 
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id, entity_name):
-        new_entity = entity_class(x=x, y=y, game_token=game_token)
-
-        if isinstance(entity_class, Creature):
-            DatabaseCreature.add_creature(new_entity)
-        else:
-            id_entity = DatabaseEntity.add_entity(entity_name, x, y, id_game=game_id)
-            new_entity.id = id_entity
-        entity_row.append(new_entity)
+        id_entity = DatabaseEntity.add_entity(entity_name, x, y, id_game=game_id)
+        entity_row.append(entity_class(id=id_entity, x=x, y=y, game_token=game_token))
         return entity_row
+
+    @staticmethod
+    def add_player(x: int = 0, y: int = 0, name: str = '', discord_identity: int = 0,
+                   game_token: str = '', game_id: int = 0, entities=None) -> int | None:
+        p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token)
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.sprite, p.name, p.hp, p.strength, p.dexterity,
+                                              p.intelligence, p.charisma, p.perception, p.initiative,
+                                              p.action_points, p.level, p.discord_identity, p.alignment,
+                                              p.backstory, p.id_game)
+        p.id = id_player
+        entities[y].insert(x, p)
+        return entities
