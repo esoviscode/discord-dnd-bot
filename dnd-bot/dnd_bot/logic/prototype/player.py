@@ -8,7 +8,7 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 class Player(Creature):
     """represents a player (which is controlled by a user)"""
 
-    def __init__(self, entity_id=0, x=0, y=0, sprite="dnd_bot/assets/gfx/entities/player.png", name: str = 'Player',
+    def __init__(self, entity_id=0, x=0, y=0, name: str = 'Player',
                  hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
                  discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
@@ -26,6 +26,7 @@ class Player(Creature):
         # TODO remove above
 
         # request a sprite path for the player based on the user
+        self.sprite = None
         game = Multiverse.get_game(game_token)
         if game is None:
             print('Warning: this player has no associated Game!')
@@ -33,7 +34,6 @@ class Player(Creature):
             user = game.get_user_by_id(discord_identity)
             if user is None:
                 print('Warning: this player has no associated User!')
-                self.sprite = Player.get_sprite_path_by_color('red')
             else:
                 self.sprite = Player.get_sprite_path_by_color(user.color)
 

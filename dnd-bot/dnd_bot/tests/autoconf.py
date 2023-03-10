@@ -7,8 +7,10 @@ from dnd_bot.database.database_connection import DatabaseConnection
 def load_database(**kwargs):
     db_connection = psycopg2.connect(**kwargs)
     with db_connection.cursor() as cur:
-        query = open('create_tables.sql')
-        cur.execute(query.read())
+        query_create_tables = open('create_tables.sql')
+        cur.execute(query_create_tables.read())
+        query_populate_tables = open('populate_tables.sql')
+        cur.execute(query_populate_tables.read())
         db_connection.commit()
 
 
