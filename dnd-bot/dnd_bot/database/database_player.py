@@ -17,5 +17,28 @@ class DatabasePlayer:
         return id_player
 
     @staticmethod
-    def get_player(id_player) -> dict | None:
-        pass
+    def get_player(id_player) -> Player | None:
+        player_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Player" WHERE id_player = (%s)',
+                                                             (id_player))
+
+        creature_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Creature" WHERE id_creature = (%s)',
+                                                               (player_tuple[5]))
+
+        entity_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Entity" WHERE id_entity = (%s)',
+                                                             (creature_tuple[11]))
+
+        if entity_tuple is None:
+            return None
+
+        player = Player(entity_id=entity_tuple[0], x=entity_tuple[2], y=entity_tuple[3], name=entity_tuple[1],
+                        hp=creature_tuple[2], level=creature_tuple[1], strength=creature_tuple[3],
+                        dexterity=creature_tuple[4], intelligence=creature_tuple[5], charisma=creature_tuple[6],
+                        perception=creature_tuple[7], initiative=creature_tuple[8], action_points=creature_tuple[9],
+                        discord_identity=player_tuple[1], alignment=player_tuple[2], backstory=player_tuple[3])
+
+        player.id = player_tuple[0]
+
+        return player
+
+
+
