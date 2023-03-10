@@ -3,6 +3,7 @@ import nextcord
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 
 
 class ViewCharacterCreationStart(nextcord.ui.View):
@@ -221,6 +222,8 @@ class ViewRaceForm(nextcord.ui.View):
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if self.race_dropdown.values:
             ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
+
+        await HandlerCharacterCreation.assign_attribute_values(self.user_id)
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),

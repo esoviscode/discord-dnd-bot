@@ -293,7 +293,6 @@ class MessageTemplates:
         """embed showing created character and his stats"""
 
         character = ChosenAttributes.chosen_attributes[user_id]
-        HandlerCharacterCreation.assign_attribute_values(user_id)
 
         embed = nextcord.Embed(title=f'Created Character')
 
@@ -318,13 +317,13 @@ class MessageTemplates:
                         inline=False)
 
         embed.add_field(name="Stats",
-                        value=f"HP: \n"
-                              f"Strength: \n"
-                              f"Dexterity: \n"
-                              f"Intelligence: \n"
-                              f"Charisma: \n"
-                              f"Perception: \n"
-                              f"Initiative: \n",
+                        value=f"HP: {character['hp']} \n"
+                              f"Strength: {character['strength']}\n"
+                              f"Dexterity: {character['dexterity']}\n"
+                              f"Intelligence: {character['intelligence']}\n"
+                              f"Charisma: {character['charisma']}\n"
+                              f"Perception: {character['perception']}\n"
+                              f"Initiative: {character['initiative']}\n",
                         inline=False)
 
         return embed

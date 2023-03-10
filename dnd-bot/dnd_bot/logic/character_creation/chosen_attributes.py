@@ -19,7 +19,8 @@ class ChosenAttributes:
                                                        'intelligence': None,
                                                        'charisma': None,
                                                        'perception': None,
-                                                       'initiative': None}
+                                                       'initiative': None,
+                                                       'action points': None}
 
     @staticmethod
     def delete_user(user_id):
