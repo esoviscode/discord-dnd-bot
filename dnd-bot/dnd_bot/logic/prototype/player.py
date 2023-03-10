@@ -25,8 +25,17 @@ class Player(Creature):
         action_points = random.randint(5, 10)
         # TODO remove above
 
-        self.sprite = Player.get_sprite_path_by_color(Multiverse.get_game(game_token).
-                                                      get_user_by_id(discord_identity).color)
+        # request a sprite path for the player based on the user
+        game = Multiverse.get_game(game_token)
+        if game is None:
+            print('Warning: this player has no associated Game!')
+        else:
+            user = game.get_user_by_id(discord_identity)
+            if user is None:
+                print('Warning: this player has no associated User!')
+                self.sprite = Player.get_sprite_path_by_color('red')
+            else:
+                self.sprite = Player.get_sprite_path_by_color(user.color)
 
         super().__init__(x=x, y=y, sprite=self.sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
                          intelligence=intelligence, charisma=charisma, perception=perception, initiative=initiative,
