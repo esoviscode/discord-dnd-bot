@@ -68,7 +68,7 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         lawfulness_option3 = nextcord.SelectOption(
             label="Chaotic",
-            description="You are a free man and you bow to no one.",
+            description="You are a nonconforming, free man and you bow to no one.",
             emoji="🤪",
             default=True if self.lawfulness_axis_value == 'Chaotic' else False)
 
