@@ -198,7 +198,7 @@ class ViewRaceForm(nextcord.ui.View):
 
         race_option3 = nextcord.SelectOption(
             label="Dwarf",
-            description="You're a rough hard worker.",
+            description="You're a hard, tough worker.",
             emoji="🤏",
             default=True if self.race_value == 'Dwarf' else False)
 
