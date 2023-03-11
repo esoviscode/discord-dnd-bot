@@ -147,7 +147,7 @@ class ViewClassForm(nextcord.ui.View):
 
         class_option3 = nextcord.SelectOption(
             label="Ranger",
-            description="Bow is your closest friend.",
+            description="A bow is your closest friend.",
             emoji="🏹",
             default=True if self.class_value == 'Ranger' else False)
 
