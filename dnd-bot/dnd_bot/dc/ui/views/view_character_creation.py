@@ -124,6 +124,16 @@ class ViewAlignmentForm(nextcord.ui.View):
         if self.goodness_axis_dropdown.values:
             ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
 
+        if (not self.lawfulness_axis_dropdown.values or not self.goodness_axis_dropdown.values) and \
+            (not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] or
+             not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
+
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  content="You must choose alignment!",
+                                                  embed=MessageTemplates.alignment_form_view_message_template(),
+                                                  view=ViewAlignmentForm(self.user_id, self.token))
+            return
+
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.class_form_view_message_template(),
                                               view=ViewClassForm(self.user_id, self.token))
@@ -173,6 +183,13 @@ class ViewClassForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if not self.class_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['class']:
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  content="You must choose class!",
+                                                  embed=MessageTemplates.class_form_view_message_template(),
+                                                  view=ViewClassForm(self.user_id, self.token))
+            return
+
         if self.class_dropdown.values:
             ChosenAttributes.chosen_attributes[self.user_id]['class'] = self.class_dropdown.values[0]
 
@@ -225,6 +242,13 @@ class ViewRaceForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if not self.race_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['race']:
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  content="You musy choose race!",
+                                                  embed=MessageTemplates.race_form_view_message_template(),
+                                                  view=ViewRaceForm(self.user_id, self.token))
+            return
+
         if self.race_dropdown.values:
             ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
 
