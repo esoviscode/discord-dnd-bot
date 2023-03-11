@@ -30,10 +30,8 @@ class DatabaseGame:
     def update_game_state(id_game: int, game_state: str) -> None:
         """updates game state on the one provided
         """
-        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
-                                          (game_state, id_game))
-
-        DatabaseConnection.connection.commit()
+        DatabaseConnection.update_object_in_db('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
+                                               (game_state, id_game), "Game")
 
     @staticmethod
     def get_all_game_tokens():

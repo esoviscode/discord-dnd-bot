@@ -98,3 +98,11 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
         return objs
 
+    @staticmethod
+    def update_object_in_db(query: str = '', parameters: tuple = None, element_name: str = '') -> None:
+        try:
+            DatabaseConnection.cursor.execute(query, parameters)
+        except ProgrammingError as err:
+            print(f'db: error updating {element_name} {err}')
+
+        DatabaseConnection.connection.commit()
