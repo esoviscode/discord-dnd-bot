@@ -31,7 +31,7 @@ class ModalNameForm(nextcord.ui.Modal):
 
         self.backstory_textbox = nextcord.ui.TextInput(
             label="Background",
-            placeholder="Tell something about your past!",
+            placeholder="Tell something about your character's past!",
             default_value=ChosenAttributes.chosen_attributes[user_id]['backstory']
         )
 
