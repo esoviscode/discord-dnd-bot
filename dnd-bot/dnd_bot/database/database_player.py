@@ -11,8 +11,10 @@ class DatabasePlayer:
                    dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                    initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
                    alignment: str = '', backstory: str = '', id_game: int = 1) -> int | None:
-        id_creature = DatabaseCreature.add_creature(x, y, sprite, name, hp, strength, dexterity, intelligence, charisma,
-                                                    perception, initiative, action_points, level, id_game)
+        id_creature = DatabaseCreature.add_creature(x=x, y=y, sprite=sprite, name=name, hp=hp, strength=strength,
+                                                    dexterity=dexterity, intelligence=intelligence, charisma=charisma,
+                                                    perception=perception, initiative=initiative,
+                                                    action_points=action_points, level=level, id_game=id_game)
         id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '
                                                  'id_creature) VALUES (%s, %s, %s, %s)',

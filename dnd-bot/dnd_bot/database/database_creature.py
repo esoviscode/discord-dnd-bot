@@ -10,7 +10,7 @@ class DatabaseCreature:
                      dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                      initiative: int = 0, action_points: int = 0, level: int = 0, drop_money: int = 0,
                      id_game: int = 1) -> int | None:
-        id_entity = DatabaseEntity.add_entity(name, x, y, sprite, id_game)
+        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, sprite=sprite, id_game=id_game)
         id_creature = DatabaseConnection.add_to_db('INSERT INTO public."Creature" (level, "HP", strength, dexterity, '
                                                    'intelligence, charisma, perception, initiative, action_points, '
                                                    'money, id_entity) VALUES'
