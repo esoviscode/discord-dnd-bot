@@ -186,7 +186,7 @@ class ViewRaceForm(nextcord.ui.View):
 
         race_option1 = nextcord.SelectOption(
             label="Human",
-            description="Just ordinary Adam's offspring.",
+            description="Just an ordinary offspring of Adam.",
             emoji="👨",
             default=True if self.race_value == 'Human' else False)
 
