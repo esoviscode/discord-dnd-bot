@@ -3,7 +3,10 @@ import json
 import random
 import cv2 as cv
 
+from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
+from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
@@ -97,13 +100,13 @@ class InitializeWorld:
                             entities[y][x].look_direction = 'down'
 
             # handle random spawning points
-            players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
+            players_positions = InitializeWorld.spawn_players_positions(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
                 entities[player_pos[1]].pop(player_pos[0])
-                entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
-                                                                     name=game.user_list[i].username,
-                                                                     discord_identity=game.user_list[i].discord_id,
-                                                                     game_token=game.token))
+                entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
+                                                      name=game.user_list[i].username,
+                                                      discord_identity=game.user_list[i].discord_id,
+                                                      game_token=game.token, entities=entities, game_id=game.id)
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
@@ -113,8 +116,8 @@ class InitializeWorld:
             game.world_height = map_json['map']['size']['y']
 
     @staticmethod
-    def spawn_players(spawning_points, num_players):
-        """function that places players in random available spawning points"""
+    def spawn_players_positions(spawning_points, num_players):
+        """function that returns random available spawning points that players can spawn in"""
         players_positions = []
         for _ in range(num_players):
             x, y = spawning_points.pop(random.randint(0, len(spawning_points) - 1))
@@ -124,6 +127,20 @@ class InitializeWorld:
 
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id, entity_name):
-        id = DatabaseEntity.add_entity(entity_name, x, y, id_game=game_id)
-        entity_row.append(entity_class(id=id, x=x, y=y, game_token=game_token))
+        entity = entity_class(x=x, y=y, game_token=game_token)
+        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
+        entity.id = id_entity
+        entity_row.append(entity)
         return entity_row
+
+    @staticmethod
+    def add_player(x: int = 0, y: int = 0, name: str = '', discord_identity: int = 0,
+                   game_token: str = '', game_id: int = 0, entities=None) -> int | None:
+        p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token)
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.sprite_path, p.name, p.hp, p.strength, p.dexterity,
+                                              p.intelligence, p.charisma, p.perception, p.initiative,
+                                              p.action_points, p.level, p.discord_identity, p.alignment,
+                                              p.backstory, id_game=game_id)
+        p.id = id_player
+        entities[y].insert(x, p)
+        return entities

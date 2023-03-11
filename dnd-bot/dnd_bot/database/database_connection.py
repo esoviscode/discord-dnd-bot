@@ -73,4 +73,28 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
         return id
 
+    @staticmethod
+    def get_object_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> tuple | None:
+        DatabaseConnection.cursor.execute(query, parameters)
+        obj = DatabaseConnection.cursor.fetchone()
+
+        if not obj:
+            print(f"db: error getting {element_name}")
+            return None
+
+        DatabaseConnection.connection.commit()
+        return obj
+
+    @staticmethod
+    def get_multiple_objects_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> list | None:
+        """returns list of tuples representing a db object"""
+        DatabaseConnection.cursor.execute(query, parameters)
+        objs = DatabaseConnection.cursor.fetchall()
+
+        if not objs:
+            print(f"db: error getting multiple {element_name}")
+            return None
+
+        DatabaseConnection.connection.commit()
+        return objs
 
