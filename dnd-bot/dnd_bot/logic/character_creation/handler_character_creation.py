@@ -2,6 +2,8 @@ import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.game.game_loop import GameLoop
+from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -36,9 +38,8 @@ class HandlerCharacterCreation:
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
                 DatabaseConnection.add_user(game_id, user.discord_id)
-
-            for user in game.user_list:
                 ChosenAttributes.add_empty_user(user.discord_id)
+                game.find_user(user.discord_id).is_ready = False
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
@@ -60,7 +61,7 @@ class HandlerCharacterCreation:
         base_dexterity = {'human': 6, 'elf': 10, 'dwarf': 3}
         base_intelligence = {'human': 10, 'elf': 6, 'dwarf': 3}
         base_charisma = {'human': 6, 'elf': 3, 'dwarf': 10}
-        base_perception = {'human': 6, 'elf': 10, 'dwarf': 3}
+        base_perception = {'human': 2, 'elf': 3, 'dwarf': 1}
         base_action_points = {'human': 10, 'elf': 6, 'dwarf': 3}
 
         base_initiative = {'warrior': 6, 'mage': 3, 'ranger': 10}
@@ -87,7 +88,7 @@ class HandlerCharacterCreation:
         points_to_distribute_randomly -= additional_charisma
         ChosenAttributes.chosen_attributes[user_id]['charisma'] = charisma
 
-        additional_perception = random.randint(0, 2)
+        additional_perception = random.randint(0, 1)
         perception = base_perception[character_race] + additional_perception
         points_to_distribute_randomly -= additional_perception
         ChosenAttributes.chosen_attributes[user_id]['perception'] = perception
@@ -103,4 +104,31 @@ class HandlerCharacterCreation:
         ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
 
         ChosenAttributes.chosen_attributes[user_id]['hp'] = base_hp[character_race] + points_to_distribute_randomly
+
+    @staticmethod
+    async def handle_character_creation_finished(user_id, token) -> (bool, str):
+        """handles finishing of character creation process; if all the players finished it the game is started
+                        :param user_id: id of the user who finished character creation process
+                        :param token: game token
+                        :return: status, optional error message)
+                        """
+        game = Multiverse.get_game(token)
+        game_id = DatabaseConnection.get_id_game_from_game_token(token)
+
+        if game is None:
+            return False, f':warning: Game of provided token doesn\'t exist!'
+
+        game.find_user(user_id).is_ready = True
+
+        if game.all_users_ready():
+            game.game_state = "STARTING"
+            DatabaseConnection.update_game_state(game_id, 'STARTING')
+            GameStart.start(token)
+            await GameLoop.start_loop(token)
+
+            return True, ''
+
+
+
+
 

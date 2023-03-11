@@ -1,7 +1,6 @@
 import nextcord
 
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
-from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player

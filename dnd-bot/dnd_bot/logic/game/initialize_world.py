@@ -3,6 +3,7 @@ import json
 import random
 import cv2 as cv
 
+from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
@@ -88,11 +89,23 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
+                character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
                 entities[player_pos[1]].pop(player_pos[0])
                 entities[player_pos[1]].insert(player_pos[0], Player(x=player_pos[0], y=player_pos[1],
-                                                                     name=game.user_list[i].username,
+                                                                     name=character['name'],
                                                                      discord_identity=game.user_list[i].discord_id,
-                                                                     game_token=game.token))
+                                                                     game_token=game.token,
+                                                                     backstory=character['backstory'],
+                                                                     alignment='-'.join(character['alignment']),
+                                                                     hp=character['hp'],
+                                                                     strength=character['strength'],
+                                                                     dexterity=character['dexterity'],
+                                                                     intelligence=character['intelligence'],
+                                                                     charisma=character['charisma'],
+                                                                     perception=character['perception'],
+                                                                     initiative=character['initiative'],
+                                                                     action_points=character['action points']))
+                del ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image

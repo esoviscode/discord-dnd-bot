@@ -105,7 +105,7 @@ class StartButton(nextcord.ui.View):
                 await Messager.send_dm_message(user_id=user_id,
                                                content=None,
                                                embed=MessageTemplates.character_creation_start_message_template(),
-                                               view=ViewCharacterCreationStart())
+                                               view=ViewCharacterCreationStart(self.token))
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)

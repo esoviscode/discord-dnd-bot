@@ -9,19 +9,21 @@ from dnd_bot.logic.character_creation.handler_character_creation import HandlerC
 class ViewCharacterCreationStart(nextcord.ui.View):
     """View shown at the beginning of character creation process"""
 
-    def __init__(self):
+    def __init__(self, token):
         super().__init__()
+        self.token = token
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await interaction.response.send_modal(ModalNameForm(interaction.user.id))
+        await interaction.response.send_modal(ModalNameForm(interaction.user.id, self.token))
 
 
 class ModalNameForm(nextcord.ui.Modal):
     """First form in character creation process"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__("Name Form")
         self.user_id = user_id
+        self.token = token
 
         self.name_textbox = nextcord.ui.TextInput(
             label="Name",
@@ -43,14 +45,15 @@ class ModalNameForm(nextcord.ui.Modal):
         ChosenAttributes.chosen_attributes[self.user_id]['backstory'] = self.backstory_textbox.value
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.alignment_form_view_message_template(),
-                                              view=ViewAlignmentForm(self.user_id))
+                                              view=ViewAlignmentForm(self.user_id, self.token))
 
 
 class ViewAlignmentForm(nextcord.ui.View):
     """View with dropdowns for two axes of alignment"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
+        self.token = token
         self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0]
         self.goodness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]
 
@@ -111,7 +114,7 @@ class ViewAlignmentForm(nextcord.ui.View):
         if self.goodness_axis_dropdown.values:
             ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
 
-        await interaction.response.send_modal(ModalNameForm(self.user_id))
+        await interaction.response.send_modal(ModalNameForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=2)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -123,14 +126,15 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.class_form_view_message_template(),
-                                              view=ViewClassForm(self.user_id))
+                                              view=ViewClassForm(self.user_id, self.token))
 
 
 class ViewClassForm(nextcord.ui.View):
     """View with dropdown for selecting a class"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
+        self.token = token
         self.class_value = ChosenAttributes.chosen_attributes[self.user_id]['class']
 
         class_option1 = nextcord.SelectOption(
@@ -165,7 +169,7 @@ class ViewClassForm(nextcord.ui.View):
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.alignment_form_view_message_template(),
-                                              view=ViewAlignmentForm(self.user_id))
+                                              view=ViewAlignmentForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -174,14 +178,15 @@ class ViewClassForm(nextcord.ui.View):
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.race_form_view_message_template(),
-                                              view=ViewRaceForm(self.user_id))
+                                              view=ViewRaceForm(self.user_id, self.token))
 
 
 class ViewRaceForm(nextcord.ui.View):
     """View with dropdown for selecting a race"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
+        self.token = token
         self.race_value = ChosenAttributes.chosen_attributes[self.user_id]['race']
 
         race_option1 = nextcord.SelectOption(
@@ -216,7 +221,7 @@ class ViewRaceForm(nextcord.ui.View):
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.class_form_view_message_template(),
-                                              view=ViewClassForm(self.user_id))
+                                              view=ViewClassForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -227,14 +232,15 @@ class ViewRaceForm(nextcord.ui.View):
 
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
-                                              view=ViewStatsRetrospectiveForm(self.user_id))
+                                              view=ViewStatsRetrospectiveForm(self.user_id, self.token))
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
     """View that allows to see stats and re-roll them once in a character creation process"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
+        self.token = token
 
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1)
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -242,25 +248,24 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.stats_retrospective_form_view_message_template(
                                                   self.user_id),
-                                              view=ViewStatsRetrospectiveFormDisabledReroll(self.user_id))
+                                              view=ViewStatsRetrospectiveFormDisabledReroll(self.user_id, self.token))
 
-    # TODO handle confirm button callback
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        pass
+        await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)
 
 
 class ViewStatsRetrospectiveFormDisabledReroll(nextcord.ui.View):
     """View that allows to see stats in a character creation process after one re-roll"""
-    def __init__(self, user_id):
+    def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
+        self.token = token
 
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1, disabled=True)
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
-    # TODO handle  and confirm button callback
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        pass
+        await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)

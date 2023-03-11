@@ -14,17 +14,6 @@ class Player(Creature):
                  discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
                  game_token: str = ''):
 
-        # TODO remove this - it generates some random values for now
-        hp = random.randint(15, 30)
-        strength = random.randint(1, 5)
-        dexterity = random.randint(1, 5)
-        intelligence = random.randint(1, 5)
-        charisma = random.randint(1, 5)
-        perception = random.randint(2, 4)
-        initiative = random.randint(1, 5)
-        action_points = random.randint(5, 10)
-        # TODO remove above
-
         self.sprite = Player.get_sprite_path_by_color(Multiverse.get_game(game_token).
                                                       get_user_by_id(discord_identity).color)
 
