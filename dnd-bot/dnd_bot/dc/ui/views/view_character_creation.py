@@ -268,27 +268,12 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1)
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        button.disabled = True
         await HandlerCharacterCreation.assign_attribute_values(self.user_id)
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.stats_retrospective_form_view_message_template(
                                                   self.user_id),
-                                              view=ViewStatsRetrospectiveFormDisabledReroll(self.user_id, self.token))
-
-    @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
-    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)
-
-
-class ViewStatsRetrospectiveFormDisabledReroll(nextcord.ui.View):
-    """View that allows to see stats in a character creation process after one re-roll"""
-    def __init__(self, user_id, token):
-        super().__init__()
-        self.user_id = user_id
-        self.token = token
-
-    @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1, disabled=True)
-    async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        pass
+                                              view=self)
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
