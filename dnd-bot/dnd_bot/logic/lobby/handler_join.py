@@ -1,3 +1,4 @@
+from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -31,6 +32,7 @@ class HandlerJoin:
         if game.game_state != 'LOBBY':
             return False, [], f':no_entry: This game has already started!'
 
+        DatabaseUser.add_user(game.id, user_id)
         game.add_player(user_id, user_dm_channel, username, HandlerJoin.get_color_by_index(len(game.user_list)))
 
         users = game.user_list

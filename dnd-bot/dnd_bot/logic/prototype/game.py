@@ -1,22 +1,25 @@
 from collections import deque
 
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.database_object import DatabaseObject
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
 
-class Game:
+class Game(DatabaseObject):
     """class represents particular games and lobbies"""
 
-    def __init__(self, token: str = None, id_host: int = None, id_campaign: int = None, game_state: str = "LOBBY",
+    def __init__(self, token: str = None, id_host: int = None, campaign_name: str = "", game_state: str = "LOBBY",
                  user_list=None, events=None, queue=None, world_width: int = 0, world_height: int = 0):
+        super().__init__(DatabaseGame.get_id_game_from_game_token(token))
         if user_list is None:
             user_list = []
         if events is None:
             events = []
         self.id_host = id_host
         self.token = token
-        self.id_campaign = id_campaign
+        self.campaign_name = campaign_name
         self.game_state = game_state
         self.user_list = user_list
         self.entities = []
@@ -45,17 +48,12 @@ class Game:
         """
         self.user_list.append(User(self.token, user_id, user_channel_id, username, color))
 
-    def add_host(self, user_id, user_channel_id, username, color):
+    def add_host(self, user: User):
         """ adds player as the host to the game
-        :param user_id: users discord id
-        :param user_channel_id: private discord channel id
-        :param username: username
-        :param color: string representing color
+        :param user: user that is the host of the game
         :return: None
         """
-        self.id_host = user_id
-        user = User(self.token, user_id, user_channel_id, username, color)
-        user.is_host = True
+        self.id_host = user.discord_id
         self.user_list.append(user)
 
     def find_user(self, discord_id):
