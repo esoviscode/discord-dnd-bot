@@ -106,27 +106,29 @@ class HandlerCharacterCreation:
         ChosenAttributes.chosen_attributes[user_id]['hp'] = base_hp[character_race] + points_to_distribute_randomly
 
     @staticmethod
-    async def handle_character_creation_finished(user_id, token) -> (bool, str):
+    async def handle_character_creation_finished(user_id, token) -> (bool, bool, str):
         """handles finishing of character creation process; if all the players finished it the game is started
                         :param user_id: id of the user who finished character creation process
                         :param token: game token
-                        :return: status, optional error message)
+                        :return: status, status of other players (if all of them are ready) optional error message)
                         """
         game = Multiverse.get_game(token)
         game_id = DatabaseConnection.get_id_game_from_game_token(token)
 
         if game is None:
-            return False, f':warning: Game of provided token doesn\'t exist!'
+            return False, False, f':warning: Game of provided token doesn\'t exist!'
 
         game.find_user(user_id).is_ready = True
 
         if game.all_users_ready():
-            game.game_state = "STARTING"
-            DatabaseConnection.update_game_state(game_id, 'STARTING')
+            game.game_state = 'ACTIVE'
+            DatabaseConnection.update_game_state(game_id, 'ACTIVE')
             GameStart.start(token)
             await GameLoop.start_loop(token)
 
-            return True, ''
+            return True, True, ''
+        else:
+            return True, False, ''
 
 
 

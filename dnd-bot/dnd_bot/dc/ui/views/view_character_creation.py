@@ -277,4 +277,17 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)
+        status, finished, error_message = \
+            await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)
+
+        if status:
+            if not finished:
+                for component in self.children:
+                    if isinstance(component, nextcord.ui.Button):
+                        component.disabled = True
+                await Messager.edit_last_user_message(user_id=self.user_id,
+                                                      embed=MessageTemplates.stats_retrospective_form_view_message_template(
+                                                          self.user_id),
+                                                      view=self)
+        else:
+            await interaction.response.send_message(error_message, ephemeral=True)
