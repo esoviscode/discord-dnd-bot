@@ -11,6 +11,9 @@ class Multiverse:
 
     @staticmethod
     def get_game(token):
+        if token not in Multiverse.games.keys():
+            print(f'Error: game with token {token} has not been found!')
+            return None
         return Multiverse.games[token]
 
     @staticmethod
