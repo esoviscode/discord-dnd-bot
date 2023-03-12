@@ -294,7 +294,7 @@ class MessageTemplates:
 
         character = ChosenAttributes.chosen_attributes[user_id]
 
-        embed = nextcord.Embed(title=f'Created Character')
+        embed = nextcord.Embed(title=f'Your Character')
 
         embed.add_field(name="Name",
                         value=character['name'],
@@ -323,7 +323,8 @@ class MessageTemplates:
                               f"Intelligence: {character['intelligence']}\n"
                               f"Charisma: {character['charisma']}\n"
                               f"Perception: {character['perception']}\n"
-                              f"Initiative: {character['initiative']}\n",
+                              f"Initiative: {character['initiative']}\n"
+                              f"Action points: {character['action points']}\n",
                         inline=False)
 
         return embed

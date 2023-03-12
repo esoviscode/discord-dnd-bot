@@ -143,7 +143,7 @@ class ViewAlignmentForm(nextcord.ui.View):
              not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
 
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose alignment!", error=True)
+                await Messager.send_dm_message(user_id=self.user_id, content="You must choose an alignment!", error=True)
             return
 
         # delete error messages
@@ -215,7 +215,7 @@ class ViewClassForm(nextcord.ui.View):
         # user hasn't chosen any option
         if not self.class_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['class']:
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose class!", error=True)
+                await Messager.send_dm_message(user_id=self.user_id, content="You must choose a class!", error=True)
             return
 
         # delete error messages
@@ -287,7 +287,7 @@ class ViewRaceForm(nextcord.ui.View):
         # user hasn't chosen any option
         if not self.race_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['race']:
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose race!", error=True)
+                await Messager.send_dm_message(user_id=self.user_id, content="You must choose a race!", error=True)
             return
 
         await HandlerCharacterCreation.assign_attribute_values(self.user_id)
@@ -335,7 +335,7 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
 
                 await Messager.send_dm_message(user_id=self.user_id,
                                                content="You created your character! Now wait for other players to "
-                                                       "finish.!",
+                                                       "finish!",
                                                error=True)
             else:
                 # delete error messages
