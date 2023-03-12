@@ -1,6 +1,6 @@
 import random
 
-from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
@@ -18,7 +18,7 @@ class HandlerCharacterCreation:
             :return: status, (if start was successful, users list, optional error message)
             """
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.get_id_game_from_game_token(token)
+        game_id = DatabaseGame.get_id_game_from_game_token(token)
 
         if game_id is None:
             return False, [], ":no_entry: Error creating game!"
@@ -31,13 +31,12 @@ class HandlerCharacterCreation:
 
         if game.game_state == 'LOBBY':
             game.game_state = "STARTING"
-            DatabaseConnection.update_game_state(game_id, 'STARTING')
+            DatabaseGame.update_game_state(game_id, 'STARTING')
 
             if game_id is None:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
-                DatabaseConnection.add_user(game_id, user.discord_id)
                 ChosenAttributes.add_empty_user(user.discord_id)
                 game.find_user(user.discord_id).is_ready = False
 
@@ -110,10 +109,10 @@ class HandlerCharacterCreation:
         """handles finishing of character creation process; if all the players finished it the game is started
                         :param user_id: id of the user who finished character creation process
                         :param token: game token
-                        :return: status, status of other players (if all of them are ready) optional error message)
+                        :return: status, status of other players (if all of them are ready) optional error message
                         """
         game = Multiverse.get_game(token)
-        game_id = DatabaseConnection.get_id_game_from_game_token(token)
+        game_id = DatabaseGame.get_id_game_from_game_token(token)
 
         if game is None:
             return False, False, f':warning: Game of provided token doesn\'t exist!'
@@ -122,15 +121,10 @@ class HandlerCharacterCreation:
 
         if game.all_users_ready():
             game.game_state = 'ACTIVE'
-            DatabaseConnection.update_game_state(game_id, 'ACTIVE')
+            DatabaseGame.update_game_state(game_id, 'ACTIVE')
             GameStart.start(token)
             await GameLoop.start_loop(token)
 
             return True, True, ''
         else:
             return True, False, ''
-
-
-
-
-
