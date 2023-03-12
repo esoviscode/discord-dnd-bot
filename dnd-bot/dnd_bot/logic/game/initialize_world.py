@@ -3,10 +3,9 @@ import json
 import random
 import cv2 as cv
 
-from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
-from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
@@ -102,11 +101,26 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players_positions(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
+                character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
                 entities[player_pos[1]].pop(player_pos[0])
                 entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
                                                       name=game.user_list[i].username,
                                                       discord_identity=game.user_list[i].discord_id,
-                                                      game_token=game.token, entities=entities, game_id=game.id)
+                                                      game_token=game.token,
+                                                      entities=entities,
+                                                      game_id=game.id,
+                                                      backstory=character['backstory'],
+                                                      alignment='-'.join(character['alignment']),
+                                                      hp=character['hp'],
+                                                      strength=character['strength'],
+                                                      dexterity=character['dexterity'],
+                                                      intelligence=character['intelligence'],
+                                                      charisma=character['charisma'],
+                                                      perception=character['perception'],
+                                                      initiative=character['initiative'],
+                                                      action_points=character['action points'])
+                                                      
+                del ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
@@ -134,9 +148,14 @@ class InitializeWorld:
         return entity_row
 
     @staticmethod
-    def add_player(x: int = 0, y: int = 0, name: str = '', discord_identity: int = 0,
-                   game_token: str = '', game_id: int = 0, entities=None) -> int | None:
-        p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token)
+    def add_player(x: int = 0, y: int = 0, name: str = '', discord_identity: int = 0, game_token: str = '',
+                   game_id: int = 0, entities=None, backstory: str = '', alignment: str = '', hp: int = 0,
+                   strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
+                   perception: int = 0, initiative: int = 0, action_points: int = 0) -> int | None:
+
+        p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token, backstory=backstory,
+                   alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
+                   charisma=charisma, perception=perception, initiative=initiative, action_points=action_points)
         id_player = DatabasePlayer.add_player(p.x, p.y, p.sprite_path, p.name, p.hp, p.strength, p.dexterity,
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
