@@ -151,9 +151,10 @@ class MessageTemplates:
     def character_creation_start_message_template():
         """embed at the beginning of character creation process"""
 
-        desc = "In the following forms you will be able to create the character for this game." \
+        desc = "In the following forms you will be able to create the character for this game.\n\n" \
                " Some of the attributes like name, backstory and alignment are just for you in order to immerse" \
-               " better with your character. The other ones: especially race and class can have a direct impact on" \
+               " better with your character. \n\n" \
+               "The other ones: especially race and class can have a direct impact on" \
                " your future interactions and attributes "
 
         embed = nextcord.Embed(title=f'Character Creation', description=desc)
@@ -236,18 +237,18 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Class Form', description=desc)
 
-        embed.add_field(name="Warrior",
+        embed.add_field(name="Warrior ⚔",
                         value="Warriors share an unparalleled mastery with weapons and armor, and a thorough "
                               "knowledge of the skills of combat. They are well acquainted with death, both meting it "
                               "out and staring it defiantly in the face.")
 
-        embed.add_field(name="Mage",
+        embed.add_field(name="Mage 🧙",
                         value="Mages are supreme magic-users, defined and united as a class by the spells they cast. "
                               "Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of "
                               "explosive fire, arcing lightning, subtle deception, brute-force mind control, "
                               "and much more.")
 
-        embed.add_field(name="Ranger",
+        embed.add_field(name="Ranger 🏹",
                         value="Far from the bustle of cities and towns, past the hedges that shelter the most distant "
                               "farms from the terrors of the wild, amid the dense-packed trees of trackless forests "
                               "and across wide and empty plains, rangers keep their unending watch.")
@@ -264,7 +265,7 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Race Form', description=desc)
 
-        embed.add_field(name="Human",
+        embed.add_field(name="Human 👨",
                         value="In the reckonings of most worlds, humans are the youngest of the common races, "
                               "late to arrive on the world scene and short-lived in comparison to dwarves, elves, "
                               "and dragons. Perhaps it is because of their shorter lives that they strive to achieve "
@@ -273,13 +274,13 @@ class MessageTemplates:
                               "on the foundation of conquest and trade. Whatever drives them, humans are the "
                               "innovators, the achievers, and the pioneers of the worlds.")
 
-        embed.add_field(name="Elf",
+        embed.add_field(name="Elf 🧝",
                         value="Elves are a magical people of otherworldly grace, living in places of ethereal beauty, "
                               "in the midst of ancient forests or in silvery spires glittering with faerie light, "
                               "where soft music drifts through the air and gentle fragrances waft on the breeze. Elves "
                               "love nature and magic, art and artistry, music and poetry.")
 
-        embed.add_field(name="Dwarf",
+        embed.add_field(name="Dwarf 🤏",
                         value="Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, "
                               "the echoing of picks and hammers in deep mines and blazing forges, a commitment to "
                               "clan and tradition, and a burning hatred of goblins and orcs – these common threads "

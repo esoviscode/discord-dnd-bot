@@ -61,19 +61,19 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         lawfulness_option1 = nextcord.SelectOption(
             label="Lawful",
-            description="You're honorable man and you like to follow the rules.",
+            description="You're honorable man and you like to follow the rules",
             emoji="📜",
             default=True if self.lawfulness_axis_value == 'Lawful' else False)
 
         lawfulness_option2 = nextcord.SelectOption(
             label="Neutral",
-            description="You're not a rebel but rules are not sacred to you.",
+            description="You're not a rebel but rules are not sacred to you",
             emoji="⚖",
             default=True if self.lawfulness_axis_value == 'Neutral' else False)
 
         lawfulness_option3 = nextcord.SelectOption(
             label="Chaotic",
-            description="You are a nonconforming, free man and you bow to no one.",
+            description="You are a nonconforming, free man and you bow to no one",
             emoji="🤪",
             default=True if self.lawfulness_axis_value == 'Chaotic' else False)
 
@@ -84,19 +84,19 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         goodness_option1 = nextcord.SelectOption(
             label="Good",
-            description="Your altruism is beyond the scale.",
+            description="Your altruism is beyond the scale",
             emoji="👼",
             default=True if self.goodness_axis_value == 'Good' else False)
 
         goodness_option2 = nextcord.SelectOption(
             label="Neutral",
-            description="You don't kill the innocent neither you risk life for them.",
+            description="You don't kill the innocent neither you risk life for them",
             emoji="😐",
             default=True if self.goodness_axis_value == 'Neutral' else False)
 
         goodness_option3 = nextcord.SelectOption(
             label="Evil",
-            description="You would sell your own mother with a smile on your face.",
+            description="You would sell your own mother with a smile on your face",
             emoji="😈",
             default=True if self.goodness_axis_value == 'Evil' else False)
 
