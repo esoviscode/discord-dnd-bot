@@ -60,25 +60,25 @@ class InitializeWorld:
                         entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,
                                                                   'Mushrooms')
                     elif entity_types[str(entity)] == 'Frost mage':
-                        entities_row = InitializeWorld.add_entity(entities_row, FrostMage, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, FrostMage, x, y, game.token, game.id,
                                                                   entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Half dragon assassin':
-                        entities_row = InitializeWorld.add_entity(entities_row, HalfDragonAssassin, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonAssassin, x, y, game.token, game.id,
                                                                   entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Half dragon warrior':
-                        entities_row = InitializeWorld.add_entity(entities_row, HalfDragonWarrior, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonWarrior, x, y, game.token, game.id,
                                        entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Lizardfolk archer':
-                        entities_row = InitializeWorld.add_entity(entities_row, LizardfolkArcher, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, LizardfolkArcher, x, y, game.token, game.id,
                                        entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Nothic':
-                        entities_row = InitializeWorld.add_entity(entities_row, Nothic, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, Nothic, x, y, game.token, game.id,
                                        entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Skeleton morningstar':
-                        entities_row = InitializeWorld.add_entity(entities_row, SkeletonMorningstar, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonMorningstar, x, y, game.token, game.id,
                                        entity_types[str(entity)])
                     elif entity_types[str(entity)] == 'Skeleton warrior':
-                        entities_row = InitializeWorld.add_entity(entities_row, SkeletonWarrior, x, y, game.token, game.id,
+                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonWarrior, x, y, game.token, game.id,
                                        entity_types[str(entity)])
 
                     # walls
@@ -132,7 +132,7 @@ class InitializeWorld:
                 character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
                 entities[player_pos[1]].pop(player_pos[0])
                 entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
-                                                      name=game.user_list[i].username,
+                                                      name=character['name'],
                                                       discord_identity=game.user_list[i].discord_id,
                                                       game_token=game.token,
                                                       entities=entities,
@@ -170,6 +170,14 @@ class InitializeWorld:
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id, entity_name):
         entity = entity_class(x=x, y=y, game_token=game_token)
+        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
+        entity.id = id_entity
+        entity_row.append(entity)
+        return entity_row
+
+    @staticmethod
+    def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
+        entity = creature_class(x=x, y=y, game_token=game_token, action_points=2)
         id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
         entity.id = id_entity
         entity_row.append(entity)

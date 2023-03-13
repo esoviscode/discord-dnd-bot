@@ -25,3 +25,7 @@ class Creature(Entity):
         self.drop_money = drop_money
         self.items = items
         self.initial_action_points = action_points
+
+    def ai_action(self):
+        self.action_points -= 1
+        return "Made simple move"
