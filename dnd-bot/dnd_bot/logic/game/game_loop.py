@@ -1,6 +1,9 @@
-from dnd_bot.dc.ui.views.view_game import ViewMain, ViewCharacterNonActive, ViewGame
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
+import asyncio
+import copy
+
+from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -16,7 +19,7 @@ class GameLoop:
         """puts all the creatures to the queue with order by initiative"""
 
         def entity_sorting_value(e):
-            if isinstance(e, Entity):
+            if not isinstance(e, Creature):
                 return -1
             else:
                 return e.initiative
@@ -61,34 +64,7 @@ class GameLoop:
             GameLoop.creature_turn(game, first_creature)
 
     @staticmethod
-    def game_loop(game_token):
-        """loops over all creatures and lets them perform actions, each iteration is a move"""
-        game = GameLoop.get_game_object(game_token)
-
-        while game.game_state == 'ACTIVE':
-            # each iteration is a creature's move
-            current_creature: Creature = game.creatures_queue.popleft()
-
-            if len(game.creatures_queue) == 0:
-                GameLoop.prepare_queue(game)
-
-            if isinstance(current_creature, Player):
-                GameLoop.players_turn(game, current_creature)
-            else:
-                GameLoop.creature_turn(game, current_creature)
-
-    @staticmethod
-    def players_turn(game, player):
-        """one turn of a player"""
-        player.active = True
-
-        while True:
-            # player performs asynchronous actions via commands or buttons
-            if not player.active:
-                break
-
-    @staticmethod
     def creature_turn(game, creature):
         """one turn of a creature"""
         # TODO creature performs some actions
-        pass
+        print(f'turn of {creature.name}')

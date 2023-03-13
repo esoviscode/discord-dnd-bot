@@ -2,6 +2,7 @@ from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 
 
 class HandlerStart:

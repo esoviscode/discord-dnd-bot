@@ -6,6 +6,13 @@ import cv2 as cv
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
+from dnd_bot.logic.prototype.entities.creatures.frost_mage import FrostMage
+from dnd_bot.logic.prototype.entities.creatures.half_dragon_assassin import HalfDragonAssassin
+from dnd_bot.logic.prototype.entities.creatures.half_dragon_warrior import HalfDragonWarrior
+from dnd_bot.logic.prototype.entities.creatures.lizardfolk_archer import LizardfolkArcher
+from dnd_bot.logic.prototype.entities.creatures.nothic import Nothic
+from dnd_bot.logic.prototype.entities.creatures.skeleton_morningstar import SkeletonMorningstar
+from dnd_bot.logic.prototype.entities.creatures.skeleton_warrior import SkeletonWarrior
 from dnd_bot.logic.prototype.entities.hole import Hole
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
@@ -52,6 +59,27 @@ class InitializeWorld:
                     elif entity_types[str(entity)] == 'Mushrooms':
                         entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,
                                                                   'Mushrooms')
+                    elif entity_types[str(entity)] == 'Frost mage':
+                        entities_row = InitializeWorld.add_entity(entities_row, FrostMage, x, y, game.token, game.id,
+                                                                  entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Half dragon assassin':
+                        entities_row = InitializeWorld.add_entity(entities_row, HalfDragonAssassin, x, y, game.token, game.id,
+                                                                  entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Half dragon warrior':
+                        entities_row = InitializeWorld.add_entity(entities_row, HalfDragonWarrior, x, y, game.token, game.id,
+                                       entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Lizardfolk archer':
+                        entities_row = InitializeWorld.add_entity(entities_row, LizardfolkArcher, x, y, game.token, game.id,
+                                       entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Nothic':
+                        entities_row = InitializeWorld.add_entity(entities_row, Nothic, x, y, game.token, game.id,
+                                       entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Skeleton morningstar':
+                        entities_row = InitializeWorld.add_entity(entities_row, SkeletonMorningstar, x, y, game.token, game.id,
+                                       entity_types[str(entity)])
+                    elif entity_types[str(entity)] == 'Skeleton warrior':
+                        entities_row = InitializeWorld.add_entity(entities_row, SkeletonWarrior, x, y, game.token, game.id,
+                                       entity_types[str(entity)])
 
                     # walls
                     elif entity_types[str(entity)] == 'Dungeon connector':

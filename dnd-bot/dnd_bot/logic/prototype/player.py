@@ -35,7 +35,6 @@ class Player(Creature):
         self.backstory = backstory
         self.equipment = equipment
         self.active = False
-        self.initial_action_points = action_points
 
     @staticmethod
     def get_sprite_path_by_color(color: str):
