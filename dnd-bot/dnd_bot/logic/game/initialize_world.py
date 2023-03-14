@@ -129,26 +129,44 @@ class InitializeWorld:
             # handle random spawning points
             players_positions = InitializeWorld.spawn_players_positions(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
-                character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
                 entities[player_pos[1]].pop(player_pos[0])
-                entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
-                                                      name=character['name'],
-                                                      discord_identity=game.user_list[i].discord_id,
-                                                      game_token=game.token,
-                                                      entities=entities,
-                                                      game_id=game.id,
-                                                      backstory=character['backstory'],
-                                                      alignment='-'.join(character['alignment']),
-                                                      hp=character['hp'],
-                                                      strength=character['strength'],
-                                                      dexterity=character['dexterity'],
-                                                      intelligence=character['intelligence'],
-                                                      charisma=character['charisma'],
-                                                      perception=character['perception'],
-                                                      initiative=character['initiative'],
-                                                      action_points=character['action points'])
+                if game.user_list[i].discord_id in ChosenAttributes.chosen_attributes:
+                    character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
+                    entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
+                                                          name=character['name'],
+                                                          discord_identity=game.user_list[i].discord_id,
+                                                          game_token=game.token,
+                                                          entities=entities,
+                                                          game_id=game.id,
+                                                          backstory=character['backstory'],
+                                                          alignment='-'.join(character['alignment']),
+                                                          hp=character['hp'],
+                                                          strength=character['strength'],
+                                                          dexterity=character['dexterity'],
+                                                          intelligence=character['intelligence'],
+                                                          charisma=character['charisma'],
+                                                          perception=character['perception'],
+                                                          initiative=character['initiative'],
+                                                          action_points=character['action points'])
                                                       
-                del ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
+                    ChosenAttributes.delete_user(game.user_list[i].discord_id)
+                else:
+                    entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
+                                                          name=game.user_list[i].username,
+                                                          discord_identity=game.user_list[i].discord_id,
+                                                          game_token=game.token,
+                                                          entities=entities,
+                                                          game_id=game.id,
+                                                          backstory='fascinating backstory',
+                                                          alignment='chaotic-evil',
+                                                          hp=random.randint(15, 30),
+                                                          strength=random.randint(1, 5),
+                                                          dexterity=random.randint(1, 5),
+                                                          intelligence=random.randint(1, 5),
+                                                          charisma=random.randint(1, 5),
+                                                          perception=random.randint(2, 4),
+                                                          initiative=random.randint(1, 5),
+                                                          action_points=100)
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
