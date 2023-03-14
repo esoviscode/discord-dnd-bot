@@ -1,4 +1,5 @@
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.database.database_player import DatabasePlayer
 
 from dnd_bot.logic.prototype.player import Player
@@ -14,10 +15,15 @@ def test_add_player(postgresql):
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
-    player = Player(x=1, y=2, name='silentsky', hp=3, strength=4, dexterity=5, intelligence=6, charisma=7, perception=8,
-                    initiative=9, action_points=10, level=11, discord_identity=12, alignment='align', backstory='back',
-                    game_token='12345')
-    DatabasePlayer.add_player(player)
+    p = Player(x=1, y=2, name='silentsky', hp=3, strength=4, dexterity=5, intelligence=6, charisma=7, perception=8,
+               initiative=9, action_points=10, level=11, discord_identity=12, alignment='align', backstory='back',
+               game_token='12345')
+    id_game = DatabaseGame.get_id_game_from_game_token('12345')
+    DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.strength, dexterity=p.dexterity,
+                              intelligence=p.intelligence, charisma=p.charisma, perception=p.perception,
+                              initiative=p.initiative, action_points=p.action_points, level=p.level,
+                              discord_identity=p.discord_identity, alignment=p.alignment, backstory=p.backstory,
+                              id_game=id_game)
 
     player_tuple = cur.execute(f'SELECT * FROM public."Player" WHERE id_player = (SELECT LASTVAL())').fetchone()
     creature_tuple = cur.execute(f'SELECT * FROM public."Creature" WHERE id_creature = (SELECT LASTVAL())').fetchone()
@@ -30,5 +36,3 @@ def test_add_player(postgresql):
     assert (creature_tuple[1] == 11)
     assert (creature_tuple[2] == 3)
     assert (creature_tuple[3] == 4)
-
-
