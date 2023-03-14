@@ -12,7 +12,7 @@ class Player(Creature):
                  hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
                  discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
-                 game_token: str = ''):
+                 game_token: str = '', character_race: str = '', character_class: str = ''):
 
         # request a sprite path for the player based on the user
         self.sprite = None
@@ -33,6 +33,8 @@ class Player(Creature):
         self.discord_identity = discord_identity
         self.alignment = alignment
         self.backstory = backstory
+        self.character_race = character_race
+        self.character_class = character_class
         self.equipment = equipment
         self.active = False
 

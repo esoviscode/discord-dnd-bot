@@ -2,6 +2,7 @@ import nextcord
 
 from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.prototype.item import Item
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
 
@@ -60,26 +61,39 @@ class MessageTemplates:
         return turn_view
 
     @staticmethod
-    def equipment_message_template(player):
-        # TODO uncomment when player equipment is ready
+    def equipment_message_template(player: Player):
         """message segment that shows the equipment of the player"""
-        # desc = "Equipped items:\n"
-        # desc += f'Helmet: {player.equipment.helmet}\n'
-        # desc += f'Chest: {player.equipment.chest}\n'
-        # desc += f'Leg Armor: {player.equipment.leg_armor}\n'
-        # desc += f'Boots: {player.equipment.boots}\n'
-        # desc += f'Left Hand: {player.equipment.left_hand}\n'
-        # desc += f'Right Hand: {player.equipment.right_hand}\n'
-        # desc += f'Accessory: {player.equipment.accessory}\n'
+        desc = ''
+        desc = "🛡️ Equipped items:\n\n"
+        desc += f'Helmet: {MessageTemplates.item_to_string_template(player.equipment.helmet)}\n'
+        desc += f'Chest: {MessageTemplates.item_to_string_template(player.equipment.chest)}\n'
+        desc += f'Leg Armor: {MessageTemplates.item_to_string_template(player.equipment.leg_armor)}\n'
+        desc += f'Boots: {MessageTemplates.item_to_string_template(player.equipment.boots)}\n'
+        desc += f'Left Hand: {MessageTemplates.item_to_string_template(player.equipment.left_hand)}\n'
+        desc += f'Right Hand: {MessageTemplates.item_to_string_template(player.equipment.right_hand)}\n'
+        desc += f'Accessory: {MessageTemplates.item_to_string_template(player.equipment.accessory)}\n'
         #
         # desc = "\n\n Your Items:\n"
         # for i, item in enumerate(player.items):
         #     desc += f'{i+1}. {item.name}'
         #
-        # embed = nextcord.Embed(title="Your equipment:",
-        #                        description=desc)
-        embed = nextcord.Embed(title='Your equipment:', description='')
+        embed = nextcord.Embed(title='Your equipment:', description=desc)
         return embed
+
+    @staticmethod
+    def item_to_string_template(item: Item):
+        if item is None:
+            return ''
+
+        ret = f'{item.name} '
+
+        if item.strength > 0:
+            ret += f' - str 💪: {item.strength}'
+        if item.intelligence > 0:
+            ret += f' - int 🎓: {item.intelligence}'
+        if item.dexterity > 0:
+            ret += f' - dex 💨: {item.dexterity}'
+        return ret
 
     @staticmethod
     def stats_message_template(player):
@@ -103,7 +117,7 @@ class MessageTemplates:
         """message segment that shows the skills of the player"""
         desc = ""
         for i, skill in enumerate(player.skills):
-            desc += f'{i+1}. {skill.name}\n'
+            desc += f'{i + 1}. {skill.name}\n'
 
         embed = nextcord.Embed(title="Your Skills:",
                                description=desc)
@@ -323,4 +337,3 @@ class MessageTemplates:
                         inline=False)
 
         return embed
-
