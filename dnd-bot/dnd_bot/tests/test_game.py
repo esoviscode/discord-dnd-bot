@@ -1,4 +1,7 @@
+import pytest
+
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_game import DatabaseGame
 
 from dnd_bot.tests.autoconf import database_fixture
 
@@ -60,3 +63,55 @@ def test_add_game_no_game_state(postgresql):
     assert (game_tuple[3] is None)
     assert (game_tuple[4] == 'test')
 
+
+#
+# get_id_game_from_game_token
+#
+def test_get_id_game_from_game_token_exists(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    id_game = DatabaseGame.get_id_game_from_game_token('12345')
+
+    assert (id_game == 1)
+
+
+def test_get_id_game_from_game_token_doesnt_exist(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    id_game = DatabaseGame.get_id_game_from_game_token('00000')
+
+    assert (id_game is None)
+
+
+def test_get_id_game_from_game_token_negative(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    try:
+        id_game = DatabaseGame.get_id_game_from_game_token('00000')
+    except ValueError:
+        pytest.fail('test_get_id_game_from_game_token_negative failed')
+
+    assert id_game is None
+
+
+#
+# get_game_token_from_id_game
+#
+def test_get_game_token_from_id_game_exists(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    game_token = DatabaseGame.get_game_token_from_id_game(1)
+
+    assert game_token == '12345'

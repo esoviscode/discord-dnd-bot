@@ -50,11 +50,13 @@ class DatabaseGame:
         """returns database game id based on the token, None if the query fails
         """
         DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = (%s)', (token,))
-        game_id = DatabaseConnection.cursor.fetchone()
+        ret = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
 
-        if not game_id:
+        if ret is None:
             return None
+
+        game_id = ret[0]
 
         return game_id
 
@@ -65,11 +67,11 @@ class DatabaseGame:
         DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = (%s)', (id_game,))
         game_token = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
-
-        if not game_token:
+        
+        if game_token is None:
             return None
 
-        return game_token
+        return game_token[0]
 
     @staticmethod
     def find_game_by_token(token: str) -> dict | None:
