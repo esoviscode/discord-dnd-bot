@@ -13,7 +13,7 @@ def load_database(**kwargs):
 
 
 def database_fixture(db_name):
-    postgresql_in_docker = factories.postgresql_noproc(host='172.20.0.2', password='admin', user='admin',
+    postgresql_in_docker = factories.postgresql_noproc(host='localhost', password='admin', user='admin',
                                                        load=[load_database], dbname=db_name)
     postgresql = factories.postgresql('postgresql_in_docker', dbname=db_name)
 
