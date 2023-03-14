@@ -252,21 +252,27 @@ class ViewAttack(ViewGame):
         game = Multiverse.get_game(token)
         self.enemies = game.get_attackable_enemies_for_player(game.get_player_by_id_user(user_discord_id))
         enemies_select_options = []
-        for enemy in self.enemies:
-            enemies_select_options.append(nextcord.SelectOption(
-                label=f"{enemy.name} ({enemy.hp}HP) at ({enemy.x}, {enemy.y})",
-                value=enemy.id
-            ))
-        self.select_enemy_to_attack_list = nextcord.ui.Select(
-            placeholder="Choose an enemy to attack",
-            options=enemies_select_options,
-            row=0
-        )
+        self.enemies_to_attack = len(self.enemies)
 
-        self.add_item(self.select_enemy_to_attack_list)
+        if self.enemies_to_attack > 0:
+            for enemy in self.enemies:
+                enemies_select_options.append(nextcord.SelectOption(
+                    label=f"{enemy.name} ({enemy.hp}HP) at ({enemy.x}, {enemy.y})",
+                    value=enemy.id
+                ))
+            self.select_enemy_to_attack_list = nextcord.ui.Select(
+                placeholder="Choose an enemy to attack",
+                options=enemies_select_options,
+                row=0
+            )
+
+            self.add_item(self.select_enemy_to_attack_list)
 
     @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.green, row=1)
     async def attack_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if self.enemies_to_attack == 0:
+            button.disabled = True
+            return
         if self.select_enemy_to_attack_list.values:
             print(f"attacked {self.select_enemy_to_attack_list.values[0]}")
 
