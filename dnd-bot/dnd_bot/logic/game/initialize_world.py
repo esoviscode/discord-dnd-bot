@@ -59,25 +59,25 @@ class InitializeWorld:
                     elif entity_types[str(entity)] == 'Mushrooms':
                         entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,
                                                                   'Mushrooms')
-                    elif entity_types[str(entity)] == 'Frost mage':
+                    elif entity_types[str(entity)] == FrostMage.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, FrostMage, x, y, game.token, game.id,
                                                                   entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Half dragon assassin':
+                    elif entity_types[str(entity)] == HalfDragonAssassin.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, HalfDragonAssassin, x, y, game.token, game.id,
                                                                   entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Half dragon warrior':
+                    elif entity_types[str(entity)] == HalfDragonWarrior.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, HalfDragonWarrior, x, y, game.token, game.id,
                                        entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Lizardfolk archer':
+                    elif entity_types[str(entity)] == LizardfolkArcher.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, LizardfolkArcher, x, y, game.token, game.id,
                                        entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Nothic':
+                    elif entity_types[str(entity)] == Nothic.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, Nothic, x, y, game.token, game.id,
                                        entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Skeleton morningstar':
+                    elif entity_types[str(entity)] == SkeletonMorningstar.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, SkeletonMorningstar, x, y, game.token, game.id,
                                        entity_types[str(entity)])
-                    elif entity_types[str(entity)] == 'Skeleton warrior':
+                    elif entity_types[str(entity)] == SkeletonWarrior.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, SkeletonWarrior, x, y, game.token, game.id,
                                        entity_types[str(entity)])
 
@@ -177,7 +177,7 @@ class InitializeWorld:
 
     @staticmethod
     def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
-        entity = creature_class(x=x, y=y, game_token=game_token, action_points=2)
+        entity = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path, name=creature_class.creature_name)
         id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
         entity.id = id_entity
         entity_row.append(entity)
