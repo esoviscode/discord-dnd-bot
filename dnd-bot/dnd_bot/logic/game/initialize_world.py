@@ -195,7 +195,7 @@ class InitializeWorld:
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id):
         entity = entity_class(x=x, y=y, game_token=game_token, name=entity_class.entity_name, sprite=entity_class.sprite_path)
-        id_entity = DatabaseEntity.add_entity(name=entity_class.entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
+        id_entity = DatabaseEntity.add_entity(name=entity_class.entity_name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity_row.append(entity)
         return entity_row
@@ -203,7 +203,7 @@ class InitializeWorld:
     @staticmethod
     def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
         entity = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path, name=creature_class.creature_name)
-        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
+        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity_row.append(entity)
         return entity_row
@@ -219,7 +219,7 @@ class InitializeWorld:
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
                    charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
                    character_race=character_race, character_class=character_class)
-        id_player = DatabasePlayer.add_player(p.x, p.y, p.sprite_path, p.name, p.hp, p.strength, p.dexterity,
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id)  # TODO add race and class
