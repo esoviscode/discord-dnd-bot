@@ -25,6 +25,10 @@ from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_b import DungeonPilla
 from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_c import DungeonPillarC
 from dnd_bot.logic.prototype.entities.walls.dungeon_straight_a import DungeonStraightA
 from dnd_bot.logic.prototype.entities.walls.dungeon_straight_b import DungeonStraightB
+from dnd_bot.logic.prototype.equipment import Equipment
+from dnd_bot.logic.prototype.items.bow import Bow
+from dnd_bot.logic.prototype.items.staff import Staff
+from dnd_bot.logic.prototype.items.sword import Sword
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_game_view
 
@@ -146,7 +150,9 @@ class InitializeWorld:
                                                           charisma=character['charisma'],
                                                           perception=character['perception'],
                                                           initiative=character['initiative'],
-                                                          action_points=character['action points'])
+                                                          action_points=character['action points'],
+                                                          character_race=character['race'],
+                                                          character_class=character['class'])
                                                       
                     ChosenAttributes.delete_user(game.user_list[i].discord_id)
                 else:
@@ -165,7 +171,9 @@ class InitializeWorld:
                                                           charisma=random.randint(1, 5),
                                                           perception=random.randint(2, 4),
                                                           initiative=random.randint(1, 5),
-                                                          action_points=100)
+                                                          action_points=100,
+                                                          character_race=random.choice(['Human', 'Elf', 'Dwarf']),
+                                                          character_class=random.choice(['Warrior', 'Mage', 'Ranger']))
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
@@ -204,15 +212,26 @@ class InitializeWorld:
     def add_player(x: int = 0, y: int = 0, name: str = '', discord_identity: int = 0, game_token: str = '',
                    game_id: int = 0, entities=None, backstory: str = '', alignment: str = '', hp: int = 0,
                    strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
-                   perception: int = 0, initiative: int = 0, action_points: int = 0) -> int | None:
+                   perception: int = 0, initiative: int = 0, action_points: int = 0,
+                   character_race: str = '', character_class: str = '') -> int | None:
 
         p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token, backstory=backstory,
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
-                   charisma=charisma, perception=perception, initiative=initiative, action_points=action_points)
+                   charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
+                   character_race=character_race, character_class=character_class)
         id_player = DatabasePlayer.add_player(p.x, p.y, p.sprite_path, p.name, p.hp, p.strength, p.dexterity,
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
-                                              p.backstory, id_game=game_id)
+                                              p.backstory, id_game=game_id)  # TODO add race and class
         p.id = id_player
+
+        # TODO change location of adding equipment/items
+        if p.character_class == 'Warrior':
+            p.equipment = Equipment(right_hand=Sword())
+        elif p.character_class == 'Mage':
+            p.equipment = Equipment(right_hand=Staff())
+        elif p.character_class == 'Ranger':
+            p.equipment = Equipment(right_hand=Bow())
+
         entities[y].insert(x, p)
         return entities
