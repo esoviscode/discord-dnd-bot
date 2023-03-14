@@ -130,16 +130,15 @@ class ViewMain(ViewGame):
     @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.blurple)
     async def attack(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening attack menu"""
-        player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
+        game = Multiverse.get_game(self.token)
 
         # TODO adding enemies in players range to the list
-        enemies = []
+        enemies = game.get_attackable_enemies_for_player(game.get_player_by_id_user(interaction.user.id))
 
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
-        enemies_list_embed = MessageTemplates.attack_view_message_template(enemies)
         self.game.players_views[self.user_discord_id] = (ViewAttack, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
-                                              embeds=[turn_view_embed, enemies_list_embed],
+                                              embeds=[turn_view_embed],
                                               view=ViewAttack(self.token, self.user_discord_id))
 
     @nextcord.ui.button(label='Move', style=nextcord.ButtonStyle.blurple)
@@ -250,65 +249,28 @@ class ViewMovement(ViewGame):
 class ViewAttack(ViewGame):
     def __init__(self, token, user_discord_id):
         super().__init__(token, user_discord_id)
-        self.enemies = []  # TODO right now there is no way to get enemies to attack
-        self.attack_enemy_buttons = [Button(label=str(x + 1), style=nextcord.ButtonStyle.blurple)
-                                     for x in range(10)]
+        game = Multiverse.get_game(token)
+        self.enemies = game.get_attackable_enemies_for_player(game.get_player_by_id_user(user_discord_id))
+        enemies_select_options = []
+        for enemy in self.enemies:
+            enemies_select_options.append(nextcord.SelectOption(
+                label=f"{enemy.name} ({enemy.hp}HP) at ({enemy.x}, {enemy.y})",
+                value=enemy.id
+            ))
+        self.select_enemy_to_attack_list = nextcord.ui.Select(
+            placeholder="Choose an enemy to attack",
+            options=enemies_select_options,
+            row=0
+        )
 
-        async def attack_enemy1(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 1"""
-            await ViewAttack.attack(self.enemies[0], interaction.user.id, self.token, interaction)
+        self.add_item(self.select_enemy_to_attack_list)
 
-        async def attack_enemy2(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 2"""
-            await ViewAttack.attack(self.enemies[1], interaction.user.id, self.token, interaction)
+    @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.green, row=1)
+    async def attack_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if self.select_enemy_to_attack_list.values:
+            print(f"attacked {self.select_enemy_to_attack_list.values[0]}")
 
-        async def attack_enemy3(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 3"""
-            await ViewAttack.attack(self.enemies[2], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy4(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 4"""
-            await ViewAttack.attack(self.enemies[3], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy5(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 5"""
-            await ViewAttack.attack(self.enemies[4], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy6(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 6"""
-            await ViewAttack.attack(self.enemies[5], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy7(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 7"""
-            await ViewAttack.attack(self.enemies[6], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy8(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 8"""
-            await ViewAttack.attack(self.enemies[7], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy9(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 9"""
-            await ViewAttack.attack(self.enemies[8], interaction.user.id, self.token, interaction)
-
-        async def attack_enemy10(interaction: nextcord.Interaction):
-            """callback function for button for attacking enemy number 10"""
-            await ViewAttack.attack(self.enemies[9], interaction.user.id, self.token, interaction)
-
-        self.attack_enemy_buttons[0].callback = attack_enemy1
-        self.attack_enemy_buttons[1].callback = attack_enemy2
-        self.attack_enemy_buttons[2].callback = attack_enemy3
-        self.attack_enemy_buttons[3].callback = attack_enemy4
-        self.attack_enemy_buttons[4].callback = attack_enemy5
-        self.attack_enemy_buttons[5].callback = attack_enemy6
-        self.attack_enemy_buttons[6].callback = attack_enemy7
-        self.attack_enemy_buttons[7].callback = attack_enemy8
-        self.attack_enemy_buttons[8].callback = attack_enemy9
-        self.attack_enemy_buttons[9].callback = attack_enemy10
-
-        for i in range(len(self.enemies)):
-            self.add_item(self.attack_enemy_buttons[i])
-
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, row=1)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await super().cancel(interaction)
 
