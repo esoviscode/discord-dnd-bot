@@ -151,7 +151,9 @@ class InitializeWorld:
                                                           charisma=character['charisma'],
                                                           perception=character['perception'],
                                                           initiative=character['initiative'],
-                                                          action_points=character['action points'])
+                                                          action_points=character['action points'],
+                                                          character_race=character['race'],
+                                                          character_class=character['class'])
                                                       
                     ChosenAttributes.delete_user(game.user_list[i].discord_id)
                 else:
@@ -170,7 +172,9 @@ class InitializeWorld:
                                                           charisma=random.randint(1, 5),
                                                           perception=random.randint(2, 4),
                                                           initiative=random.randint(1, 5),
-                                                          action_points=100)
+                                                          action_points=100,
+                                                          character_race=random.choice(['Human', 'Elf', 'Dwarf']),
+                                                          character_class=random.choice(['Warrior', 'Mage', 'Ranger']))
 
             game.entities = copy.deepcopy(entities)
             game.sprite = str(map_json['map']['img_file'])  # path to raw map image
