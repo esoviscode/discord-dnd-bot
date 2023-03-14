@@ -18,6 +18,7 @@ def test_add_player(postgresql):
     p = Player(x=1, y=2, name='silentsky', hp=3, strength=4, dexterity=5, intelligence=6, charisma=7, perception=8,
                initiative=9, action_points=10, level=11, discord_identity=12, alignment='align', backstory='back',
                game_token='12345')
+
     game_id = DatabaseGame.get_id_game_from_game_token('12345')
     DatabasePlayer.add_player(x=p.x, y=p.y, sprite=p.sprite_path, name=p.name, hp=p.hp, strength=p.strength,
                               dexterity=p.dexterity, intelligence=p.intelligence, charisma=p.charisma,

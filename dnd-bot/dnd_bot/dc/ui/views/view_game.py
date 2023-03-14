@@ -48,9 +48,8 @@ class ViewGame(View):
 
             player = game.get_player_by_id_user(user.discord_id)
             player_view = get_player_view(Multiverse.get_game(game_token), player)
-            turn_view_embed = MessageTemplates.creature_turn_embed(player,
-                                                                   active_creature, active_user_icon=player_icon,
-                                                                   recent_action=recent_action_message)
+            turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
+                                                                         recent_action=recent_action_message)
             await Messager.edit_last_user_message(user.discord_id, embeds=[turn_view_embed] + player_current_embeds,
                                                   view=view_to_show, files=[player_view])
 
@@ -64,13 +63,8 @@ class ViewGame(View):
 
     async def cancel(self, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
-        player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         self.game.players_views[self.user_discord_id] = (ViewMain, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
@@ -78,17 +72,16 @@ class ViewGame(View):
 
     async def character_view_options(self, interaction: nextcord.Interaction):
         """shared handler for character view"""
+
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        active_creature = Multiverse.get_game(self.token).get_active_creature()
+
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         self.game.players_views[self.user_discord_id] = (ViewCharacterNonActive, [])
 
-        if player.discord_identity == active_player.discord_identity:
+        if isinstance(active_creature, Player) and player.discord_identity == active_creature.discord_identity:
             await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
                                                   view=ViewCharacter(self.token, interaction.user.id))
         else:
@@ -99,11 +92,7 @@ class ViewGame(View):
         """shared handler for equipment view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         equipment_embed = MessageTemplates.equipment_message_template(player)
         self.game.players_views[self.user_discord_id] = (ViewEquipment, [equipment_embed])
@@ -115,11 +104,7 @@ class ViewGame(View):
         """shared handler for stats view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         stats_embed = MessageTemplates.stats_message_template(player)
         self.game.players_views[self.user_discord_id] = (ViewStats, [stats_embed])
@@ -131,11 +116,7 @@ class ViewGame(View):
         """shared handler for character view"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         skills_embed = MessageTemplates.skills_message_template(player)
         self.game.players_views[self.user_discord_id] = (ViewSkills, [skills_embed])
@@ -154,16 +135,12 @@ class ViewMain(ViewGame):
         # TODO adding enemies in players range to the list
         enemies = []
 
-        active_player = Multiverse.get_game(self.token).get_active_creature()
-        active_user = await get_user_by_id(active_player.discord_identity)
-        turn_view_embed = MessageTemplates.player_turn_embed(
-            player, active_player,
-            active_user_icon=active_user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
         enemies_list_embed = MessageTemplates.attack_view_message_template(enemies)
         self.game.players_views[self.user_discord_id] = (ViewAttack, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, enemies_list_embed],
-                                              view=ViewAttack(self.token, enemies))
+                                              view=ViewAttack(self.token, self.user_discord_id))
 
     @nextcord.ui.button(label='Move', style=nextcord.ButtonStyle.blurple)
     async def move(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -171,8 +148,7 @@ class ViewMain(ViewGame):
         game = Multiverse.get_game(self.token)
         player = game.get_player_by_id_user(interaction.user.id)
 
-        turn_view_embed = MessageTemplates.player_turn_embed(player, player,
-                                                             active_user_icon=interaction.user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
                                               view=ViewMovement(self.token, interaction.user.id))
         game.players_views[str(interaction.user.id)] = (ViewMovement, [])
@@ -182,12 +158,11 @@ class ViewMain(ViewGame):
         """button for opening skill menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
 
-        turn_view_embed = MessageTemplates.player_turn_embed(player, player,
-                                                             active_user_icon=interaction.user.display_avatar.url)
+        turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
         skills_list_embed = MessageTemplates.skills_message_template(player)
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed, skills_list_embed],
-                                              view=ViewSkills(self.token, player.skills))
+                                              view=ViewSkills(self.token, self.user_discord_id))
 
     @nextcord.ui.button(label='Character', style=nextcord.ButtonStyle.blurple)
     async def character(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
