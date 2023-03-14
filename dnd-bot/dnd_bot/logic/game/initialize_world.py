@@ -52,13 +52,12 @@ class InitializeWorld:
                     elif entity_types[str(entity)] == 'Player':
                         player_spawning_points.append((x, y))
                         entities_row.append(None)
-                    elif entity_types[str(entity)] == 'Rock':
-                        entities_row = InitializeWorld.add_entity(entities_row, Rock, x, y, game.token, game.id, 'Rock')
-                    elif entity_types[str(entity)] == 'Hole':
-                        entities_row = InitializeWorld.add_entity(entities_row, Hole, x, y, game.token, game.id, 'Hole')
-                    elif entity_types[str(entity)] == 'Mushrooms':
-                        entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,
-                                                                  'Mushrooms')
+                    elif entity_types[str(entity)] == Rock.entity_name:
+                        entities_row = InitializeWorld.add_entity(entities_row, Rock, x, y, game.token, game.id)
+                    elif entity_types[str(entity)] == Hole.entity_name:
+                        entities_row = InitializeWorld.add_entity(entities_row, Hole, x, y, game.token, game.id)
+                    elif entity_types[str(entity)] == Mushrooms.entity_name:
+                        entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,)
                     elif entity_types[str(entity)] == FrostMage.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, FrostMage, x, y, game.token, game.id,
                                                                   entity_types[str(entity)])
@@ -82,33 +81,33 @@ class InitializeWorld:
                                        entity_types[str(entity)])
 
                     # walls
-                    elif entity_types[str(entity)] == 'Dungeon connector':
+                    elif entity_types[str(entity)] == DungeonConnector.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonConnector, x, y, game.token,
-                                                                  game.id, 'Dungeon connector')
-                    elif entity_types[str(entity)] == 'Dungeon corner in':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonCornerIn.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonCornerIn, x, y, game.token,
-                                                                  game.id, 'Dungeon corner in')
-                    elif entity_types[str(entity)] == 'Dungeon corner out':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonCornerOut.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonCornerOut, x, y, game.token,
-                                                                  game.id, 'Dungeon corner out')
-                    elif entity_types[str(entity)] == 'Dungeon crossroads':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonCrossroads.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonCrossroads, x, y, game.token,
-                                                                  game.id, 'Dungeon crossroads')
-                    elif entity_types[str(entity)] == 'Dungeon pillar A':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonPillarA.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonPillarA, x, y, game.token,
-                                                                  game.id, 'Dungeon pillar A')
-                    elif entity_types[str(entity)] == 'Dungeon pillar B':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonPillarB.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonPillarB, x, y, game.token,
-                                                                  game.id, 'Dungeon pillar B')
-                    elif entity_types[str(entity)] == 'Dungeon pillar C':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonPillarC.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonPillarC, x, y, game.token,
-                                                                  game.id, 'Dungeon pillar C')
-                    elif entity_types[str(entity)] == 'Dungeon straight A':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonStraightA.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonStraightA, x, y, game.token,
-                                                                  game.id, 'Dungeon straight A')
-                    elif entity_types[str(entity)] == 'Dungeon straight B':
+                                                                  game.id)
+                    elif entity_types[str(entity)] == DungeonStraightB.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, DungeonStraightB, x, y, game.token,
-                                                                  game.id, 'Dungeon straight B')
+                                                                  game.id)
                 entities.append(entities_row)
 
             # handle entity rotations
@@ -186,9 +185,9 @@ class InitializeWorld:
         return players_positions
 
     @staticmethod
-    def add_entity(entity_row, entity_class, x, y, game_token, game_id, entity_name):
-        entity = entity_class(x=x, y=y, game_token=game_token)
-        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
+    def add_entity(entity_row, entity_class, x, y, game_token, game_id):
+        entity = entity_class(x=x, y=y, game_token=game_token, name=entity_class.entity_name, sprite=entity_class.sprite_path)
+        id_entity = DatabaseEntity.add_entity(name=entity_class.entity_name, x=x, y=y, id_game=game_id, sprite=entity.sprite_path)
         entity.id = id_entity
         entity_row.append(entity)
         return entity_row
