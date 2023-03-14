@@ -101,3 +101,13 @@ class Game(DatabaseObject):
     def get_active_creature(self):
         """returns current active player"""
         return self.active_creature
+
+    def get_attackable_enemies_for_player(self, player):
+        creatures = self.get_movable_entities()
+        result = []
+        for creature in creatures:
+            if not isinstance(creature, Player):
+                # TODO check if the enemy is reachable by the player
+                result.append(creature)
+
+        return result
