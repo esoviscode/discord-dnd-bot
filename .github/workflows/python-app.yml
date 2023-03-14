@@ -58,7 +58,7 @@ jobs:
         cp dnd-bot/dnd_bot/tests/populate_tables.sql .
     - name: Test with pytest
       run: |
-        pytest
+        pytest --junitxml=test-results
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
