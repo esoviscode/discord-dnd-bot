@@ -1,7 +1,7 @@
 import nextcord
 
+from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
-from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
 
@@ -124,12 +124,21 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def creature_turn_embed(player: Player, active_creature: Creature, active_user_icon=None, recent_action=''):
+    async def creature_turn_embed(token, user_id, recent_action=''):
         """message embed representing the active creature's actions and the player's stats"""
+        player = Multiverse.get_game(token).get_player_by_id_user(user_id)
+
+        active_creature = Multiverse.get_game(token).get_active_creature()
+
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | '
                                      f'HP: {player.hp}/{player.hp}', description=recent_action)
-        embed.set_footer(text=f'{active_creature.name}\'s turn', icon_url=active_user_icon)
+        if isinstance(active_creature, Player):
+            active_user = await get_user_by_id(active_creature.discord_identity)
+            active_user_icon = active_user.display_avatar.url
+            embed.set_footer(text=f'{active_creature.name}\'s turn', icon_url=active_user_icon)
+        else:
+            embed.set_footer(text=f'{active_creature.name}\'s turn')
 
         return embed
 

@@ -25,12 +25,13 @@ class HandlerGame:
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
-        await ViewGame.display_views_for_users(game_token, recent_action_message)
 
         # reset creature's action points to the initial value
         game.active_creature.action_points = game.active_creature.initial_action_points
-
         game.active_creature = next_creature
+
+        # send messages to users
+        await ViewGame.display_views_for_users(game_token, recent_action_message)
 
         if not isinstance(game.active_creature, Player):
             await HandlerGame.turn(game_token, game.active_creature)
