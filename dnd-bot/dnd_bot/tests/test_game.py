@@ -115,3 +115,75 @@ def test_get_game_token_from_id_game_exists(postgresql):
     game_token = DatabaseGame.get_game_token_from_id_game(1)
 
     assert game_token == '12345'
+
+
+#
+#  start_game
+#
+def test_start_game_correct(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    DatabaseGame.start_game(1)
+
+    DatabaseConnection.cursor.execute('SELECT * FROM public."Game" WHERE id_game = 1')
+    game = DatabaseConnection.cursor.fetchone()
+
+    assert game[3] == 'ACTIVE'
+
+
+#
+# get_all_game_tokens
+#
+def test_get_all_game_tokens(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    all_game_tokens = DatabaseGame.get_all_game_tokens()
+
+    assert len(all_game_tokens) == 2
+    assert all_game_tokens[0] == '12345'
+    assert all_game_tokens[1] == '67890'
+
+
+#
+# find_game_by_token
+#
+def test_find_game_by_token_correct(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    game_dict = DatabaseGame.find_game_by_token('12345')
+
+    assert game_dict['id_game'] == 1
+    assert game_dict['token'] == '12345'
+    assert game_dict['id_host'] == 678
+    assert game_dict['game_state'] == 'LOBBY'
+
+
+def test_find_game_by_token_nonexistent(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    ret = DatabaseGame.find_game_by_token('00000')
+
+    assert ret is None
+
+
+def test_find_game_by_token_none(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    ret = DatabaseGame.find_game_by_token(None)
+
+    assert ret is None
