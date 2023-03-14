@@ -1,8 +1,6 @@
 import psycopg2
 from pytest_postgresql import factories
 
-from dnd_bot.database.database_connection import DatabaseConnection
-
 
 def load_database(**kwargs):
     db_connection = psycopg2.connect(**kwargs)
