@@ -61,10 +61,5 @@ class GameLoop:
 
         # move of non player creature
         if not isinstance(first_creature, Player):
-            GameLoop.creature_turn(game, first_creature)
-
-    @staticmethod
-    def creature_turn(game, creature):
-        """one turn of a creature"""
-        # TODO creature performs some actions
-        print(f'turn of {creature.name}')
+            from dnd_bot.logic.game.handler_game import HandlerGame
+            await HandlerGame.turn(game_token, first_creature)
