@@ -39,9 +39,6 @@ class HandlerStart:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
 
-            GameStart.start(token)
-            await GameLoop.start_loop(token)
-
             users = [user.discord_id for user in game.user_list]
             return True, users, ''
         else:
