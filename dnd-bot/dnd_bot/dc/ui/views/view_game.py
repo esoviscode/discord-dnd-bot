@@ -268,16 +268,22 @@ class ViewAttack(ViewGame):
 
             self.add_item(self.select_enemy_to_attack_list)
 
-    @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.green, row=1)
-    async def attack_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1)
+        attack_button.callback = self.attack_button
+        attack_button.disabled = self.enemies_to_attack == 0
+        self.add_item(attack_button)
+
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1)
+        cancel_button.callback = self.cancel
+        self.add_item(cancel_button)
+
+    async def attack_button(self, interaction: nextcord.Interaction):
         if self.enemies_to_attack == 0:
-            button.disabled = True
             return
         if self.select_enemy_to_attack_list.values:
             print(f"attacked {self.select_enemy_to_attack_list.values[0]}")
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, row=1)
-    async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def cancel(self, interaction: nextcord.Interaction):
         await super().cancel(interaction)
 
     @staticmethod
