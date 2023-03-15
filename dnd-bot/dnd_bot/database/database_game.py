@@ -95,5 +95,4 @@ class DatabaseGame:
                  for user_tuple in users_tuples]
 
         return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2],
-                'id_campaign': game_tuple[3],
-                'game_state': game_tuple[4], 'players': users}
+                'game_state': game_tuple[3], 'campaign_name': game_tuple[4], 'players': users}

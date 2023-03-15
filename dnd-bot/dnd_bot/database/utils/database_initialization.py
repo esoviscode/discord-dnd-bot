@@ -11,9 +11,9 @@ Python script to initialize tables
 
 db_address, db_name, db_user, db_password, db_port = DatabaseConnection.__connection_get_authentication__()
 
-print('DB table initialization: attempting connection to {db_name} database at {db_address}:{db_port}')
+print(f'DB table initialization: attempting connection to {db_name} database at {db_address}:{db_port}')
 
-connection = connect(database=db_name, user=db_user, password=db_password,
+connection = connect(database=db_name, user=db_user, password=db_password[-1],
                      host=db_address, port=db_port)
 cursor = connection.cursor()
 

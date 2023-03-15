@@ -281,36 +281,34 @@ class ViewAttack(ViewGame):
         if self.enemies_to_attack == 0:
             return
         if self.select_enemy_to_attack_list.values:
-            print(f"attacked {self.select_enemy_to_attack_list.values[0]}")
+            await ViewAttack.attack(self.select_enemy_to_attack_list.values[0],
+                                    interaction.user.id, self.token, interaction)
 
     async def cancel(self, interaction: nextcord.Interaction):
         await super().cancel(interaction)
 
     @staticmethod
-    async def attack(enemy, id_user, token, interaction: nextcord.Interaction):
+    async def attack(target_id, id_user, token, interaction: nextcord.Interaction):
         """attack enemy nr enemy_number from the available enemy list with the main weapon"""
-        status, new_enemies, error_message = await HandlerAttack.handle_attack(enemy, id_user, token)
+        game = Multiverse.get_game(token)
+        player = game.get_player_by_id_user(id_user)
+        target = game.get_entity_by_id(target_id)
 
+        status, message = await HandlerAttack.handle_attack(player, target, token)
+
+        error_data = MessageHolder.read_last_error_data(id_user)
         if not status:
-            await interaction.response.send_message(error_message)
+            if error_data is not None:
+                await Messager.edit_message(error_data[0], error_data[1], f"**{message}**")
+            else:
+                await Messager.send_dm_message(id_user, f"**{message}**", error=True)
             return
 
-        turn_view_message = MessageTemplates.turn_view_template(token)
-        enemies_list_embed = MessageTemplates.attack_view_message_template(new_enemies)
+        if error_data is not None:
+            MessageHolder.delete_last_error_data(id_user)
+            await Messager.delete_message(error_data[0], error_data[1])
 
-        lobby_players = Multiverse.get_game(token).user_list
-
-        for user in lobby_players:
-            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
-            player_view = get_player_view(Multiverse.get_game(token), player)
-
-            if player.active:
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message,
-                                                      embed=enemies_list_embed, view=ViewAttack(token, new_enemies),
-                                                      files=[player_view])
-            else:
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message,
-                                                      files=[player_view])
+        await ViewGame.display_views_for_users(token, message)
 
 
 class ViewCharacter(ViewGame):

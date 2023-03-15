@@ -63,7 +63,7 @@ class MessageTemplates:
     @staticmethod
     def equipment_message_template(player: Player):
         """message segment that shows the equipment of the player"""
-        desc = ''
+
         desc = "🛡️ Equipped items:\n\n"
         desc += f'Helmet: {MessageTemplates.item_to_string_template(player.equipment.helmet)}\n'
         desc += f'Chest: {MessageTemplates.item_to_string_template(player.equipment.chest)}\n'
@@ -98,8 +98,8 @@ class MessageTemplates:
     @staticmethod
     def stats_message_template(player):
         """message segment that shows the stats of the player"""
-        desc = ""
-        desc += f'Strength: {player.strength}\n'
+
+        desc = f'Strength: {player.strength}\n'
         desc += f'Dexterity: {player.dexterity}\n'
         desc += f'Max HP: {player.hp}\n'
         desc += f'Intelligence: {player.intelligence}\n'
@@ -108,8 +108,7 @@ class MessageTemplates:
         desc += f'Initiative: {player.initiative}\n'
         desc += f'Action Points: {player.action_points}\n'
 
-        embed = nextcord.Embed(title="Your Stats:",
-                               description=desc)
+        embed = nextcord.Embed(title="Your Stats:", description=desc)
         return embed
 
     @staticmethod

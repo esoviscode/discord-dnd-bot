@@ -7,18 +7,21 @@ from dnd_bot.logic.prototype.player import Player
 class DatabasePlayer:
 
     @staticmethod
-    def add_player(x: int = 0, y: int = 0, sprite: str = '', name: str = 'Creature', hp: int = 0, strength: int = 0,
+    def add_player(x: int = 0, y: int = 0, name: str = 'Creature', hp: int = 0, strength: int = 0,
                    dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                    initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
-                   alignment: str = '', backstory: str = '', id_game: int = 1) -> int | None:
-        id_creature = DatabaseCreature.add_creature(x=x, y=y, sprite=sprite, name=name, hp=hp, strength=strength,
+                   alignment: str = '', backstory: str = '', id_game: int = 1, experience: int = 0,
+                   character_class='', character_race='') -> int | None:
+        id_creature = DatabaseCreature.add_creature(x=x, y=y, name=name, hp=hp, strength=strength,
                                                     dexterity=dexterity, intelligence=intelligence, charisma=charisma,
                                                     perception=perception, initiative=initiative,
-                                                    action_points=action_points, level=level, id_game=id_game)
+                                                    action_points=action_points, level=level, id_game=id_game,
+                                                    experience=experience)
         id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '
-                                                 'id_creature) VALUES (%s, %s, %s, %s)',
-                                                 (id_user, alignment, backstory, id_creature))
+                                                 'race, class, id_creature) VALUES (%s, %s, %s, %s, %s, %s)',
+                                                 (id_user, alignment, backstory,
+                                                  character_race.upper(), character_class.upper(), id_creature))
         return id_player
 
     @staticmethod
@@ -40,7 +43,8 @@ class DatabasePlayer:
                         hp=creature_tuple[2], level=creature_tuple[1], strength=creature_tuple[3],
                         dexterity=creature_tuple[4], intelligence=creature_tuple[5], charisma=creature_tuple[6],
                         perception=creature_tuple[7], initiative=creature_tuple[8], action_points=creature_tuple[9],
-                        discord_identity=player_tuple[1], alignment=player_tuple[2], backstory=player_tuple[3])
+                        discord_identity=player_tuple[1], alignment=player_tuple[2], backstory=player_tuple[3],
+                        experience=creature_tuple[12])
 
         player.id = player_tuple[0]
 
