@@ -104,10 +104,12 @@ def get_player_view(game: Game, player: Player):
         paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
 
     # cropping image
-    player_view = player_view[max(0, player.y - Mv.view_range) * Mv.square_size:
-                              min(game.world_height, player.y + Mv.view_range + 1) * Mv.square_size,
-                              max(0, player.x - Mv.view_range) * Mv.square_size:
-                              min(game.world_width, player.x + Mv.view_range + 1) * Mv.square_size]
+    from_y = max(0, player.y - Mv.view_range)
+    to_y = min(game.world_height, player.y + Mv.view_range + 1)
+    from_x = max(0, player.x - Mv.view_range)
+    to_x = min(game.world_width, player.x + Mv.view_range + 1)
+    player_view = player_view[from_y * Mv.square_size:to_y * Mv.square_size,
+                              from_x * Mv.square_size:to_x * Mv.square_size]
 
     # cropping mask
     mask = Mv.masks[player.perception][
@@ -119,8 +121,43 @@ def get_player_view(game: Game, player: Player):
     # pasting player's blind spots
     player_view = cv.bitwise_and(player_view, player_view, mask=mask)
 
-    file_name = "%s/game_images/pov%s_%s.png" % (TMP_IMAGES_PATH, game.token, player.discord_identity)
+    # pasting coordinates and grid
+    number_width = 10
+    number_height = 13
+    number_space = 1
+    width = to_x - from_x + 1
+    height = to_y - from_y + 1
 
+    def length(num):
+        return len(str(num)) * number_width + (len(str(num)) + 1) * number_space
+
+    padding_top = 10 + number_height
+    padding_left = 10 + length(height)
+    square = 50
+    line_color = (110, 110, 110)
+
+    coords = np.zeros((player_view.shape[0] + padding_top, player_view.shape[1] + padding_left, player_view.shape[2]),
+                       player_view.dtype)
+    lines = coords.copy()
+    coords[padding_top:, padding_left:, :] = player_view[:, :, :]
+
+    for i in range(width + 1):
+        cv.line(lines, (padding_left + i * square - 1, padding_top), (padding_left + i * square - 1, coords.shape[0]),
+                line_color, 1)
+        cv.putText(img=coords, text=str(from_x + i),
+                   org=(padding_left + i * square + (square - length(i + 1)) // 2, padding_top - 6),
+                   fontFace=cv.FONT_HERSHEY_TRIPLEX, fontScale=0.55, color=(200, 200, 200), thickness=1)
+    for i in range(height + 1):
+        cv.line(lines, (padding_left, padding_top + i * square - 1), (coords.shape[1], padding_top + i * square - 1),
+                line_color, 1)
+        cv.putText(img=coords, text=str(from_y + i),
+                   org=(padding_left - length(i + 1) - 5, padding_top + ((i + 1) * square - 19)),
+                   fontFace=cv.FONT_HERSHEY_TRIPLEX, fontScale=0.55, color=(200, 200, 200), thickness=1)
+
+    player_view = cv.addWeighted(lines, .6, coords, 1.0, 0)
+
+    # saving view
+    file_name = "%s/game_images/pov%s_%s.png" % (TMP_IMAGES_PATH, game.token, player.discord_identity)
     cv.imwrite(file_name, player_view, [cv.IMWRITE_PNG_COMPRESSION, 9])
     del player_view
 
