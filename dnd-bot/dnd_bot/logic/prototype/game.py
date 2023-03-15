@@ -68,7 +68,7 @@ class Game(DatabaseObject):
     def get_entity_by_id(self, entity_id):
         for entity_row in self.entities:
             for entity in entity_row:
-                if entity is not None and entity.id == int(entity_id):
+                if entity and entity.id == int(entity_id):
                     return entity
         return None
 
