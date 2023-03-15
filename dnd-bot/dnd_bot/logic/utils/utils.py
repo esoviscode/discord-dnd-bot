@@ -145,13 +145,13 @@ def get_player_view(game: Game, player: Player):
         cv.line(lines, (padding_left + i * square - 1, padding_top), (padding_left + i * square - 1, coords.shape[0]),
                 line_color, 1)
         cv.putText(img=coords, text=str(from_x + i),
-                   org=(padding_left + i * square + (square - length(i + 1)) // 2, padding_top - 6),
+                   org=(padding_left + i * square + (square - length(from_x + i)) // 2, padding_top - 6),
                    fontFace=cv.FONT_HERSHEY_TRIPLEX, fontScale=0.55, color=(200, 200, 200), thickness=1)
     for i in range(height + 1):
         cv.line(lines, (padding_left, padding_top + i * square - 1), (coords.shape[1], padding_top + i * square - 1),
                 line_color, 1)
         cv.putText(img=coords, text=str(from_y + i),
-                   org=(padding_left - length(i + 1) - 5, padding_top + ((i + 1) * square - 19)),
+                   org=(padding_left - length(from_y + i) - 5, padding_top + ((i + 1) * square - 19)),
                    fontFace=cv.FONT_HERSHEY_TRIPLEX, fontScale=0.55, color=(200, 200, 200), thickness=1)
 
     player_view = cv.addWeighted(lines, .6, coords, 1.0, 0)
