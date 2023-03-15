@@ -8,5 +8,6 @@ class Sword(Item):
         name = 'Sword'
         strength = 3
         base_price = 13
+        use_range = 1
 
-        super().__init__(name=name, strength=strength, base_price=base_price)
+        super().__init__(name=name, strength=strength, base_price=base_price, use_range=use_range)
