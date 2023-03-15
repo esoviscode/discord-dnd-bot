@@ -165,6 +165,7 @@ def test_find_game_by_token_correct(postgresql):
     assert game_dict['token'] == '12345'
     assert game_dict['id_host'] == 678
     assert game_dict['game_state'] == 'LOBBY'
+    assert game_dict['campaign_name'] == 'test_campaign'
 
 
 def test_find_game_by_token_nonexistent(postgresql):

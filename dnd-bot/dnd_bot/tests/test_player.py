@@ -17,23 +17,30 @@ def test_add_player(postgresql):
 
     p = Player(x=1, y=2, name='silentsky', hp=3, strength=4, dexterity=5, intelligence=6, charisma=7, perception=8,
                initiative=9, action_points=10, level=11, discord_identity=12, alignment='align', backstory='back',
-               game_token='12345')
+               game_token='12345', character_class='MAGE', character_race='HUMAN')
 
     game_id = DatabaseGame.get_id_game_from_game_token('12345')
-    DatabasePlayer.add_player(x=p.x, y=p.y, sprite=p.sprite_path, name=p.name, hp=p.hp, strength=p.strength,
-                              dexterity=p.dexterity, intelligence=p.intelligence, charisma=p.charisma,
-                              perception=p.perception, initiative=p.initiative, action_points=p.action_points,
-                              level=p.level, discord_identity=p.discord_identity, alignment=p.alignment,
-                              backstory=p.backstory, id_game=game_id)
+    id_player = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.strength,
+                                          dexterity=p.dexterity, intelligence=p.intelligence, charisma=p.charisma,
+                                          perception=p.perception, initiative=p.initiative,
+                                          action_points=p.action_points,
+                                          level=p.level, discord_identity=p.discord_identity, alignment=p.alignment,
+                                          backstory=p.backstory, id_game=game_id,
+                                          character_race=p.character_race, character_class=p.character_class)
 
     player_tuple = cur.execute(f'SELECT * FROM public."Player" WHERE id_player = (SELECT LASTVAL())').fetchone()
     creature_tuple = cur.execute(f'SELECT * FROM public."Creature" WHERE id_creature = (SELECT LASTVAL())').fetchone()
     entity_tuple = cur.execute(f'SELECT * FROM public."Entity" WHERE id_entity = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
 
-    assert (entity_tuple[1] == 'silentsky')
-    assert (entity_tuple[2] == 1)
-    assert (entity_tuple[3] == 2)
-    assert (creature_tuple[1] == 11)
-    assert (creature_tuple[2] == 3)
-    assert (creature_tuple[3] == 4)
+    assert entity_tuple[1] == 'silentsky'
+    assert entity_tuple[2] == 1
+    assert entity_tuple[3] == 2
+    assert creature_tuple[1] == 11
+    assert creature_tuple[2] == 3
+    assert creature_tuple[3] == 4
+
+    assert player_tuple[2] == p.alignment
+    assert player_tuple[3] == p.backstory
+    assert player_tuple[5] == p.character_race
+    assert player_tuple[6] == p.character_class
