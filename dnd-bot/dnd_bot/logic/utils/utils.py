@@ -137,7 +137,7 @@ def get_player_view(game: Game, player: Player):
     line_color = (110, 110, 110)
 
     coords = np.zeros((player_view.shape[0] + padding_top, player_view.shape[1] + padding_left, player_view.shape[2]),
-                       player_view.dtype)
+                      player_view.dtype)
     lines = coords.copy()
     coords[padding_top:, padding_left:, :] = player_view[:, :, :]
 
