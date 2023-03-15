@@ -1,3 +1,4 @@
+import math
 from collections import deque
 
 from dnd_bot.database.database_game import DatabaseGame
@@ -121,9 +122,69 @@ class Game(DatabaseObject):
     def get_attackable_enemies_for_player(self, player):
         creatures = self.get_movable_entities()
         result = []
+        weapon = player.equipment.right_hand
+        if weapon is None:
+            return result
+
+        def find_position_to_check(x_src=0, y_src=0, x_dest=1, y_dest=1):
+            result = []
+
+            def find_positions(x1, y1, x2, y2, dx, dy, decide):
+                pk = 2 * dy - dx
+                for i in range(0, dx + 1):
+                    if decide == 0:
+                        result.append((x1, y1))
+                    else:
+                        result.append((y1, x1))
+
+                    if x1 < x2:
+                        x1 = x1 + 1
+                    else:
+                        x1 = x1 - 1
+                    if pk < 0:
+
+                        if decide == 0:
+                            pk = pk + 2 * dy
+                        else:
+                            pk = pk + 2 * dy
+                    else:
+                        if y1 < y2:
+                            y1 = y1 + 1
+                        else:
+                            y1 = y1 - 1
+
+                        pk = pk + 2 * dy - 2 * dx
+
+            dx = abs(x_dest - x_src)
+            dy = abs(y_dest - y_src)
+
+            # If slope is less than one
+            if dx > dy:
+                find_positions(x_src, y_src, x_dest, y_dest, dx, dy, 0)
+            # if slope is greater than or equal to 1
+            else:
+                find_positions(y_src, x_src, y_dest, x_dest, dy, dx, 1)
+
+            return result[1:-1]
+
+        attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
             if not isinstance(creature, Player):
-                # TODO check if the enemy is reachable by the player
-                result.append(creature)
+                # check if creature is in player's range circle
+                # mod is conditional variable which defines proper circles
+                mod = 1
+                if 3 <= attack_range < 6:
+                    mod = 3
+                elif attack_range >= 6:
+                    mod = 4
+                if (player.x - creature.x)**2 + (player.y - creature.y)**2 <= attack_range**2 + mod:
+                    add = True
+                    positions = find_position_to_check(player.x, player.y, creature.x, creature.y)
+                    for pos in positions:
+                        if self.entities[pos[1]][pos[0]]:
+                            add = False
+                            break
+                    if add:
+                        result.append(creature)
 
         return result
