@@ -3,6 +3,7 @@ from collections import deque
 from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.database_object import DatabaseObject
+from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
@@ -63,6 +64,21 @@ class Game(DatabaseObject):
                 return u
 
         return None
+
+    def get_entity_by_id(self, entity_id):
+        for entity_row in self.entities:
+            for entity in entity_row:
+                if entity and entity.id == int(entity_id):
+                    return entity
+        return None
+
+    def delete_entity(self, entity_id):
+        entity = self.get_entity_by_id(entity_id)
+        x = entity.x
+        y = entity.y
+
+        self.entities[y].remove(entity)
+        self.entities[y].insert(x, None)
 
     def all_users_ready(self):
         """checks if all users in lobby are ready"""

@@ -1,24 +1,47 @@
+import random
+
+from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.player import Player
 
 
 class HandlerAttack:
     @staticmethod
-    async def handle_attack(enemy, id_user, token) -> (bool, [], str):
-        """handler for attacking enemy with main weapon"""
+    async def handle_attack(source: Creature, target: Creature, token) -> (bool, str):
+        """
+        handler for attacking enemy with main weapon
+        """
 
-        game = Multiverse.get_game(token)
+        game: Game = Multiverse.get_game(token)
 
-        player = game.get_player_by_id_user(id_user)
-        if player is None:
-            return False, [], 'This user doesn\'t have a player!'
+        if target is None or not isinstance(target, Creature):
+            return False, 'The target does not exist!'
 
-        if not player.active:
-            return False, [], 'You can\'t perform a move right now!'
+        if source != game.active_creature:
+            return False, 'You can\'t perform a move right now!'
 
-        if player.action_points == 0:
-            return False, [], 'You\'re out of action points!'
+        if source.action_points <= 0:
+            return False, 'You\'re out of action points!'
 
-        enemies = []
-        # TODO implement attacking and getting new list of enemies
+        if isinstance(source, Player):
+            attack_status_message = f'**{source.name}** has attacked **{target.name}**' \
+                                    f' using a *{source.equipment.right_hand.name}*!\n\n'
+        else:
+            attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 
-        return True, enemies, ''
+        # TODO handle evasion more properly
+        if random.choice([0, 1, 2, 3]) == 3:  # evasion
+            return True, attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
+
+        damage = 10  # TODO some smart way to calculate damage
+
+        target.hp -= damage
+
+        if target.hp <= 0:
+            target_name = target.name
+            game.delete_entity(target.id)
+            return True, attack_status_message[:-3] + f' for  `{damage}`  damage!\n\n' + f'💀 {target_name} has been defeated!'
+
+        return True, attack_status_message[:-3] + f' for `{damage}` damage!\n\n' + \
+                                                  f'**{target.name}** has `{target.hp}` HP left!'
