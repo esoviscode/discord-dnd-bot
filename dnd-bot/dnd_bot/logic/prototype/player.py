@@ -36,6 +36,7 @@ class Player(Creature):
         self.character_class = character_class
         self.equipment = equipment
         self.active = False
+        self.attack_mode = False
 
     def get_sprite_path_by_color(self, color: str):
         import os
