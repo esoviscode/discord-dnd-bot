@@ -61,14 +61,18 @@ class ViewGame(View):
         await asyncio.gather(*tasks)
         await q.join()
 
-    async def cancel(self, interaction: nextcord.Interaction):
+    async def cancel(self, interaction: nextcord.Interaction, files=None):
         """button for moving back to main menu"""
 
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         self.game.players_views[self.user_discord_id] = (ViewMain, [])
-        await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                              view=ViewMain(self.token, interaction.user.id))
+        if files:
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+                                                  view=ViewMain(self.token, interaction.user.id), files=files)
+        else:
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+                                                  view=ViewMain(self.token, interaction.user.id))
 
     async def character_view_options(self, interaction: nextcord.Interaction):
         """shared handler for character view"""
@@ -139,7 +143,10 @@ class ViewMain(ViewGame):
         self.game.players_views[self.user_discord_id] = (ViewAttack, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               embeds=[turn_view_embed],
-                                              view=ViewAttack(self.token, self.user_discord_id))
+                                              view=ViewAttack(self.token, self.user_discord_id),
+                                              files=[get_player_view(game,
+                                                                     game.get_player_by_id_user(interaction.user.id),
+                                                                     True)])
 
     @nextcord.ui.button(label='Move', style=nextcord.ButtonStyle.blurple)
     async def move(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -285,7 +292,8 @@ class ViewAttack(ViewGame):
                                     interaction.user.id, self.token, interaction)
 
     async def cancel(self, interaction: nextcord.Interaction):
-        await super().cancel(interaction)
+        await super().cancel(interaction, [get_player_view(self.game,
+                                                           self.game.get_player_by_id_user(interaction.user.id))])
 
     @staticmethod
     async def attack(target_id, id_user, token, interaction: nextcord.Interaction):
