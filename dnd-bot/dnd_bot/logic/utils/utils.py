@@ -140,11 +140,11 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     entities = [e for e in sum(game.entities, []) if e and e.fragile
                 and (e.x - player.x, e.y - player.y) in points_in_range]
 
-    for entity in entities:
-        sprite = copy.deepcopy(entity.sprite)
-        sprite = rotate_image_to_direction(sprite, entity.look_direction)
-
-        paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
+    # for entity in entities:
+    #     sprite = copy.deepcopy(entity.sprite)
+    #     sprite = rotate_image_to_direction(sprite, entity.look_direction)
+    #
+    #     paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
 
     # cropping image
     from_y = max(0, player.y - Mv.view_range)
@@ -168,17 +168,22 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     if attack_mode:
         attackable = []
         attack_range = min(player.equipment.right_hand.use_range, player.perception)
+        from dnd_bot.logic.prototype.creature import Creature
         for p in generate_circle_points(attack_range, attack_range):
             x = player.x + p[0]
             y = player.y + p[1]
-            path = find_position_to_check(player.x, player.y, player.x + p[0], player.y + p[1])
-            if p == (0, 0) or x < 0 or x >= game.world_width or y < 0 or y >= game.world_height \
-                    or game.entities[y][x]:
+            if x < 0 or x >= game.world_width or y < 0 or y >= game.world_height:
                 continue
-            for pos in path:
-                if game.entities[pos[1]][pos[0]]:
-                    break
-            attackable.append((x, y))
+            if (not game.entities[y][x]) or \
+                    (isinstance(game.entities[y][x], Creature) and not isinstance(game.entities[y][x], Player)):
+                path = find_position_to_check(player.x, player.y, player.x + p[0], player.y + p[1])
+                add = True
+                for pos in path:
+                    if game.entities[pos[1]][pos[0]]:
+                        add = False
+                        break
+                if add:
+                    attackable.append((x, y))
 
         number_width = 10
         number_height = 13
@@ -221,6 +226,16 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
 
         player_view = cv.addWeighted(tiles, .4, coords, 1.0, 0)
         player_view = cv.addWeighted(lines, .6, player_view, 1.0, 0)
+
+    for entity in entities:
+        sprite = copy.deepcopy(entity.sprite)
+        sprite = rotate_image_to_direction(sprite, entity.look_direction)
+
+        if attack_mode:
+            paste_image(sprite, player_view, padding_left + (entity.x - from_x) * Mv.square_size,
+                        padding_top + (entity.y - from_y) * Mv.square_size)
+        else:
+            paste_image(sprite, player_view, (entity.x - from_x) * Mv.square_size, (entity.y - from_y) * Mv.square_size)
 
     # saving view
     file_name = "%s/game_images/pov%s_%s.png" % (TMP_IMAGES_PATH, game.token, player.discord_identity)
