@@ -9,7 +9,7 @@ class Player(Creature):
     def __init__(self, entity_id=0, x=0, y=0, name: str = 'Player',
                  hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
-                 discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
+                 discord_identity: int = 0, alignment: str = '', backstory: str = '',
                  game_token: str = '', character_race: str = '', character_class: str = '', experience: int = 0):
 
         # request a sprite path for the player based on the user
@@ -34,7 +34,6 @@ class Player(Creature):
         self.backstory = backstory
         self.character_race = character_race
         self.character_class = character_class
-        self.equipment = equipment
         self.active = False
 
     def get_sprite_path_by_color(self, color: str):

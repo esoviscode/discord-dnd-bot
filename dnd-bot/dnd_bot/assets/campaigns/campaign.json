@@ -1,0 +1,78 @@
+{
+  "items": {
+    "armors": {
+      "helmets": {},
+      "chestplates": {},
+      "leg armors": {},
+      "boots: ": {}
+    },
+    "weapons": {
+      "swords": {
+        "Novice sword": {
+          "damage": [6, 8],
+          "range": 1,
+          "action-points": 3,
+          "base-price": 2
+        },
+        "Two-handed axe": {
+          "damage": [10, 13],
+          "range": 2,
+          "action-points": 8,
+          "base-price": 3
+        }
+      },
+      "staffs": {
+        "Novice staff": {
+          "damage": [3, 5],
+          "range": 3,
+          "action-points": 9,
+          "base-price": 2
+        },
+        "Frost staff": {
+          "damage": [9, 12],
+          "range": 3,
+          "action-points": 12,
+          "base-price": 6
+        }
+      },
+      "bows": {
+        "Novice bow": {
+          "damage": [4, 7],
+          "range": 4,
+          "action-points": 4,
+          "base-price": 5
+        },
+        "Light crossbow": {
+          "damage": [12, 14],
+          "range": 4,
+          "action-points": 5,
+          "base-price": 6
+        }
+      }
+    },
+    "off-hands": {
+      "shields": {
+      }
+    },
+    "accessories": {
+      "Ring of vitality" :{
+        "hp": 4,
+        "charisma": 2,
+        "base-price": 9
+      },
+      "Necklace of prudence": {
+        "intelligence": 5,
+        "base-price": 10
+      },
+      "Holy Bible": {
+        "hp": 10,
+        "strength": 3,
+        "base-price": 35
+      },
+      "Hunting necklace": {
+        "dexterity": 6,
+        "perception": 1
+      }
+    }
+  }
+}
