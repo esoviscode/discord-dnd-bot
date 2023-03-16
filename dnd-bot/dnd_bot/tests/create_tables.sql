@@ -32,12 +32,9 @@ ALTER TABLE IF EXISTS public."User"
 CREATE TABLE public."Event"
 (
     id_event BIGSERIAL NOT NULL,
-    x INTEGER,
-    y INTEGER,
-    range INTEGER,
     status VARCHAR,
-    content VARCHAR,
     id_game BIGINT,
+    json_id BIGINT,
     PRIMARY KEY (id_event),
     CONSTRAINT id_game FOREIGN KEY (id_game)
         REFERENCES public."Game" (id_game) MATCH SIMPLE
@@ -48,16 +45,16 @@ CREATE TABLE public."Event"
 
 ALTER TABLE IF EXISTS public."Event"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Entity"
 (
     id_entity BIGSERIAL NOT NULL,
     name VARCHAR,
     x INTEGER,
     y INTEGER,
-    sprite VARCHAR,
     id_game BIGINT,
+    description VARCHAR,
     PRIMARY KEY (id_entity),
     CONSTRAINT id_game FOREIGN KEY (id_game)
         REFERENCES public."Game" (id_game) MATCH SIMPLE
@@ -67,7 +64,7 @@ CREATE TABLE public."Entity"
 
 ALTER TABLE IF EXISTS public."Entity"
     OWNER to admin;
-	
+
 
 CREATE TABLE public."Creature"
 (
@@ -82,7 +79,8 @@ CREATE TABLE public."Creature"
     initiative INTEGER,
     action_points INTEGER,
     money INTEGER,
-    id_entity BIGINT,
+    id_entity BIGINT NOT NULL,
+    experience INTEGER,
     PRIMARY KEY (id_creature),
     CONSTRAINT base_entity FOREIGN KEY (id_entity)
         REFERENCES public."Entity" (id_entity) MATCH SIMPLE
@@ -92,8 +90,8 @@ CREATE TABLE public."Creature"
 
 ALTER TABLE IF EXISTS public."Creature"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Dialog"
 (
     id_dialog BIGSERIAL NOT NULL,
@@ -101,6 +99,7 @@ CREATE TABLE public."Dialog"
     id_listener BIGINT,
     content VARCHAR,
     status VARCHAR,
+    json_id BIGINT,
     PRIMARY KEY (id_dialog),
     CONSTRAINT id_speaker FOREIGN KEY (id_speaker)
         REFERENCES public."Entity" (id_entity) MATCH SIMPLE
@@ -115,8 +114,8 @@ CREATE TABLE public."Dialog"
 
 ALTER TABLE IF EXISTS public."Dialog"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Item"
 (
     id_item BIGSERIAL NOT NULL,
@@ -130,13 +129,14 @@ CREATE TABLE public."Item"
     action_points INTEGER,
     effect VARCHAR,
     base_price INTEGER,
+    description VARCHAR,
     PRIMARY KEY (id_item)
 );
 
 ALTER TABLE IF EXISTS public."Item"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Creature_Item"
 (
     id_creature_item BIGSERIAL NOT NULL,
@@ -156,8 +156,8 @@ CREATE TABLE public."Creature_Item"
 
 ALTER TABLE IF EXISTS public."Creature_Item"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Skill"
 (
     id_skill BIGSERIAL NOT NULL,
@@ -166,9 +166,9 @@ CREATE TABLE public."Skill"
 );
 
 ALTER TABLE IF EXISTS public."Skill"
-    OWNER to admin;	
-	
-	
+    OWNER to admin;
+
+
 CREATE TABLE public."Entity_Skill"
 (
     id_entity_skill BIGSERIAL NOT NULL,
@@ -187,7 +187,7 @@ CREATE TABLE public."Entity_Skill"
 
 ALTER TABLE IF EXISTS public."Entity_Skill"
     OWNER to admin;
-	
+
 CREATE TABLE public."Equipment"
 (
     id_equipment BIGSERIAL NOT NULL,
@@ -231,8 +231,8 @@ CREATE TABLE public."Equipment"
 
 ALTER TABLE IF EXISTS public."Equipment"
     OWNER to admin;
-	
-	
+
+
 CREATE TABLE public."Player"
 (
     id_player BIGSERIAL NOT NULL,
@@ -240,7 +240,9 @@ CREATE TABLE public."Player"
     alignment VARCHAR,
     backstory VARCHAR,
     id_equipment BIGINT,
-    id_creature BIGINT,
+    race VARCHAR,
+    class VARCHAR,
+    id_creature BIGINT NOT NULL,
     PRIMARY KEY (id_player),
     CONSTRAINT id_user FOREIGN KEY (id_user)
         REFERENCES public."User" (id_user) MATCH SIMPLE
@@ -253,7 +255,9 @@ CREATE TABLE public."Player"
     CONSTRAINT id_creature FOREIGN KEY (id_creature)
         REFERENCES public."Creature" (id_creature) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT race_enum CHECK (race in ('HUMAN', 'ELF', 'DWARF')),
+    CONSTRAINT class_enum CHECK (class in ('WARRIOR', 'MAGE', 'RANGER'))
 );
 
 ALTER TABLE IF EXISTS public."Player"

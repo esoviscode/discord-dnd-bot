@@ -4,6 +4,8 @@ import nextcord
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.ui.views.view_character_creation import ViewCharacterCreationStart
+from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.handler_game import HandlerGame
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
@@ -95,10 +97,15 @@ class StartButton(nextcord.ui.View):
     @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
-        status, lobby_players_identities, error_message = await HandlerStart.start_game(self.token, interaction.user.id)
+        status, lobby_players_identities, error_message =\
+            await HandlerCharacterCreation.start_character_creation(self.token, interaction.user.id)
 
         if status:
-            await GameLoop.start_loop(self.token)
+            for user_id in lobby_players_identities:
+                await Messager.send_dm_message(user_id=user_id,
+                                               content=None,
+                                               embed=MessageTemplates.character_creation_start_message_template(),
+                                               view=ViewCharacterCreationStart(self.token))
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)

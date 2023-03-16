@@ -1,8 +1,10 @@
+import math
 from collections import deque
 
 from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.database_object import DatabaseObject
+from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.user import User
 
@@ -28,6 +30,8 @@ class Game(DatabaseObject):
         self.world_width = world_width
         self.world_height = world_height
         self.active_creature = None
+        self.players_views = dict()  # this dict is to save the view non-active player is looking at;
+        # key values are stringified discord ids and values are particular views
 
         # this queue contains all the creatures in current map that can possibly make move in a turn
         if queue is None:
@@ -61,6 +65,21 @@ class Game(DatabaseObject):
                 return u
 
         return None
+
+    def get_entity_by_id(self, entity_id):
+        for entity_row in self.entities:
+            for entity in entity_row:
+                if entity and entity.id == int(entity_id):
+                    return entity
+        return None
+
+    def delete_entity(self, entity_id):
+        entity = self.get_entity_by_id(entity_id)
+        x = entity.x
+        y = entity.y
+
+        self.entities[y].remove(entity)
+        self.entities[y].insert(x, None)
 
     def all_users_ready(self):
         """checks if all users in lobby are ready"""
@@ -99,3 +118,33 @@ class Game(DatabaseObject):
     def get_active_creature(self):
         """returns current active player"""
         return self.active_creature
+
+    def get_attackable_enemies_for_player(self, player):
+        creatures = self.get_movable_entities()
+        result = []
+        weapon = player.equipment.right_hand
+        if weapon is None:
+            return result
+
+        from dnd_bot.logic.utils.utils import find_position_to_check
+        attack_range = min(weapon.use_range, player.perception)
+        for creature in creatures:
+            if not isinstance(creature, Player):
+                # check if creature is in player's range circle
+                # mod is conditional variable which defines proper circles
+                mod = 1
+                if 3 <= attack_range < 6:
+                    mod = 3
+                elif attack_range >= 6:
+                    mod = 4
+                if (player.x - creature.x)**2 + (player.y - creature.y)**2 <= attack_range**2 + mod:
+                    add = True
+                    positions = find_position_to_check(player.x, player.y, creature.x, creature.y)
+                    for pos in positions:
+                        if self.entities[pos[1]][pos[0]]:
+                            add = False
+                            break
+                    if add:
+                        result.append(creature)
+
+        return result

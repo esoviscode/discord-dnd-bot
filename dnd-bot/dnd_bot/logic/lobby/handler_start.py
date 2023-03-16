@@ -1,9 +1,8 @@
 from dnd_bot.database.database_game import DatabaseGame
-from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.logic.prototype.player import Player
 
 
 class HandlerStart:
@@ -40,9 +39,6 @@ class HandlerStart:
             if game_id is None:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
-
-            GameStart.start(token)
-            await GameLoop.start_loop(token)
 
             users = [user.discord_id for user in game.user_list]
             return True, users, ''

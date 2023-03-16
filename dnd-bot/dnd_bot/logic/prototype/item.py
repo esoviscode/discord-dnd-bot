@@ -7,7 +7,7 @@ class Item(DatabaseObject):
 
     def __init__(self, id_item: int = 0, name: str = "", hp: int = 0, strength: int = 0, dexterity: int = 0,
                  intelligence: int = 0, charisma: int = 0, perception: int = 0, action_points: int = 0,
-                 effect: str = "", base_price: int = 0):
+                 effect: str = "", base_price: int = 0, use_range: int = 1):
         ## TODO super().__init__(DatabaseItem.add_item(name,hp,strength, dexterity, intelligence, charisma, perception,
         ##                                       action_points, effect, base_price))
         self.id = id_item
@@ -21,3 +21,4 @@ class Item(DatabaseObject):
         self.action_points = action_points
         self.effect = effect
         self.base_price = base_price
+        self.use_range = use_range

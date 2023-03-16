@@ -34,13 +34,16 @@ class Messager:
         await message.edit(content=new_content, embeds=message.embeds)
 
     @staticmethod
-    async def edit_last_user_message(user_id: int, content="", embed=None, embeds=None, view=None, files=None):
+    async def edit_last_user_message(user_id: int, content="", embed=None, embeds=None, view=None, files=None,
+                                     retain_view=False):
         if embeds is None:
             embeds = []
         channel_id, message_id = MessageHolder.read_last_message_data(user_id)
 
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
+        if retain_view:
+            view = nextcord.ui.View.from_message(message)
 
         # includes files
         if files:
