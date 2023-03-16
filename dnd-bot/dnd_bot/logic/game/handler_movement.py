@@ -1,3 +1,5 @@
+from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -39,5 +41,4 @@ class HandlerMovement:
         player.action_points = player.initial_action_points
 
         player.active = False
-
         return True, ''

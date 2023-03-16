@@ -45,3 +45,16 @@ class DatabasePlayer:
         player.id = player_tuple[0]
 
         return player
+
+    @staticmethod
+    def get_players_id_entity(id_player: int = 0) -> int:
+        player_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Player" WHERE id_player = (%s)',
+                                                             (id_player))
+
+        creature_tuple = DatabaseConnection.get_object_from_db(
+            'SELECT * FROM public."Creature" WHERE id_creature = (%s)',
+            (player_tuple[5]))
+
+        entity_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Entity" WHERE id_entity = (%s)',
+                                                             (creature_tuple[11]))
+        return entity_tuple[0]

@@ -1,3 +1,5 @@
+from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.prototype.creature import Creature
@@ -59,7 +61,7 @@ class GameLoop:
     @staticmethod
     def game_loop(game_token):
         """loops over all creatures and lets them perform actions, each iteration is a move"""
-        game = GameLoop.get_game_object(game_token)
+        game: Game = GameLoop.get_game_object(game_token)
 
         while game.game_state == 'ACTIVE':
             # each iteration is a creature's move
@@ -88,3 +90,5 @@ class GameLoop:
         """one turn of a creature"""
         # TODO creature performs some actions
         pass
+
+

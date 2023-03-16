@@ -10,7 +10,9 @@ class DatabaseEntity:
 
     @staticmethod
     def update_entity(id_entity: int = 0, x: int = 0, y: int = 0) -> None:
-        pass
+        DatabaseConnection.update_object_in_db('UPDATE public."Entity" SET x = (%s), y = (%s) WHERE id_entity = (%s)',
+                                               (x, y, id_entity), "Entity")
+        print(f'id:{id_entity}\nx={x}\ny={y}')
 
     @staticmethod
     def get_entity(id_entity: int) -> dict | None:
