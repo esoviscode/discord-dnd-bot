@@ -5,6 +5,12 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+from dnd_bot.logic.prototype.classes.mage import Mage
+from dnd_bot.logic.prototype.classes.ranger import Ranger
+from dnd_bot.logic.prototype.classes.warrior import Warrior
+from dnd_bot.logic.prototype.races.dwarf import Dwarf
+from dnd_bot.logic.prototype.races.elf import Elf
+from dnd_bot.logic.prototype.races.human import Human
 
 
 class ViewCharacterCreationStart(nextcord.ui.View):
@@ -167,19 +173,19 @@ class ViewClassForm(nextcord.ui.View):
         class_option1 = nextcord.SelectOption(
             label="Warrior",
             description="You like close encounters with your enemies.",
-            emoji="⚔",
+            emoji=Warrior.emoji(),
             default=True if self.class_value == 'Warrior' else False)
 
         class_option2 = nextcord.SelectOption(
             label="Mage",
             description="You're a magic freak.",
-            emoji="🧙",
+            emoji=Mage.emoji(),
             default=True if self.class_value == 'Mage' else False)
 
         class_option3 = nextcord.SelectOption(
             label="Ranger",
             description="A bow is your closest friend.",
-            emoji="🏹",
+            emoji=Ranger.emoji(),
             default=True if self.class_value == 'Ranger' else False)
 
         self.class_dropdown = nextcord.ui.Select(
@@ -239,19 +245,19 @@ class ViewRaceForm(nextcord.ui.View):
         race_option1 = nextcord.SelectOption(
             label="Human",
             description="Just an ordinary offspring of Adam.",
-            emoji="👨",
+            emoji=Human.emoji(),
             default=True if self.race_value == 'Human' else False)
 
         race_option2 = nextcord.SelectOption(
             label="Elf",
             description="You have a lot of grace.",
-            emoji="🧝",
+            emoji=Elf.emoji(),
             default=True if self.race_value == 'Elf' else False)
 
         race_option3 = nextcord.SelectOption(
             label="Dwarf",
             description="You're a hard, tough worker.",
-            emoji="🤏",
+            emoji=Dwarf.emoji(),
             default=True if self.race_value == 'Dwarf' else False)
 
         self.race_dropdown = nextcord.ui.Select(
