@@ -34,9 +34,19 @@ class HandlerAttack:
         if random.choice([0, 1, 2, 3]) == 3:  # evasion
             return True, attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
 
-        damage = 10  # TODO some smart way to calculate damage
+        damage = 0
+        if source.creature_class == 'Warrior':  # TODO this should be taken from an enum
+            damage = source.strength
+        if source.creature_class == 'Mage':
+            damage = source.intelligence
+        if source.creature_class == 'Ranger':
+            damage = source.dexterity
+
+        if source.equipment.right_hand:
+            damage += random.randint(*source.equipment.right_hand.damage)
 
         target.hp -= damage
+        source.action_points -= source.equipment.right_hand.action_points
 
         if target.hp <= 0:
             target_name = target.name

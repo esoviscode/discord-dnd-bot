@@ -22,24 +22,23 @@ class Player(Creature):
             if user is None:
                 print('Warning: this player has no associated User!')
             else:
-                self.character_class = character_class
-                self.sprite = self.get_sprite_path_by_color(user.color)
+                self.sprite = self.get_sprite_path_by_color(user.color, character_class)
 
         super().__init__(x=x, y=y, sprite=self.sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
                          intelligence=intelligence, charisma=charisma, perception=perception, initiative=initiative,
-                         action_points=action_points, level=level, game_token=game_token, experience=experience)
+                         action_points=action_points, level=level, game_token=game_token, experience=experience,
+                         creature_class=character_class)
 
         self.discord_identity = discord_identity
         self.alignment = alignment
         self.backstory = backstory
         self.character_race = character_race
-        self.character_class = character_class
         self.active = False
 
-    def get_sprite_path_by_color(self, color: str):
+    def get_sprite_path_by_color(self, color: str, character_class: str):
         import os
 
-        path = f'dnd_bot/assets/gfx/entities/{self.character_class.lower()}_sprite_{color}.png'
+        path = f'dnd_bot/assets/gfx/entities/{character_class.lower()}_sprite_{color}.png'
         if os.path.isfile(path):
             return path
         else:
