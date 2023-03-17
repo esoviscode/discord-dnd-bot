@@ -2,15 +2,9 @@ import nextcord
 
 from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
-from dnd_bot.logic.prototype.classes.mage import Mage
-from dnd_bot.logic.prototype.classes.ranger import Ranger
-from dnd_bot.logic.prototype.classes.warrior import Warrior
 from dnd_bot.logic.prototype.item import Item
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
-from dnd_bot.logic.prototype.races.dwarf import Dwarf
-from dnd_bot.logic.prototype.races.elf import Elf
-from dnd_bot.logic.prototype.races.human import Human
 from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
