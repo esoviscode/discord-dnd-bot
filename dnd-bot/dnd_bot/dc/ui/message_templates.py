@@ -11,6 +11,7 @@ from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.races.dwarf import Dwarf
 from dnd_bot.logic.prototype.races.elf import Elf
 from dnd_bot.logic.prototype.races.human import Human
+from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
 class MessageTemplates:
@@ -307,38 +308,63 @@ class MessageTemplates:
         """embed showing created character and his stats"""
 
         character = ChosenAttributes.chosen_attributes[user_id]
+        character_class = string_to_character_class(character['class'])
+        character_race = string_to_character_race(character['race'])
 
         embed = nextcord.Embed(title=f'Your Character')
 
         embed.add_field(name="Name",
-                        value=character['name'],
+                        value=f"{character['name']}",
                         inline=False)
 
         embed.add_field(name="Backstory",
-                        value=character['backstory'],
+                        value=f"{character['backstory']}",
                         inline=False)
 
         embed.add_field(name="Alignment",
-                        value='-'.join(character['alignment']),
+                        value=f"{'-'.join(character['alignment'])}",
                         inline=False)
 
         embed.add_field(name="Class",
-                        value=character['class'],
-                        inline=False)
+                        value=f"{character_class.emoji()} {character['class']}",
+                        inline=True)
 
         embed.add_field(name="Race",
-                        value=character['race'],
-                        inline=False)
+                        value=f"{character_race.emoji()} {character['race']}",
+                        inline=True)
 
         embed.add_field(name="Stats",
-                        value=f"HP: {character['hp']} \n"
-                              f"Strength: {character['strength']}\n"
-                              f"Dexterity: {character['dexterity']}\n"
-                              f"Intelligence: {character['intelligence']}\n"
-                              f"Charisma: {character['charisma']}\n"
-                              f"Perception: {character['perception']}\n"
-                              f"Initiative: {character['initiative']}\n"
-                              f"Action points: {character['action points']}\n",
+                        value=f"{'💖'} HP: {character['hp']}"
+                              f" ({character_class.base_hp() + character_race.base_hp()} + "
+                              f"{character['hp'] - character_class.base_hp() - character_race.base_hp()}) \n\n"
+                              
+                              f"{'💪'} Strength: {character['strength']}"
+                              f" ({character_class.base_strength() + character_race.base_strength()} + "
+                              f"{character['strength'] - character_class.base_strength() - character_race.base_strength()}) \n\n "
+                              
+                              f"{'👋'} Dexterity: {character['dexterity']}"
+                              f" ({character_class.base_dexterity() + character_race.base_dexterity()} + "
+                              f"{character['dexterity'] - character_class.base_dexterity() - character_race.base_dexterity()}) \n\n "
+                              
+                              f"{'🧠'} Intelligence: {character['intelligence']}"
+                              f" ({character_class.base_intelligence() + character_race.base_intelligence()} + "
+                              f"{character['intelligence'] - character_class.base_intelligence() - character_race.base_intelligence()}) \n\n "
+                              
+                              f"{'😎‍'} Charisma: {character['charisma']}"
+                              f" ({character_class.base_charisma() + character_race.base_charisma()} + "
+                              f"{character['charisma'] - character_class.base_charisma() - character_race.base_charisma()}) \n\n "
+                              
+                              f"{'👀'} Perception: {character['perception']}"
+                              f" ({character_class.base_perception() + character_race.base_perception()} + "
+                              f"{character['perception'] - character_class.base_perception() - character_race.base_perception()}) \n\n "
+                              
+                              f"{'✊'} Initiative: {character['initiative']}"
+                              f" ({character_class.base_initiative() + character_race.base_initiative()} + "
+                              f"{character['initiative'] - character_class.base_initiative() - character_race.base_initiative()}) \n\n "
+                              
+                              f"{'✨'} Action points: {character['action points']}"
+                              f" ({character_class.base_action_points() + character_race.base_action_points()} + "
+                              f"{character['action points'] - character_class.base_action_points() - character_race.base_action_points()}) \n\n ",
                         inline=False)
 
         return embed

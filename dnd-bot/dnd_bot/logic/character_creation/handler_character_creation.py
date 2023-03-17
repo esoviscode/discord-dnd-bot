@@ -55,7 +55,7 @@ class HandlerCharacterCreation:
         character_class = string_to_character_class(character['class'])
         character_race = string_to_character_race(character['race'])
 
-        points_to_distribute_randomly = 10
+        points_to_distribute_randomly = 15
 
         additional_strength = random.randint(0, 2)
         strength = character_class.base_strength() + character_race.base_strength() + additional_strength
