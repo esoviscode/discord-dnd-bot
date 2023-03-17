@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class CharacterClass(ABC):
+    """Abstract interface defining methods which must be overriden by classes defining particular character classes"""
 
     @staticmethod
     @abstractmethod

@@ -265,6 +265,11 @@ def rotate_image_to_direction(img, direction):
 
 
 def string_to_character_class(class_name: str):
+    """
+    returns class (not object) defining particular character class given its name
+    :param class_name: name of character class
+    :return class: class defining character class
+    """
     if str.lower(class_name) == "warrior":
         return Warrior
     if str.lower(class_name) == "ranger":
@@ -275,6 +280,11 @@ def string_to_character_class(class_name: str):
 
 
 def string_to_character_race(race_name: str):
+    """
+        returns class (not object) defining particular character race given its name
+        :param race_name: name of character class
+        :return class: class defining character race
+    """
     if str.lower(race_name) == "human":
         return Human
     if str.lower(race_name) == "elf":

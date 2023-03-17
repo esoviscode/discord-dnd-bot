@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 
 class CharacterRace:
+    """Abstract interface defining methods which must be overriden by classes defining particular character races"""
 
     @staticmethod
     @abstractmethod
