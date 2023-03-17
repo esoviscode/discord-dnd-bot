@@ -1,3 +1,4 @@
+from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
@@ -39,11 +40,10 @@ class GameLoop:
             if isinstance(c, Player):
                 GameLoop.update_player(c)
             elif isinstance(c, Creature):
-                pass
+                GameLoop.update_creature(c)
             else:
                 continue
             game.creatures_queue.append(c)
-
 
     @staticmethod
     def get_game_object(game_token):
@@ -79,4 +79,5 @@ class GameLoop:
 
     @staticmethod
     def update_creature(c: Creature):
-        pass
+        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, money=c.money, experience=c.experience,
+                                         x=c.x, y=c.y)

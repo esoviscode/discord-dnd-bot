@@ -3,6 +3,7 @@ import json
 import random
 import cv2 as cv
 
+from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
@@ -202,11 +203,12 @@ class InitializeWorld:
 
     @staticmethod
     def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
-        entity = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
+        creature = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
                                 name=creature_class.creature_name, hp=20)
-        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id)
-        entity.id = id_entity
-        entity_row.append(entity)
+        id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2)
+
+        creature.id = id_creature
+        entity_row.append(creature)
         return entity_row
 
     @staticmethod
