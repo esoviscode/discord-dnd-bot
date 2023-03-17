@@ -109,25 +109,11 @@ def get_player_view(game: Game, player: Player):
         paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
 
     # raytracing
-    mask_points, obstacle_points = get_non_visible_tiles_in_player_view(game, player)
+    mask_points, _ = get_non_visible_tiles_in_player_view(game, player)
     for x, y in mask_points:
-        one_tile_mask = cv.rectangle(player_view,
-                                     (x * Mv.square_size,
-                                      y * Mv.square_size),
-                                     ((x + 1) * Mv.square_size,
-                                      (y + 1) * Mv.square_size),
-                                     (60, 0, 0), 5)
-    for x, y in obstacle_points:
-        cv.rectangle(player_view,
-                     (x * Mv.square_size,
-                      y * Mv.square_size),
-                     ((x + 1) * Mv.square_size,
-                      (y + 1) * Mv.square_size),
-                     (0, 0, 255), 5)
-        # one_tile_mask[20:30, 20:30] = True
-        # player_view = cv.bitwise_and(player_view, player_view, mask=one_tile_mask)
-        #
-        # paste_image(one_tile_mask, player_view, point[0] * Mv.square_size, point[1] * Mv.square_size)
+        cv.rectangle(player_view, (x * Mv.square_size, y * Mv.square_size),
+                     ((x + 1) * Mv.square_size, (y + 1) * Mv.square_size),
+                     (0, 0, 0), -1)
 
     # cropping image
     from_y = max(0, player.y - Mv.view_range)
@@ -135,7 +121,7 @@ def get_player_view(game: Game, player: Player):
     from_x = max(0, player.x - Mv.view_range)
     to_x = min(game.world_width, player.x + Mv.view_range + 1)
     player_view = player_view[from_y * Mv.square_size:to_y * Mv.square_size,
-                  from_x * Mv.square_size:to_x * Mv.square_size]
+                              from_x * Mv.square_size:to_x * Mv.square_size]
 
     # cropping mask
     mask = Mv.masks[player.perception][
@@ -215,7 +201,6 @@ def get_non_visible_tiles_in_player_view(game: Game, player: Player):
         obstacle_index = 0
         found_obstacle = False
         for i, point in enumerate(ray_points):
-            # if point[0] in range(0, game.world_width) and point[1] in range(0, game.world_height):
             checked_entity = game.get_entity_by_x_y(x=point[0], y=point[1])
 
             if checked_entity and not isinstance(checked_entity, Creature):
@@ -229,12 +214,6 @@ def get_non_visible_tiles_in_player_view(game: Game, player: Player):
             [result.append(point) for point in ray_points[obstacle_index + 1:] if point not in result and
              point[0] in range(0, game.world_width) and point[1] in range(0, game.world_height)]
 
-    # TODO remove points that are in perception circle
-
-    print('result')
-    print(result)
-    print('obstacles')
-    print(obstacles)
     return result, obstacles
 
 
