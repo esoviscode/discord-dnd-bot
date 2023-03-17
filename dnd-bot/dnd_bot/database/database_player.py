@@ -11,7 +11,7 @@ class DatabasePlayer:
                    dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                    initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
                    alignment: str = '', backstory: str = '', id_game: int = 1, experience: int = 0,
-                   character_class='', character_race='') -> int | None:
+                   character_class: str = '', character_race: str = '') -> int | None:
         id_creature = DatabaseCreature.add_creature(x=x, y=y, name=name, hp=hp, strength=strength,
                                                     dexterity=dexterity, intelligence=intelligence, charisma=charisma,
                                                     perception=perception, initiative=initiative,
@@ -52,13 +52,9 @@ class DatabasePlayer:
 
     @staticmethod
     def get_players_id_entity(id_player: int = 0) -> int:
-        player_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Player" WHERE id_player = (%s)',
-                                                             (id_player))
+        id_creature = DatabaseConnection.get_object_from_db('SELECT id_creature FROM public."Player" WHERE '
+                                                            'id_player = (%s)', (id_player,))
 
-        creature_tuple = DatabaseConnection.get_object_from_db(
-            'SELECT * FROM public."Creature" WHERE id_creature = (%s)',
-            (player_tuple[5]))
-
-        entity_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Entity" WHERE id_entity = (%s)',
-                                                             (creature_tuple[11]))
-        return entity_tuple[0]
+        return DatabaseConnection.get_object_from_db(
+            'SELECT id_entity FROM public."Creature" WHERE id_creature = (%s)',
+            (id_creature,))

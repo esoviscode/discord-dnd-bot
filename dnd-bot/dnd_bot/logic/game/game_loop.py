@@ -1,3 +1,5 @@
+from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
 import asyncio
 import copy
@@ -34,8 +36,14 @@ class GameLoop:
 
         # add creatures to the queue
         for c in entities:
-            if isinstance(c, Creature) or isinstance(c, Player):
-                game.creatures_queue.append(c)
+            if isinstance(c, Player):
+                GameLoop.update_player(c)
+            elif isinstance(c, Creature):
+                pass
+            else:
+                continue
+            game.creatures_queue.append(c)
+
 
     @staticmethod
     def get_game_object(game_token):
@@ -64,4 +72,11 @@ class GameLoop:
             from dnd_bot.logic.game.handler_game import HandlerGame
             await HandlerGame.turn(game_token, first_creature)
 
+    @staticmethod
+    def update_player(p: Player):
+        id_entity = DatabasePlayer.get_players_id_entity(p.id)
+        DatabaseEntity.update_entity(id_entity, p.x, p.y)
 
+    @staticmethod
+    def update_creature(c: Creature):
+        pass
