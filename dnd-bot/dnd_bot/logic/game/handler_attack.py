@@ -21,37 +21,43 @@ class HandlerAttack:
         if source != game.active_creature:
             return False, 'You can\'t perform a move right now!'
 
-        if source.action_points <= 0:
-            return False, 'You\'re out of action points!'
+        if source.action_points < source.equipment.right_hand.action_points:
+            return False, 'You have an insufficient number of action points!'
 
         if isinstance(source, Player):
-            attack_status_message = f'**{source.name}** has attacked **{target.name}**' \
+            attack_status_message = f'**{source.name}** has attacked **{target.name}** at ({target.x},{target.y})\n' \
                                     f' using a *{source.equipment.right_hand.name}*!\n\n'
         else:
             attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 
-        # TODO handle evasion more properly
-        if random.choice([0, 1, 2, 3]) == 3:  # evasion
+        # dodging an attack
+        # the chance is (source dexterity)%
+        if random.randint(0, 99) <= source.dexterity:  # evasion
             return True, attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
 
-        damage = 0
+        # calculating damage
+        # damage = main class attribute + damage from weapon
+        base_damage = 0
         if source.creature_class == 'Warrior':  # TODO this should be taken from an enum
-            damage = source.strength
+            base_damage = source.strength
         if source.creature_class == 'Mage':
-            damage = source.intelligence
+            base_damage = source.intelligence
         if source.creature_class == 'Ranger':
-            damage = source.dexterity
+            base_damage = source.dexterity
 
+        weapon_damage = 0
         if source.equipment.right_hand:
-            damage += random.randint(*source.equipment.right_hand.damage)
+            weapon_damage += random.randint(*source.equipment.right_hand.damage)
 
-        target.hp -= damage
+        target.hp -= (base_damage + weapon_damage)
         source.action_points -= source.equipment.right_hand.action_points
 
         if target.hp <= 0:
             target_name = target.name
             game.delete_entity(target.id)
-            return True, attack_status_message[:-3] + f' for  `{damage}`  damage!\n\n' + f'💀 {target_name} has been defeated!'
+            return True, attack_status_message[:-3] + f' for ' \
+                                                      f'**`{base_damage + weapon_damage}`**  damage!\n\n' + \
+                                                      f'> 💀 **{target_name}** has been defeated!'
 
-        return True, attack_status_message[:-3] + f' for `{damage}` damage!\n\n' + \
-                                                  f'**{target.name}** has `{target.hp}` HP left!'
+        return True, attack_status_message[:-3] + f' for **`{base_damage + weapon_damage}`** damage!\n\n' + \
+                                                  f'> **{target.name}** has `{target.hp}` HP left!'
