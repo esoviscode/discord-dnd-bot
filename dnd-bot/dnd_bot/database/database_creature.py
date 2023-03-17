@@ -22,11 +22,11 @@ class DatabaseCreature:
         return id_creature
 
     @staticmethod
-    def update_creature(id_creature: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
+    def update_creature(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
                         y: int = 0) -> None:
-        DatabaseConnection.update_object_in_db('UPDATE public."Creature" SET level = (%s), money = (%s), '
+        DatabaseConnection.update_object_in_db('UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), '
                                                'experience = (%s) WHERE id_creature = (%s)',
-                                               (level, money, experience, id_creature), "Creature")
+                                               (level, hp, money, experience, id_creature), "Creature")
         id_entity = DatabaseCreature.get_creature_id_entity(id_creature)
         DatabaseEntity.update_entity(id_entity, x, y)
 

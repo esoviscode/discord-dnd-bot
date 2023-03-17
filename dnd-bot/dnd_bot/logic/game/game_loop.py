@@ -73,11 +73,11 @@ class GameLoop:
             await HandlerGame.turn(game_token, first_creature)
 
     @staticmethod
-    def update_player(p: Player):
-        id_entity = DatabasePlayer.get_players_id_entity(p.id)
-        DatabaseEntity.update_entity(id_entity, p.x, p.y)
+    def update_player(p: Player) -> None:
+        DatabasePlayer.update_player(id_player=p.id, level=p.level, hp=p.hp, money=p.money, experience=p.experience,
+                                     x=p.x, y=p.y)
 
     @staticmethod
-    def update_creature(c: Creature):
-        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, money=c.money, experience=c.experience,
-                                         x=c.x, y=c.y)
+    def update_creature(c: Creature) -> None:
+        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
+                                         experience=c.experience, x=c.x, y=c.y)

@@ -25,6 +25,13 @@ class DatabasePlayer:
         return id_player
 
     @staticmethod
+    def update_player(id_player: int = 0,hp: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
+                      y: int = 0) -> None:
+        id_creature = DatabasePlayer.get_players_id_creature(id_player)
+        DatabaseCreature.update_creature(id_creature=id_creature, level=level, money=money, experience=experience, x=x,
+                                         y=y, hp=hp)
+
+    @staticmethod
     def get_player(id_player) -> Player | None:
         player_tuple = DatabaseConnection.get_object_from_db('SELECT * FROM public."Player" WHERE id_player = (%s)',
                                                              (id_player))
@@ -52,9 +59,13 @@ class DatabasePlayer:
 
     @staticmethod
     def get_players_id_entity(id_player: int = 0) -> int:
-        id_creature = DatabaseConnection.get_object_from_db('SELECT id_creature FROM public."Player" WHERE '
-                                                            'id_player = (%s)', (id_player,))
+        id_creature = DatabasePlayer.get_players_id_creature(id_player=id_player)
 
         return DatabaseConnection.get_object_from_db(
             'SELECT id_entity FROM public."Creature" WHERE id_creature = (%s)',
             (id_creature,))
+
+    @staticmethod
+    def get_players_id_creature(id_player: int = 0) -> int:
+        return DatabaseConnection.get_object_from_db('SELECT id_creature FROM public."Player" WHERE '
+                                                     'id_player = (%s)', (id_player,), "Player")

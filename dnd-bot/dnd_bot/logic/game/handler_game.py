@@ -41,7 +41,7 @@ class HandlerGame:
         game = Multiverse.get_game(game_token)
         while game.active_creature.action_points > 0:
             recent_action_message = active_creature.ai_action()
-            await asyncio.sleep(1)
+            # TODO do testowania await asyncio.sleep(1)
             print(f"Turn executed in {active_creature.name}")
             await ViewGame.display_views_for_users(game_token, recent_action_message)
 
