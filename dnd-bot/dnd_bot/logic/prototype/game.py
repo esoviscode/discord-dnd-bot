@@ -73,6 +73,11 @@ class Game(DatabaseObject):
                     return entity
         return None
 
+    def get_entity_by_x_y(self, x=0, y=0) -> Entity | None:
+        if x >= self.world_width or y >= self.world_height:
+            return None
+        return self.entities[y][x]
+
     def delete_entity(self, entity_id):
         entity = self.get_entity_by_id(entity_id)
         x = entity.x
@@ -126,7 +131,6 @@ class Game(DatabaseObject):
         if weapon is None:
             return result
 
-        from dnd_bot.logic.utils.utils import find_position_to_check
         attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
             if not isinstance(creature, Player):
@@ -138,6 +142,7 @@ class Game(DatabaseObject):
                 elif attack_range >= 6:
                     mod = 4
                 if (player.x - creature.x)**2 + (player.y - creature.y)**2 <= attack_range**2 + mod:
+                    from dnd_bot.logic.utils.utils import find_position_to_check
                     add = True
                     positions = find_position_to_check(player.x, player.y, creature.x, creature.y)
                     for pos in positions:
