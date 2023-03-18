@@ -4,6 +4,8 @@ import random
 import cv2 as cv
 
 from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.database.database_equipment import DatabaseEquipment
+from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
@@ -27,6 +29,7 @@ from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_c import DungeonPilla
 from dnd_bot.logic.prototype.entities.walls.dungeon_straight_a import DungeonStraightA
 from dnd_bot.logic.prototype.entities.walls.dungeon_straight_b import DungeonStraightB
 from dnd_bot.logic.prototype.equipment import Equipment
+from dnd_bot.logic.prototype.item import Item
 from dnd_bot.logic.prototype.items.bow import Bow
 from dnd_bot.logic.prototype.items.staff import Staff
 from dnd_bot.logic.prototype.items.sword import Sword
@@ -62,28 +65,33 @@ class InitializeWorld:
                     elif entity_types[str(entity)] == Hole.entity_name:
                         entities_row = InitializeWorld.add_entity(entities_row, Hole, x, y, game.token, game.id)
                     elif entity_types[str(entity)] == Mushrooms.entity_name:
-                        entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id,)
+                        entities_row = InitializeWorld.add_entity(entities_row, Mushrooms, x, y, game.token, game.id, )
                     elif entity_types[str(entity)] == FrostMage.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, FrostMage, x, y, game.token, game.id,
-                                                                  entity_types[str(entity)])
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == HalfDragonAssassin.creature_name:
-                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonAssassin, x, y, game.token, game.id,
-                                                                  entity_types[str(entity)])
+                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonAssassin, x, y, game.token,
+                                                                    game.id,
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == HalfDragonWarrior.creature_name:
-                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonWarrior, x, y, game.token, game.id,
-                                       entity_types[str(entity)])
+                        entities_row = InitializeWorld.add_creature(entities_row, HalfDragonWarrior, x, y, game.token,
+                                                                    game.id,
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == LizardfolkArcher.creature_name:
-                        entities_row = InitializeWorld.add_creature(entities_row, LizardfolkArcher, x, y, game.token, game.id,
-                                       entity_types[str(entity)])
+                        entities_row = InitializeWorld.add_creature(entities_row, LizardfolkArcher, x, y, game.token,
+                                                                    game.id,
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == Nothic.creature_name:
                         entities_row = InitializeWorld.add_creature(entities_row, Nothic, x, y, game.token, game.id,
-                                       entity_types[str(entity)])
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == SkeletonMorningstar.creature_name:
-                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonMorningstar, x, y, game.token, game.id,
-                                       entity_types[str(entity)])
+                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonMorningstar, x, y, game.token,
+                                                                    game.id,
+                                                                    entity_types[str(entity)])
                     elif entity_types[str(entity)] == SkeletonWarrior.creature_name:
-                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonWarrior, x, y, game.token, game.id,
-                                       entity_types[str(entity)])
+                        entities_row = InitializeWorld.add_creature(entities_row, SkeletonWarrior, x, y, game.token,
+                                                                    game.id,
+                                                                    entity_types[str(entity)])
 
                     # walls
                     elif entity_types[str(entity)] == DungeonConnector.entity_name:
@@ -154,7 +162,7 @@ class InitializeWorld:
                                                           action_points=character['action points'],
                                                           character_race=character['race'],
                                                           character_class=character['class'])
-                                                      
+
                     ChosenAttributes.delete_user(game.user_list[i].discord_id)
                 else:
                     entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
@@ -195,7 +203,8 @@ class InitializeWorld:
 
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id):
-        entity = entity_class(x=x, y=y, game_token=game_token, name=entity_class.entity_name, sprite=entity_class.sprite_path)
+        entity = entity_class(x=x, y=y, game_token=game_token, name=entity_class.entity_name,
+                              sprite=entity_class.sprite_path)
         id_entity = DatabaseEntity.add_entity(name=entity_class.entity_name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity_row.append(entity)
@@ -204,7 +213,7 @@ class InitializeWorld:
     @staticmethod
     def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
         creature = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
-                                name=creature_class.creature_name, hp=20)
+                                  name=creature_class.creature_name, hp=20)
         id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2)
 
         creature.id = id_creature
@@ -216,26 +225,80 @@ class InitializeWorld:
                    game_id: int = 0, entities=None, backstory: str = '', alignment: str = '', hp: int = 0,
                    strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                    perception: int = 0, initiative: int = 0, action_points: int = 0,
-                   character_race: str = '', character_class: str = '') -> int | None:
+                   character_race: str = '', character_class: str = ''):
 
         p = Player(x=x, y=y, name=name, discord_identity=discord_identity, game_token=game_token, backstory=backstory,
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
                    charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
                    character_race=character_race, character_class=character_class)
+
+        # TODO change location of adding equipment/items
+        if p.character_class == 'Warrior':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Sword())
+        elif p.character_class == 'Mage':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Staff())
+        elif p.character_class == 'Ranger':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Bow())
+        # TODO id_equipment
         id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.character_class)  # TODO add race and class
+                                              character_class=p.character_class, id_equipment=p.equipment.id)
         p.id = id_player
-
-        # TODO change location of adding equipment/items
-        if p.character_class == 'Warrior':
-            p.equipment = Equipment(right_hand=Sword())
-        elif p.character_class == 'Mage':
-            p.equipment = Equipment(right_hand=Staff())
-        elif p.character_class == 'Ranger':
-            p.equipment = Equipment(right_hand=Bow())
 
         entities[y].insert(x, p)
         return entities
+
+    @staticmethod
+    def add_equipment(helmet: Item = None, chest: Item = None, leg_armor: Item = None, boots: Item = None,
+                      left_hand: Item = None, right_hand: Item = None, accessory: Item = None) -> Equipment:
+        """adds equipment to database and returns id_equipment"""
+        e = Equipment()
+        if helmet is not None:
+            helmet_id = helmet.id = InitializeWorld.add_item(helmet)
+            e.helmet = helmet
+        else:
+            helmet_id = None
+        if chest is not None:
+            chest_id = chest.id = InitializeWorld.add_item(chest)
+            e.chest = chest
+        else:
+            chest_id = None
+        if leg_armor is not None:
+            leg_armor_id = leg_armor.id = InitializeWorld.add_item(leg_armor)
+            e.leg_armor = leg_armor
+        else:
+            leg_armor_id = None
+        if boots is not None:
+            boots_id = boots.id = InitializeWorld.add_item(boots)
+            e.boots = boots
+        else:
+            boots_id = None
+        if left_hand is not None:
+            left_hand_id = left_hand.id = InitializeWorld.add_item(left_hand)
+            e.left_hand = left_hand
+        else:
+            left_hand_id = None
+        if right_hand is not None:
+            right_hand_id = right_hand.id = InitializeWorld.add_item(right_hand)
+            e.right_hand = right_hand
+        else:
+            right_hand_id = None
+        if accessory is not None:
+            accessory_id = accessory.id = InitializeWorld.add_item(accessory)
+            e.accessory = accessory
+        else:
+            accessory_id = None
+
+        e.id = DatabaseEquipment.add_equipment(helmet=helmet_id, chest=chest_id, leg_armor=leg_armor_id, boots=boots_id,
+                                               left_hand=left_hand_id, right_hand=right_hand_id, accessory=accessory_id)
+        return e
+
+    @staticmethod
+    def add_item(i: Item) -> int:
+        """adds item to database and returns its id_item"""
+        return DatabaseItem.add_item(name=i.name, hp=i.hp, strength=i.strength, dexterity=i.dexterity,
+                                     intelligence=i.intelligence, charisma=i.charisma, perception=i.perception,
+                                     action_points=i.action_points, effect=i.effect, base_price=i.base_price,
+                                     description=i.description)

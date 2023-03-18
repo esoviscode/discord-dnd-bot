@@ -11,7 +11,7 @@ class DatabasePlayer:
                    dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                    initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
                    alignment: str = '', backstory: str = '', id_game: int = 1, experience: int = 0,
-                   character_class: str = '', character_race: str = '') -> int | None:
+                   character_class: str = '', character_race: str = '', id_equipment: int = 0) -> int | None:
         id_creature = DatabaseCreature.add_creature(x=x, y=y, name=name, hp=hp, strength=strength,
                                                     dexterity=dexterity, intelligence=intelligence, charisma=charisma,
                                                     perception=perception, initiative=initiative,
@@ -19,9 +19,10 @@ class DatabasePlayer:
                                                     experience=experience)
         id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '
-                                                 'race, class, id_creature) VALUES (%s, %s, %s, %s, %s, %s)',
+                                                 'race, class, id_equipment,id_creature) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                                                  (id_user, alignment, backstory,
-                                                  character_race.upper(), character_class.upper(), id_creature))
+                                                  character_race.upper(), character_class.upper(), id_equipment,
+                                                  id_creature), "Player")
         return id_player
 
     @staticmethod
