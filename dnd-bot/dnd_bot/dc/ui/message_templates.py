@@ -5,6 +5,7 @@ from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.prototype.item import Item
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
 class MessageTemplates:
@@ -245,21 +246,59 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Class Form', description=desc)
 
-        embed.add_field(name="Warrior ⚔",
-                        value="Warriors share an unparalleled mastery with weapons and armor, and a thorough "
-                              "knowledge of the skills of combat. They are well acquainted with death, both meting it "
-                              "out and staring it defiantly in the face.")
+        def add_class_field(class_name, description, embed):
+            """Function adding fields describing character class
+                :param class_name: name of the character class
+                :param description: description of this character class
+                :param embed: embed to which the fields are appended"""
 
-        embed.add_field(name="Mage 🧙",
-                        value="Mages are supreme magic-users, defined and united as a class by the spells they cast. "
-                              "Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of "
-                              "explosive fire, arcing lightning, subtle deception, brute-force mind control, "
-                              "and much more.")
+            character_class = string_to_character_class(class_name)
 
-        embed.add_field(name="Ranger 🏹",
-                        value="Far from the bustle of cities and towns, past the hedges that shelter the most distant "
-                              "farms from the terrors of the wild, amid the dense-packed trees of trackless forests "
-                              "and across wide and empty plains, rangers keep their unending watch.")
+            embed.add_field(name=f"{class_name} {character_class.emoji()}",
+                            value=description,
+                            inline=True)
+
+            class_stats_description = ""
+            if character_class.base_hp() > 0:
+                class_stats_description += f"{'💖'}  hp:  {character_class.base_hp()}\n\n"
+            if character_class.base_strength() > 0:
+                class_stats_description += f"{'💪'}  strength:  {character_class.base_strength()}\n\n"
+            if character_class.base_dexterity() > 0:
+                class_stats_description += f"{'👋'}  dexterity:  {character_class.base_dexterity()}\n\n"
+            if character_class.base_intelligence() > 0:
+                class_stats_description += f"{'🧠'}  intelligence:  {character_class.base_intelligence()}\n\n"
+            if character_class.base_charisma() > 0:
+                class_stats_description += f"{'😎‍'}  charisma:  {character_class.base_charisma()}\n\n"
+            if character_class.base_perception() > 0:
+                class_stats_description += f"{'👀'}  perception:  {character_class.base_perception()}\n\n"
+            if character_class.base_action_points() > 0:
+                class_stats_description += f"{'✊'}  action points:  {character_class.base_action_points()}\n\n"
+            if character_class.base_initiative() > 0:
+                class_stats_description += f"{'✨'}  initiative:  {character_class.base_initiative()}\n\n"
+
+            embed.add_field(name="",
+                            value=class_stats_description,
+                            inline=True)
+
+            embed.add_field(name="",
+                            value="\n\u200b",
+                            inline=False)
+
+        warrior_description = "Warriors share an unparalleled mastery with weapons and armor, and a thorough " \
+                              "knowledge of the skills of combat. They are well acquainted with death, both meting it " \
+                              "out and staring it defiantly in the face."
+        add_class_field("Warrior", warrior_description, embed)
+
+        mage_description = "Mages are supreme magic-users, defined and united as a class by the spells they cast. " \
+                           "Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of " \
+                           "explosive fire, arcing lightning, subtle deception, brute-force mind control, " \
+                           "and much more.\n\n\n "
+        add_class_field("Mage", mage_description, embed)
+
+        ranger_description = "Far from the bustle of cities and towns, past the hedges that shelter the most distant " \
+                             "farms from the terrors of the wild, amid the dense-packed trees of trackless forests " \
+                             "and across wide and empty plains, rangers keep their unending watch.\n\n\n "
+        add_class_field("Ranger", ranger_description, embed)
 
         return embed
 
@@ -273,26 +312,64 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Race Form', description=desc)
 
-        embed.add_field(name="Human 👨",
-                        value="In the reckonings of most worlds, humans are the youngest of the common races, "
-                              "late to arrive on the world scene and short-lived in comparison to dwarves, elves, "
-                              "and dragons. Perhaps it is because of their shorter lives that they strive to achieve "
-                              "as much as they can in the years they are given. Or maybe they feel they have "
-                              "something to prove to the elder races, and that's why they build their mighty empires "
-                              "on the foundation of conquest and trade. Whatever drives them, humans are the "
-                              "innovators, the achievers, and the pioneers of the worlds.")
+        def add_race_field(race_name, description, embed):
+            """Function adding fields describing character race
+                :param race_name: name of the character race
+                :param description: description of this character race
+                :param embed: embed to which the fields are appended"""
 
-        embed.add_field(name="Elf 🧝",
-                        value="Elves are a magical people of otherworldly grace, living in places of ethereal beauty, "
-                              "in the midst of ancient forests or in silvery spires glittering with faerie light, "
-                              "where soft music drifts through the air and gentle fragrances waft on the breeze. Elves "
-                              "love nature and magic, art and artistry, music and poetry.")
+            character_race = string_to_character_race(race_name)
 
-        embed.add_field(name="Dwarf 🤏",
-                        value="Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, "
-                              "the echoing of picks and hammers in deep mines and blazing forges, a commitment to "
-                              "clan and tradition, and a burning hatred of goblins and orcs – these common threads "
-                              "unite all dwarves.")
+            embed.add_field(name=f"{race_name} {character_race.emoji()}",
+                            value=description,
+                            inline=True)
+
+            race_stats_description = ""
+            if character_race.base_hp() > 0:
+                race_stats_description += f"{'💖'}  hp:  {character_race.base_hp()}\n\n"
+            if character_race.base_strength() > 0:
+                race_stats_description += f"{'💪'}  strength:  {character_race.base_strength()}\n\n"
+            if character_race.base_dexterity() > 0:
+                race_stats_description += f"{'👋'}  dexterity:  {character_race.base_dexterity()}\n\n"
+            if character_race.base_intelligence() > 0:
+                race_stats_description += f"{'🧠'}  intelligence:  {character_race.base_intelligence()}\n\n"
+            if character_race.base_charisma() > 0:
+                race_stats_description += f"{'😎‍'}  charisma:  {character_race.base_charisma()}\n\n"
+            if character_race.base_perception() > 0:
+                race_stats_description += f"{'👀'}  perception:  {character_race.base_perception()}\n\n"
+            if character_race.base_action_points() > 0:
+                race_stats_description += f"{'✊'}  action points:  {character_race.base_action_points()}\n\n"
+            if character_race.base_initiative() > 0:
+                race_stats_description += f"{'✨'}  initiative:  {character_race.base_initiative()}\n\n"
+
+            embed.add_field(name="",
+                            value=race_stats_description,
+                            inline=True)
+
+            embed.add_field(name="",
+                            value="\n\u200b",
+                            inline=False)
+
+        human_description = "In the reckonings of most worlds, humans are the youngest of the common races, late to " \
+                            "arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. " \
+                            "Perhaps it is because of their shorter lives that they strive to achieve as much as they " \
+                            "can in the years they are given. Or maybe they feel they have something to prove to the " \
+                            "elder races, and that's why they build their mighty empires on the foundation of " \
+                            "conquest and trade. Whatever drives them, humans are the innovators, the achievers, " \
+                            "and the pioneers of the worlds.\n\n\n "
+        add_race_field("Human", human_description, embed)
+
+        elf_description = "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, " \
+                          "in the midst of ancient forests or in silvery spires glittering with faerie light, " \
+                          "where soft music drifts through the air and gentle fragrances waft on the breeze. Elves " \
+                          "love nature and magic, art and artistry, music and poetry.\n\n\n "
+        add_race_field("Elf", elf_description, embed)
+
+        dwarf_description = "Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, the echoing " \
+                            "of picks and hammers in deep mines and blazing forges, a commitment to clan and " \
+                            "tradition, and a burning hatred of goblins and orcs – these common threads unite all " \
+                            "dwarves.\n\n\n "
+        add_race_field("Dwarf", dwarf_description, embed)
 
         return embed
 
@@ -301,38 +378,63 @@ class MessageTemplates:
         """embed showing created character and his stats"""
 
         character = ChosenAttributes.chosen_attributes[user_id]
+        character_class = string_to_character_class(character['class'])
+        character_race = string_to_character_race(character['race'])
 
         embed = nextcord.Embed(title=f'Your Character')
 
         embed.add_field(name="Name",
-                        value=character['name'],
+                        value=f"{character['name']}",
                         inline=False)
 
         embed.add_field(name="Backstory",
-                        value=character['backstory'],
+                        value=f"{character['backstory']}",
                         inline=False)
 
         embed.add_field(name="Alignment",
-                        value='-'.join(character['alignment']),
+                        value=f"{'-'.join(character['alignment'])}",
                         inline=False)
 
         embed.add_field(name="Class",
-                        value=character['class'],
-                        inline=False)
+                        value=f"{character_class.emoji()} {character['class']}",
+                        inline=True)
 
         embed.add_field(name="Race",
-                        value=character['race'],
-                        inline=False)
+                        value=f"{character_race.emoji()} {character['race']}",
+                        inline=True)
 
         embed.add_field(name="Stats",
-                        value=f"HP: {character['hp']} \n"
-                              f"Strength: {character['strength']}\n"
-                              f"Dexterity: {character['dexterity']}\n"
-                              f"Intelligence: {character['intelligence']}\n"
-                              f"Charisma: {character['charisma']}\n"
-                              f"Perception: {character['perception']}\n"
-                              f"Initiative: {character['initiative']}\n"
-                              f"Action points: {character['action points']}\n",
+                        value=f"{'💖'} HP: {character['hp']}"
+                              f" ({character_class.base_hp() + character_race.base_hp()} + "
+                              f"{character['hp'] - character_class.base_hp() - character_race.base_hp()}) \n\n"
+                              
+                              f"{'💪'} Strength: {character['strength']}"
+                              f" ({character_class.base_strength() + character_race.base_strength()} + "
+                              f"{character['strength'] - character_class.base_strength() - character_race.base_strength()}) \n\n "
+                              
+                              f"{'👋'} Dexterity: {character['dexterity']}"
+                              f" ({character_class.base_dexterity() + character_race.base_dexterity()} + "
+                              f"{character['dexterity'] - character_class.base_dexterity() - character_race.base_dexterity()}) \n\n "
+                              
+                              f"{'🧠'} Intelligence: {character['intelligence']}"
+                              f" ({character_class.base_intelligence() + character_race.base_intelligence()} + "
+                              f"{character['intelligence'] - character_class.base_intelligence() - character_race.base_intelligence()}) \n\n "
+                              
+                              f"{'😎‍'} Charisma: {character['charisma']}"
+                              f" ({character_class.base_charisma() + character_race.base_charisma()} + "
+                              f"{character['charisma'] - character_class.base_charisma() - character_race.base_charisma()}) \n\n "
+                              
+                              f"{'👀'} Perception: {character['perception']}"
+                              f" ({character_class.base_perception() + character_race.base_perception()} + "
+                              f"{character['perception'] - character_class.base_perception() - character_race.base_perception()}) \n\n "
+                              
+                              f"{'✊'} Initiative: {character['initiative']}"
+                              f" ({character_class.base_initiative() + character_race.base_initiative()} + "
+                              f"{character['initiative'] - character_class.base_initiative() - character_race.base_initiative()}) \n\n "
+                              
+                              f"{'✨'} Action points: {character['action points']}"
+                              f" ({character_class.base_action_points() + character_race.base_action_points()} + "
+                              f"{character['action points'] - character_class.base_action_points() - character_race.base_action_points()}) \n\n ",
                         inline=False)
 
         return embed
