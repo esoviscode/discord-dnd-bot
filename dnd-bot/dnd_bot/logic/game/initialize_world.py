@@ -229,11 +229,11 @@ class InitializeWorld:
         p.id = id_player
 
         # TODO change location of adding equipment/items
-        if p.character_class == 'Warrior':
+        if p.creature_class == 'Warrior':
             p.equipment = Equipment(right_hand=Sword(name='Novice sword'), accessory=Item(name='Holy Bible'))
-        elif p.character_class == 'Mage':
+        elif p.creature_class == 'Mage':
             p.equipment = Equipment(right_hand=Staff(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
-        elif p.character_class == 'Ranger':
+        elif p.creature_class == 'Ranger':
             p.equipment = Equipment(right_hand=Bow(name='Novice bow'), accessory=Item(name='Hunting necklace'))
 
         entities[y].insert(x, p)
