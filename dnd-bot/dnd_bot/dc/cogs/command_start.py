@@ -1,6 +1,8 @@
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.logic.game.game_loop import GameLoop
+from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.lobby.handler_start import HandlerStart
 
 
@@ -22,6 +24,9 @@ class CommandStart(Cog):
             # send messages about successful start operation
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, "Game has started successfully!\n")
+
+            GameStart.start(token)
+            await GameLoop.start_loop(token)
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
 

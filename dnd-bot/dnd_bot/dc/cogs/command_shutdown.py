@@ -26,8 +26,8 @@ class ShutdownCommand(Cog):
             # stop all running game threads
             for game in Multiverse.games.values():
                 game.game_state = "INACTIVE"
-                if game.get_active_player():
-                    game.get_active_player().active = False
+                if game.get_active_creature():
+                    game.get_active_creature().active = False
                 if game.game_loop_thread:
                     game.game_loop_thread.join()
 
@@ -35,7 +35,7 @@ class ShutdownCommand(Cog):
             print("\nDeleting old images...")
             tmp_img_path = 'dnd_bot/assets/tmp/game_images'
             for filename in os.listdir(tmp_img_path):
-                if filename.startswith('pov'):
+                if filename.startswith('pov') or filename.startswith('map'):
                     os.remove('%s/%s' % (tmp_img_path, filename))
 
             await self.bot.close()

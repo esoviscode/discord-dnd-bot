@@ -1,22 +1,26 @@
 import cv2 as cv
 
+from dnd_bot.logic.prototype.database_object import DatabaseObject
 
-class Entity:
+
+class Entity(DatabaseObject):
     """This class is the base class for all entities in the game like creatures and elements on the map"""
-    def __init__(self, x=0, y=0, sprite=None, name='Entity', id_game=0, game_token='', skills=None, fragile=False,
-                 look_direction='down'):
+
+    def __init__(self, id: int = 0, x: int = 0, y: int = 0, sprite: str = '', name: str = 'Entity', game_token: str = '',
+                 skills=None, fragile: bool = False, look_direction: str = 'down'):
         """":param fragile: if entity can be moved or destroyed from its position"""
+        super().__init__(id)
         if skills is None:
             skills = []
         self.x = x
         self.y = y
         self.sprite = sprite
         self.name = name
-        self.id_game = id_game
         self.game_token = game_token
         self.skills = skills
         self.fragile = fragile
         self.look_direction = look_direction
+        self.sprite_path = sprite
         if sprite:
             self.sprite = cv.imread(sprite, cv.IMREAD_UNCHANGED)
             self.sprite = cv.resize(self.sprite, (50, 50), interpolation=cv.INTER_AREA)
@@ -31,6 +35,9 @@ class Entity:
         """moves entity one tile in set direction"""
 
         if direction == 'right':
+            if self.x + 1 >= game.world_width:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y][self.x + 1] is not None:
                 return False, 'This field is taken!'
 
@@ -45,6 +52,9 @@ class Entity:
             return True, ''
 
         elif direction == 'left':
+            if self.x - 1 < 0:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y][self.x - 1] is not None:
                 return False, 'This field is taken!'
 
@@ -59,6 +69,9 @@ class Entity:
             return True, ''
 
         elif direction == 'up':
+            if self.y - 1 < 0:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y - 1][self.x] is not None:
                 return False, 'This field is taken!'
 
@@ -72,6 +85,9 @@ class Entity:
             self.look_direction = direction
             return True, ''
         elif direction == 'down':
+            if self.y + 1 >= game.world_width:
+                return False, 'You cannot go beyond the world border!'
+
             if game.entities[self.y + 1][self.x] is not None:
                 return False, 'This field is taken!'
 

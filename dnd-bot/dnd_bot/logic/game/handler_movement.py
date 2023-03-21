@@ -12,8 +12,8 @@ class HandlerMovement:
         if player is None:
             return False, 'This user doesn\'t have a player!'
 
-        if not player.active:
-            return False, 'You can\'t perform a move right now!'
+        if game.active_creature != player:
+            return False, 'You can\'t perform a move right now - another creature is active!'
 
         if player.action_points == 0:
             return False, 'You\'re out of action points!'

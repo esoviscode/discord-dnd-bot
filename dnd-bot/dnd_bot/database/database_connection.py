@@ -1,5 +1,7 @@
 import os
-from psycopg2 import connect, ProgrammingError
+from sqlite3 import ProgrammingError
+
+from psycopg2 import connect
 
 
 class DatabaseConnection:
@@ -58,126 +60,41 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
 
     @staticmethod
-    def add_game(token: str, id_host: int, game_state: str, campaign_name: str) -> int | None:
-        """start game and add game to database
-        :param token: lobby/game token (5 digit password)
-        :param id_host: discord id of host
-        :param game_state: string enum, initial value of added game is 'LOBBY'
-        :param campaign_name: campaign  name
-        :return:
-            on success: game id, on failure: None
-        """
-
-        DatabaseConnection.cursor.execute('INSERT INTO public."Game" (token, id_host, game_state, campaign_name) VALUES '
-                                          '(%s, %s, %s, %s)',
-                                          (token, id_host, game_state, campaign_name))
+    def add_to_db(query: str = "", parameters: tuple = None, element_name: str = "element") -> int | None:
+        DatabaseConnection.cursor.execute(query, parameters)
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
 
         try:
-            game_id = DatabaseConnection.cursor.fetchone()[0]
+            id = DatabaseConnection.cursor.fetchone()[0]
         except ProgrammingError as err:
-            print(f"db: error adding game {err}")
+            print(f"db: error adding {element_name} {err}")
             return None
 
         DatabaseConnection.connection.commit()
-        return game_id
+        return id
 
     @staticmethod
-    def start_game(id_game: int) -> None:
-        """starts game
-        :param id_game: database game id
-        """
-        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state=(%s) WHERE id_game = (%s)',
-                                          ('ACTIVE', id_game))
+    def get_object_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> tuple | None:
+        DatabaseConnection.cursor.execute(query, parameters)
+        obj = DatabaseConnection.cursor.fetchone()
 
-        DatabaseConnection.connection.commit()
-
-    @staticmethod
-    def add_user(id_game: int, discord_id: int) -> int | None:
-        """add user to a game
-        :param id_game: database game id
-        :param discord_id: user discord id
-        """
-
-        DatabaseConnection.cursor.execute('INSERT INTO public."User" (id_game, discord_id) VALUES (%s, %s)',
-                                          (id_game, discord_id))
-        DatabaseConnection.cursor.execute('SELECT LASTVAL()')
-
-        try:
-            user_id = DatabaseConnection.cursor.fetchone()[0]
-        except ProgrammingError as err:
-            print(f"db: error adding user {err}")
+        if not obj:
+            print(f"db: error getting {element_name}")
             return None
 
         DatabaseConnection.connection.commit()
-        return user_id
+        return obj
 
     @staticmethod
-    def find_game_by_token(token: str) -> dict | None:
-        """find game by token/password
-        :param token: game token/password to find the game by
-        :return: on success: dictionary containing game data - it's keys: 'id game' - database game id, 'token' - game token, 'id_host' -
-        discord host id, 'id_campaign' - campaign id, 'game_state' - string enum, 'players' - list of players
-        """
+    def get_multiple_objects_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> list | None:
+        """returns list of tuples representing a db object"""
+        DatabaseConnection.cursor.execute(query, parameters)
+        objs = DatabaseConnection.cursor.fetchall()
 
-        DatabaseConnection.cursor.execute(f'SELECT * FROM public."Game" WHERE token = %s AND game_state != %s',
-                                          (token, 'FINISHED'))
-        game_tuple = DatabaseConnection.cursor.fetchone()
-
-        if not game_tuple:
+        if not objs:
+            print(f"db: error getting multiple {element_name}")
             return None
 
-        DatabaseConnection.cursor.execute(f'SELECT * FROM public."User" WHERE id_game = {game_tuple[0]}')
-        users_tuples = DatabaseConnection.cursor.fetchall()
-
-        users = [{'id_user': user_tuple[0], 'id_game': user_tuple[1], 'discord_id': user_tuple[2]}
-                 for user_tuple in users_tuples]
-
-        return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2],
-                'id_campaign': game_tuple[3],
-                'game_state': game_tuple[4], 'players': users}
-
-    @staticmethod
-    def update_game_state(id_game: int, game_state: str) -> None:
-        """updates game state on the one provided
-        """
-        DatabaseConnection.cursor.execute('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
-                                          (game_state, id_game))
-
         DatabaseConnection.connection.commit()
+        return objs
 
-    @staticmethod
-    def get_all_game_tokens():
-        """returns all tokens currently existing in the database
-        """
-        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game"')
-        tokens = DatabaseConnection.cursor.fetchall()
-        DatabaseConnection.connection.commit()
-
-        return [x[0] for x in tokens]
-
-    @staticmethod
-    def get_id_game_from_game_token(token: str) -> int | None:
-        """returns database game id based on the token, None if the query fails
-        """
-        DatabaseConnection.cursor.execute(f'SELECT id_game FROM public."Game" WHERE token = (%s)', (token,))
-        game_id = DatabaseConnection.cursor.fetchone()
-        DatabaseConnection.connection.commit()
-
-        if not game_id:
-            return None
-
-        return game_id
-
-    @staticmethod
-    def get_game_token_from_id_game(id_game: int) -> str | None:
-        """returns game token based on database game id, None if the query fails
-        """
-        DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = (%s)', (id_game,))
-        game_token = DatabaseConnection.cursor.fetchone()
-        DatabaseConnection.connection.commit()
-
-        if not game_token:
-            return None
-
-        return game_token

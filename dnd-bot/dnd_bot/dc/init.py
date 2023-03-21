@@ -8,7 +8,7 @@ from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.dc.ui.messager import Messager
 
 activity = nextcord.Activity(name='/help', type=nextcord.ActivityType.listening)
-bot = commands.Bot(command_prefix='$', intents=Intents().all(), activity=activity)
+bot = commands.Bot(command_prefix='/', intents=Intents().all(), activity=activity)
 
 
 @bot.event

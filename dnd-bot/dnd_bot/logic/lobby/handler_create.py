@@ -1,9 +1,12 @@
 import random
 
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.user import User
 
 generated_ids = []
 MAX_RANDOM_VALUE = 10000
@@ -47,24 +50,26 @@ class HandlerCreate:
         :param host_username: discord username
         :return: status, (if creation was successful, new game token, optional error message)
         """
-        tokens = DatabaseConnection.get_all_game_tokens()
+        tokens = DatabaseGame.get_all_game_tokens()
         token = await HandlerCreate.generate_token()
         while token in tokens:
             token = await HandlerCreate.generate_token()
 
-        game_id = DatabaseConnection.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
-        if game_id is None:
+        DatabaseGame.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
+        game = Game(token, host_id, "Storm King's Thunder", "LOBBY")
+
+        if game.id is None:
             return False, -1, ":no_entry: Error creating game!"
 
-        user_id = DatabaseConnection.add_user(game_id, host_id)
-        if user_id is None:
+        DatabaseUser.add_user(game.id, host_id)
+        user = User(token, host_id, host_dm_channel, host_username, HandlerJoin.get_color_by_index(0), True)
+        if user.id is None:
             return False, -1, ":no_entry: Error creating host user"
 
-        game = Game(token)
-
+        if not Multiverse.masks:
+            Multiverse.generate_masks()
         Multiverse.add_game(game)
-        Multiverse.get_game(token).add_host(host_id, host_dm_channel, host_username,
-                                            HandlerJoin.get_color_by_index(0))
+        Multiverse.get_game(token).add_host(user)
 
         return True, token, ""
 

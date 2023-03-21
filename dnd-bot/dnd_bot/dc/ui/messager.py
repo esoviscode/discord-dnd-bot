@@ -34,25 +34,28 @@ class Messager:
         await message.edit(content=new_content, embeds=message.embeds)
 
     @staticmethod
-    async def edit_last_user_message(user_id: int, content="", embed=None, embeds=None, view=None, files=None):
+    async def edit_last_user_message(user_id: int, content="", embed=None, embeds=None, view=None, files=None,
+                                     retain_view=False):
         if embeds is None:
             embeds = []
         channel_id, message_id = MessageHolder.read_last_message_data(user_id)
 
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
+        if retain_view:
+            view = nextcord.ui.View.from_message(message)
 
         # includes files
         if files:
             if len(embeds) > 0:
-                await message.edit(content=content, embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
+                await message.edit(content=str(content), embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
             else:
-                await message.edit(content=content, embed=embed, view=view, files=[nextcord.File(f) for f in files])
+                await message.edit(content=str(content), embed=embed, view=view, files=[nextcord.File(f) for f in files])
         else:
             if len(embeds) > 0:
-                await message.edit(content=content, embeds=embeds, view=view)
+                await message.edit(content=str(content), embeds=embeds, view=view)
             else:
-                await message.edit(content=content, embed=embed, view=view)
+                await message.edit(content=str(content), embed=embed, view=view)
 
     @staticmethod
     async def delete_last_user_message(user_id: int):

@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: postgresovisco
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: discord_bot
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports: 
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - discord_bot_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    container_name: pgadmin-discord-bot
+    image: dpage/pgadmin4:6.20
+    environment:
+      PGADMIN_DEFAULT_EMAIL: esovisco@pg.edu.pl
+      PGADMIN_DEFAULT_PASSWORD: 1qazaq1
+    ports:
+      - "5555:80"
+    volumes:
+      - pgadmin:/root/.pgadmin
+      - ./database/servers.json:/pgadmin4/servers.json
+    restart: unless-stopped
+    networks:
+      - discord_bot_network
+  discord-bot:
+    container_name: discord-bot
+    image: ghcr.io/esoviscode/discord-bot:latest
+    env_file:
+      - .env
+    networks:
+      - discord_bot_network
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+     - db
+
+volumes:
+  postgres:
+  pgadmin:
+
+networks:
+  discord_bot_network:
+    driver: bridge
