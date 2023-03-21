@@ -1,6 +1,8 @@
 import random
 
 from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
@@ -112,6 +114,14 @@ class HandlerCharacterCreation:
         if game.all_users_ready():
             game.game_state = 'ACTIVE'
             DatabaseGame.update_game_state(game_id, 'ACTIVE')
+
+            # delete any error message from character creation
+            for user in game.user_list:
+                error_data = MessageHolder.read_last_error_data(user.discord_id)
+                if error_data is not None:
+                    MessageHolder.delete_last_error_data(user.discord_id)
+                    await Messager.delete_message(error_data[0], error_data[1])
+
             GameStart.start(token)
             await GameLoop.start_loop(token)
 
