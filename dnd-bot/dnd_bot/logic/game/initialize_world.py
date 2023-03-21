@@ -27,6 +27,7 @@ from dnd_bot.logic.prototype.entities.walls.dungeon_straight_a import DungeonStr
 from dnd_bot.logic.prototype.entities.walls.dungeon_straight_b import DungeonStraightB
 from dnd_bot.logic.prototype.equipment import Equipment
 from dnd_bot.logic.prototype.items.bow import Bow
+from dnd_bot.logic.prototype.items.item import Item
 from dnd_bot.logic.prototype.items.staff import Staff
 from dnd_bot.logic.prototype.items.sword import Sword
 from dnd_bot.logic.prototype.player import Player
@@ -224,16 +225,16 @@ class InitializeWorld:
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.character_class)  # TODO add race and class
+                                              character_class=p.creature_class)  # TODO add race and class
         p.id = id_player
 
         # TODO change location of adding equipment/items
-        if p.character_class == 'Warrior':
-            p.equipment = Equipment(right_hand=Sword())
-        elif p.character_class == 'Mage':
-            p.equipment = Equipment(right_hand=Staff())
-        elif p.character_class == 'Ranger':
-            p.equipment = Equipment(right_hand=Bow())
+        if p.creature_class == 'Warrior':
+            p.equipment = Equipment(right_hand=Sword(name='Novice sword'), accessory=Item(name='Holy Bible'))
+        elif p.creature_class == 'Mage':
+            p.equipment = Equipment(right_hand=Staff(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
+        elif p.creature_class == 'Ranger':
+            p.equipment = Equipment(right_hand=Bow(name='Novice bow'), accessory=Item(name='Hunting necklace'))
 
         entities[y].insert(x, p)
         return entities

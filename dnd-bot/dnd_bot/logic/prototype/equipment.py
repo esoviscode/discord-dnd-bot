@@ -1,8 +1,5 @@
-import copy
-
-from dnd_bot.database.database_equipment import DatabaseEquipment
 from dnd_bot.logic.prototype.database_object import DatabaseObject
-from dnd_bot.logic.prototype.item import Item
+from dnd_bot.logic.prototype.items.item import Item
 
 
 class Equipment(DatabaseObject):

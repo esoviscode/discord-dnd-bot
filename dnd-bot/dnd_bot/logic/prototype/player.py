@@ -9,7 +9,7 @@ class Player(Creature):
     def __init__(self, entity_id=0, x=0, y=0, name: str = 'Player',
                  hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
-                 discord_identity: int = 0, alignment: str = '', backstory: str = '', equipment: Equipment = None,
+                 discord_identity: int = 0, alignment: str = '', backstory: str = '',
                  game_token: str = '', character_race: str = '', character_class: str = '', experience: int = 0):
 
         # request a sprite path for the player based on the user
@@ -22,26 +22,24 @@ class Player(Creature):
             if user is None:
                 print('Warning: this player has no associated User!')
             else:
-                self.character_class = character_class
-                self.sprite = self.get_sprite_path_by_color(user.color)
+                self.sprite = self.get_sprite_path_by_color(user.color, character_class)
 
         super().__init__(x=x, y=y, sprite=self.sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
                          intelligence=intelligence, charisma=charisma, perception=perception, initiative=initiative,
-                         action_points=action_points, level=level, game_token=game_token, experience=experience)
+                         action_points=action_points, level=level, game_token=game_token, experience=experience,
+                         creature_class=character_class)
 
         self.discord_identity = discord_identity
         self.alignment = alignment
         self.backstory = backstory
         self.character_race = character_race
-        self.character_class = character_class
-        self.equipment = equipment
         self.active = False
         self.attack_mode = False
 
-    def get_sprite_path_by_color(self, color: str):
+    def get_sprite_path_by_color(self, color: str, character_class: str):
         import os
 
-        path = f'dnd_bot/assets/gfx/entities/{self.character_class.lower()}_sprite_{color}.png'
+        path = f'dnd_bot/assets/gfx/entities/{character_class.lower()}_sprite_{color}.png'
         if os.path.isfile(path):
             return path
         else:
