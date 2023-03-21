@@ -34,6 +34,7 @@ class Player(Creature):
         self.backstory = backstory
         self.character_race = character_race
         self.active = False
+        self.attack_mode = False
 
     def get_sprite_path_by_color(self, color: str, character_class: str):
         import os

@@ -35,7 +35,7 @@ class ShutdownCommand(Cog):
             print("\nDeleting old images...")
             tmp_img_path = 'dnd_bot/assets/tmp/game_images'
             for filename in os.listdir(tmp_img_path):
-                if filename.startswith('pov'):
+                if filename.startswith('pov') or filename.startswith('map'):
                     os.remove('%s/%s' % (tmp_img_path, filename))
 
             await self.bot.close()

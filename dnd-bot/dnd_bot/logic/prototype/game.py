@@ -126,47 +126,7 @@ class Game(DatabaseObject):
         if weapon is None:
             return result
 
-        def find_position_to_check(x_src=0, y_src=0, x_dest=1, y_dest=1):
-            result = []
-
-            def find_positions(x1, y1, x2, y2, dx, dy, decide):
-                pk = 2 * dy - dx
-                for i in range(0, dx + 1):
-                    if decide == 0:
-                        result.append((x1, y1))
-                    else:
-                        result.append((y1, x1))
-
-                    if x1 < x2:
-                        x1 = x1 + 1
-                    else:
-                        x1 = x1 - 1
-                    if pk < 0:
-
-                        if decide == 0:
-                            pk = pk + 2 * dy
-                        else:
-                            pk = pk + 2 * dy
-                    else:
-                        if y1 < y2:
-                            y1 = y1 + 1
-                        else:
-                            y1 = y1 - 1
-
-                        pk = pk + 2 * dy - 2 * dx
-
-            dx = abs(x_dest - x_src)
-            dy = abs(y_dest - y_src)
-
-            # If slope is less than one
-            if dx > dy:
-                find_positions(x_src, y_src, x_dest, y_dest, dx, dy, 0)
-            # if slope is greater than or equal to 1
-            else:
-                find_positions(y_src, x_src, y_dest, x_dest, dy, dx, 1)
-
-            return result[1:-1]
-
+        from dnd_bot.logic.utils.utils import find_position_to_check
         attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
             if not isinstance(creature, Player):
