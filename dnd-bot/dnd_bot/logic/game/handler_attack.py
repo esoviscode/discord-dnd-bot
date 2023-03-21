@@ -30,6 +30,8 @@ class HandlerAttack:
         else:
             attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 
+        source.action_points -= source.equipment.right_hand.action_points
+
         # dodging an attack
         # the chance is (source dexterity)%
         if random.randint(0, 99) <= source.dexterity:  # evasion
@@ -50,7 +52,6 @@ class HandlerAttack:
             weapon_damage += random.randint(*source.equipment.right_hand.damage)
 
         target.hp -= (base_damage + weapon_damage)
-        source.action_points -= source.equipment.right_hand.action_points
 
         if target.hp <= 0:
             target_name = target.name
