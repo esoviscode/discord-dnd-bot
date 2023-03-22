@@ -212,10 +212,15 @@ class InitializeWorld:
         return entity_row
 
     @staticmethod
-    def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
+    def add_creature(entity_row, creature_class, x: int = 0, y: int = 0, game_token: str = '', game_id: int = 0,
+                     entity_name: str = '', creature_class_attribute: str = None, equipment: Equipment = None,
+                     hp: int = 20):
+        if equipment is None:
+            equipment = InitializeWorld.add_equipment()
         creature = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
-                                  name=creature_class.creature_name, hp=20)
-        id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2)
+                                  name=creature_class.creature_name, hp=hp, equipment=equipment)
+        id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2,
+                                                    creature_class=creature_class_attribute, id_equipment=equipment.id)
 
         creature.id = id_creature
         entity_row.append(creature)
@@ -232,22 +237,24 @@ class InitializeWorld:
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
                    charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
                    character_race=character_race, character_class=character_class)
-        # TODO id_equipment
+        # TODO change location of adding equipment/items
+        if p.creature_class == 'Warrior':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Sword(name='Novice sword'),
+                                                        accessory=Item(name='Holy Bible'))
+        elif p.creature_class == 'Mage':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Staff(name='Novice staff'),
+                                                        accessory=Item(name='Necklace of prudence'))
+        elif p.creature_class == 'Ranger':
+            p.equipment = InitializeWorld.add_equipment(right_hand=Bow(name='Novice bow'),
+                                                        accessory=Item(name='Hunting necklace'))
+
         id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
                                               p.intelligence, p.charisma, p.perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class, id_equipment=p.equipment.id)  # TODO add race and class
+                                              character_class=p.creature_class,
+                                              id_equipment=p.equipment.id)  # TODO add race and class
         p.id = id_player
-
-        # TODO change location of adding equipment/items
-        if p.creature_class == 'Warrior':
-            p.equipment = InitializeWorld.add_equipment(right_hand=Sword(name='Novice sword'), accessory=Item(name='Holy Bible'))
-        elif p.creature_class == 'Mage':
-            p.equipment = InitializeWorld.add_equipment(right_hand=Staff(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
-        elif p.creature_class == 'Ranger':
-            p.equipment = InitializeWorld.add_equipment(right_hand=Bow(name='Novice bow'), accessory=Item(name='Hunting necklace'))
-
 
         entities[y].insert(x, p)
         return entities
@@ -300,7 +307,4 @@ class InitializeWorld:
     @staticmethod
     def add_item(i: Item) -> int:
         """adds item to database and returns its id_item"""
-        return DatabaseItem.add_item(name=i.name, hp=i.hp, strength=i.strength, dexterity=i.dexterity,
-                                     intelligence=i.intelligence, charisma=i.charisma, perception=i.perception,
-                                     action_points=i.action_points, effect=i.effect, base_price=i.base_price,
-                                     description=i.description)
+        return DatabaseItem.add_item(name=i.name)
