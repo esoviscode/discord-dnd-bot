@@ -25,7 +25,7 @@ class ViewGame(View):
         :param token: game token
         :param user_discord_id: discord identity of user that this view is sent to
         """
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
         self.user_discord_id = user_discord_id
@@ -131,7 +131,7 @@ class ViewGame(View):
 
 class ViewMain(ViewGame):
 
-    @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Attack', style=nextcord.ButtonStyle.blurple, custom_id='attack-main-button')
     async def attack(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening attack menu"""
         game = Multiverse.get_game(self.token)
@@ -148,7 +148,7 @@ class ViewMain(ViewGame):
                                               view=ViewAttack(self.token, self.user_discord_id),
                                               files=[get_player_view(game, player, True)])
 
-    @nextcord.ui.button(label='Move', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Move', style=nextcord.ButtonStyle.blurple, custom_id='move-main-button')
     async def move(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening move menu"""
         game = Multiverse.get_game(self.token)
@@ -159,7 +159,7 @@ class ViewMain(ViewGame):
                                               view=ViewMovement(self.token, interaction.user.id))
         game.players_views[str(interaction.user.id)] = (ViewMovement, [])
 
-    @nextcord.ui.button(label='Skill', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Skill', style=nextcord.ButtonStyle.blurple, custom_id='skill-main-button')
     async def skill(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening skill menu"""
         player = Multiverse.get_game(self.token).get_player_by_id_user(interaction.user.id)
@@ -170,17 +170,17 @@ class ViewMain(ViewGame):
                                               embeds=[turn_view_embed, skills_list_embed],
                                               view=ViewSkills(self.token, self.user_discord_id))
 
-    @nextcord.ui.button(label='Character', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Character', style=nextcord.ButtonStyle.blurple, custom_id='character-main-button')
     async def character(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening character menu"""
         await super().character_view_options(interaction)
 
-    @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger)
+    @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger, custom_id='more-main-button')
     async def more_actions(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening more actions menu"""
         pass
 
-    @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger)
+    @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger, custom_id='end-turn-main-button')
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for ending turn"""
 
@@ -194,37 +194,39 @@ class ViewMain(ViewGame):
 
 class ViewMovement(ViewGame):
 
-    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True,
+                        custom_id='move-empty-1')
     async def empty_button_1(self):
         """placeholder button to create space"""
         pass
 
-    @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple, row=0)
+    @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple, row=0, custom_id='move-up')
     async def move_one_up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile up"""
         await ViewMovement.move_one_tile('up', interaction.user.id, self.token)
 
-    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True)
+    @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True,
+                        custom_id='move-empty-2')
     async def empty_button_2(self):
         """placeholder button to create space"""
         pass
 
-    @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple, row=1)
+    @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-left')
     async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile left"""
         await ViewMovement.move_one_tile('left', interaction.user.id, self.token)
 
-    @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple, row=1)
+    @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-down')
     async def move_one_down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile down"""
         await ViewMovement.move_one_tile('down', interaction.user.id, self.token)
 
-    @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple, row=1)
+    @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-right')
     async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile right"""
         await ViewMovement.move_one_tile('right', interaction.user.id, self.token)
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='move-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         await super().cancel(interaction)
@@ -275,12 +277,12 @@ class ViewAttack(ViewGame):
 
             self.add_item(self.select_enemy_to_attack_list)
 
-        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1)
+        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1, custom_id='attack-action-button')
         attack_button.callback = self.attack_button
         attack_button.disabled = self.enemies_to_attack == 0
         self.add_item(attack_button)
 
-        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1)
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1, custom_id='attack-cancel-button')
         cancel_button.callback = self.cancel
         self.add_item(cancel_button)
 
@@ -322,22 +324,22 @@ class ViewAttack(ViewGame):
 
 class ViewCharacter(ViewGame):
 
-    @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple, custom_id='character-equipment')
     async def character_view_equipment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening equipment menu"""
         await super().character_view_equipment(interaction)
 
-    @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple, custom_id='character-stats')
     async def character_view_stats(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
         await super().character_view_stats(interaction)
 
-    @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple, custom_id='character-skills')
     async def show_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
         await super().character_view_skills(interaction)
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='character-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         await super().cancel(interaction)
@@ -345,17 +347,17 @@ class ViewCharacter(ViewGame):
 
 class ViewCharacterNonActive(ViewGame):
 
-    @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Equipment', style=nextcord.ButtonStyle.blurple, custom_id='nonactive-equipment')
     async def character_view_equipment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening equipment menu"""
         await super().character_view_equipment(interaction)
 
-    @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Stats', style=nextcord.ButtonStyle.blurple, custom_id='nonactive-stats')
     async def character_view_stats(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening stats menu"""
         await super().character_view_stats(interaction)
 
-    @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label='Skills', style=nextcord.ButtonStyle.blurple, custom_id='nonactive-skills')
     async def character_view_skills(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening skills menu"""
         await super().character_view_skills(interaction)
@@ -363,7 +365,7 @@ class ViewCharacterNonActive(ViewGame):
 
 class ViewEquipment(ViewGame):
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='equipment-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         await super().character_view_options(interaction)
@@ -371,7 +373,7 @@ class ViewEquipment(ViewGame):
 
 class ViewStats(ViewGame):
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='stats-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to character view"""
         await super().character_view_options(interaction)
@@ -379,7 +381,7 @@ class ViewStats(ViewGame):
 
 class ViewCharacterSkills(ViewGame):
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='stats-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         await super().character_view_options(interaction)
@@ -389,7 +391,8 @@ class ViewSkills(ViewGame):
     def __init__(self, token, user_discord_id):
         super().__init__(token, user_discord_id)
         self.skills = []  # TODO no way to check the available skills for now
-        self.use_skill_buttons = [Button(label=str(x + 1), style=nextcord.ButtonStyle.blurple)
+        self.use_skill_buttons = [Button(label=str(x + 1), style=nextcord.ButtonStyle.blurple,
+                                         custom_id=f'use-skill-button-{x}')
                                   for x in range(10)]
 
         async def use_skill1(interaction: nextcord.Interaction):
@@ -446,7 +449,7 @@ class ViewSkills(ViewGame):
         for i in range(len(self.skills)):
             self.add_item(self.use_skill_buttons[i])
 
-    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='skills-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving back to main menu"""
         await super().cancel(interaction)
