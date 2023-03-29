@@ -46,3 +46,25 @@ class HandlerGame:
             await ViewGame.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token)
+
+    @staticmethod
+    async def pause_game(token: str = ''):
+        game = Multiverse.get_game(token)
+
+        if not game:
+            raise Exception('Game with provided token doesn\'t exist!')
+
+        game.status = 'INACTIVE'
+
+        # TODO save game state to database
+
+    @staticmethod
+    async def resume_game(token: str = ''):
+        game = Multiverse.get_game(token)
+
+        if not game:
+            raise Exception('Game with provided token doesn\'t exist!')
+
+        # TODO load game state from database
+
+        game.status = 'ACTIVE'
