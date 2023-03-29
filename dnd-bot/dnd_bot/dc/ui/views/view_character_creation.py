@@ -35,13 +35,13 @@ class ModalNameForm(nextcord.ui.Modal):
         self.name_textbox = nextcord.ui.TextInput(
             label="Name",
             placeholder="Enter your character name!",
-            default_value=ChosenAttributes.chosen_attributes[user_id]['name']
+            default_value=ChosenAttributes.chosen_attributes[(user_id, self.token)]['name']
         )
 
         self.backstory_textbox = nextcord.ui.TextInput(
             label="Background",
             placeholder="Tell something about your character's past!",
-            default_value=ChosenAttributes.chosen_attributes[user_id]['backstory']
+            default_value=ChosenAttributes.chosen_attributes[(user_id, self.token)]['backstory']
         )
 
         self.add_item(self.name_textbox)
@@ -49,8 +49,8 @@ class ModalNameForm(nextcord.ui.Modal):
 
     async def callback(self, interaction: nextcord.Interaction):
         """save user's choices and open alignment form"""
-        ChosenAttributes.chosen_attributes[self.user_id]['name'] = self.name_textbox.value
-        ChosenAttributes.chosen_attributes[self.user_id]['backstory'] = self.backstory_textbox.value
+        ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['name'] = self.name_textbox.value
+        ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['backstory'] = self.backstory_textbox.value
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.alignment_form_view_message_template(),
                                               view=ViewAlignmentForm(self.user_id, self.token))
@@ -62,8 +62,8 @@ class ViewAlignmentForm(nextcord.ui.View):
         super().__init__()
         self.user_id = user_id
         self.token = token
-        self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0]
-        self.goodness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]
+        self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][0]
+        self.goodness_axis_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][1]
 
         lawfulness_option1 = nextcord.SelectOption(
             label="Lawful",
@@ -118,10 +118,10 @@ class ViewAlignmentForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.lawfulness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
 
         if self.goodness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][1] = self.goodness_axis_dropdown.values[0]
 
         # delete error messages
         error_data = MessageHolder.read_last_error_data(self.user_id)
@@ -135,18 +135,18 @@ class ViewAlignmentForm(nextcord.ui.View):
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.lawfulness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
 
         if self.goodness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][1] = self.goodness_axis_dropdown.values[0]
 
         # check for previous error messages
         error_data = MessageHolder.read_last_error_data(self.user_id)
 
         # user hasn't made choice in at least one dropdown
         if (not self.lawfulness_axis_dropdown.values or not self.goodness_axis_dropdown.values) and \
-            (not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] or
-             not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
+            (not ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][0] or
+             not ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][1]):
 
             if error_data is None:
                 await Messager.send_dm_message(user_id=self.user_id, content="You must choose an alignment!", error=True)
@@ -168,7 +168,7 @@ class ViewClassForm(nextcord.ui.View):
         super().__init__()
         self.user_id = user_id
         self.token = token
-        self.class_value = ChosenAttributes.chosen_attributes[self.user_id]['class']
+        self.class_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['class']
 
         class_option1 = nextcord.SelectOption(
             label="Warrior",
@@ -199,7 +199,7 @@ class ViewClassForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.class_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['class'] = self.class_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['class'] = self.class_dropdown.values[0]
 
         # delete error messages
         error_data = MessageHolder.read_last_error_data(self.user_id)
@@ -215,11 +215,11 @@ class ViewClassForm(nextcord.ui.View):
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.class_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['class'] = self.class_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['class'] = self.class_dropdown.values[0]
 
         error_data = MessageHolder.read_last_error_data(self.user_id)
         # user hasn't chosen any option
-        if not self.class_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['class']:
+        if not self.class_dropdown.values and not ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['class']:
             if error_data is None:
                 await Messager.send_dm_message(user_id=self.user_id, content="You must choose a class!", error=True)
             return
@@ -240,7 +240,7 @@ class ViewRaceForm(nextcord.ui.View):
         super().__init__()
         self.user_id = user_id
         self.token = token
-        self.race_value = ChosenAttributes.chosen_attributes[self.user_id]['race']
+        self.race_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['race']
 
         race_option1 = nextcord.SelectOption(
             label="Human",
@@ -271,7 +271,7 @@ class ViewRaceForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.race_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['race'] = self.race_dropdown.values[0]
 
         # delete error messages
         error_data = MessageHolder.read_last_error_data(self.user_id)
@@ -287,16 +287,16 @@ class ViewRaceForm(nextcord.ui.View):
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         # save user's choices if they were made
         if self.race_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
+            ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['race'] = self.race_dropdown.values[0]
 
         error_data = MessageHolder.read_last_error_data(self.user_id)
         # user hasn't chosen any option
-        if not self.race_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['race']:
+        if not self.race_dropdown.values and not ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['race']:
             if error_data is None:
                 await Messager.send_dm_message(user_id=self.user_id, content="You must choose a race!", error=True)
             return
 
-        await HandlerCharacterCreation.assign_attribute_values(self.user_id)
+        await HandlerCharacterCreation.assign_attribute_values(self.token, self.user_id)
 
         # delete error messages
         if error_data is not None:
@@ -304,7 +304,7 @@ class ViewRaceForm(nextcord.ui.View):
             await Messager.delete_message(error_data[0], error_data[1])
 
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
+                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id, self.token),
                                               view=ViewStatsRetrospectiveForm(self.user_id, self.token))
 
 
@@ -318,10 +318,10 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1)
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         button.disabled = True
-        await HandlerCharacterCreation.assign_attribute_values(self.user_id)
+        await HandlerCharacterCreation.assign_attribute_values(self.token, self.user_id)
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.stats_retrospective_form_view_message_template(
-                                                  self.user_id),
+                                                  self.user_id, self.token),
                                               view=self)
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
@@ -336,7 +336,7 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
                         component.disabled = True
                 await Messager.edit_last_user_message(user_id=self.user_id,
                                                       embed=MessageTemplates.stats_retrospective_form_view_message_template(
-                                                          self.user_id),
+                                                          self.user_id, self.token),
                                                       view=self)
 
                 await Messager.send_dm_message(user_id=self.user_id,

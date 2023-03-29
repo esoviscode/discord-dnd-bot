@@ -374,10 +374,10 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def stats_retrospective_form_view_message_template(user_id):
+    def stats_retrospective_form_view_message_template(user_id, token):
         """embed showing created character and his stats"""
 
-        character = ChosenAttributes.chosen_attributes[user_id]
+        character = ChosenAttributes.chosen_attributes[(user_id, token)]
         character_class = string_to_character_class(character['class'])
         character_race = string_to_character_race(character['race'])
 

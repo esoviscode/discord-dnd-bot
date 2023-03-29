@@ -134,8 +134,8 @@ class InitializeWorld:
             players_positions = InitializeWorld.spawn_players_positions(player_spawning_points, len(game.user_list))
             for i, player_pos in enumerate(players_positions):
                 entities[player_pos[1]].pop(player_pos[0])
-                if game.user_list[i].discord_id in ChosenAttributes.chosen_attributes:
-                    character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
+                if (game.user_list[i].discord_id, game.token) in ChosenAttributes.chosen_attributes:
+                    character = ChosenAttributes.chosen_attributes[(game.user_list[i].discord_id, game.token)]
                     entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
                                                           name=character['name'],
                                                           discord_identity=game.user_list[i].discord_id,
@@ -155,7 +155,7 @@ class InitializeWorld:
                                                           character_race=character['race'],
                                                           character_class=character['class'])
                                                       
-                    ChosenAttributes.delete_user(game.user_list[i].discord_id)
+                    ChosenAttributes.delete_user(game.user_list[i].discord_id, game.token)
                 else:
                     entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
                                                           name=game.user_list[i].username,

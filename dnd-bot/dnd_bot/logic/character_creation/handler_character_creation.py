@@ -40,7 +40,7 @@ class HandlerCharacterCreation:
                 game.game_state = 'LOBBY'
                 return False, [], ":warning: Error creating game!"
             for user in game.user_list:
-                ChosenAttributes.add_empty_user(user.discord_id)
+                ChosenAttributes.add_empty_user(user.discord_id, token)
                 game.find_user(user.discord_id).is_ready = False
 
             users = [user.discord_id for user in game.user_list]
@@ -49,11 +49,12 @@ class HandlerCharacterCreation:
             return False, [], f':no_entry: This game has already started!'
 
     @staticmethod
-    async def assign_attribute_values(user_id):
+    async def assign_attribute_values(token, user_id):
         """Called to choose attribute values based on the user's choices in character creation process
+            :param token: game token
             :param user_id: id of the user who finished character creation"""
 
-        character = ChosenAttributes.chosen_attributes[user_id]
+        character = ChosenAttributes.chosen_attributes[(user_id, token)]
         character_class = string_to_character_class(character['class'])
         character_race = string_to_character_race(character['race'])
 
@@ -62,39 +63,39 @@ class HandlerCharacterCreation:
         additional_strength = random.randint(0, 2)
         strength = character_class.base_strength() + character_race.base_strength() + additional_strength
         points_to_distribute_randomly -= additional_strength
-        ChosenAttributes.chosen_attributes[user_id]['strength'] = strength
+        ChosenAttributes.chosen_attributes[(user_id, token)]['strength'] = strength
 
         additional_dexterity = random.randint(0, 2)
         dexterity = character_class.base_dexterity() + character_race.base_dexterity() + additional_dexterity
         points_to_distribute_randomly -= additional_dexterity
-        ChosenAttributes.chosen_attributes[user_id]['dexterity'] = dexterity
+        ChosenAttributes.chosen_attributes[(user_id, token)]['dexterity'] = dexterity
 
         additional_intelligence = random.randint(0, 2)
         intelligence = character_class.base_intelligence() + character_race.base_intelligence() + additional_intelligence
         points_to_distribute_randomly -= additional_intelligence
-        ChosenAttributes.chosen_attributes[user_id]['intelligence'] = intelligence
+        ChosenAttributes.chosen_attributes[(user_id, token)]['intelligence'] = intelligence
 
         additional_charisma = random.randint(0, 2)
         charisma = character_class.base_charisma() + character_race.base_charisma() + additional_charisma
         points_to_distribute_randomly -= additional_charisma
-        ChosenAttributes.chosen_attributes[user_id]['charisma'] = charisma
+        ChosenAttributes.chosen_attributes[(user_id, token)]['charisma'] = charisma
 
         additional_perception = random.randint(0, 1)
         perception = character_class.base_perception() + character_race.base_perception() + additional_perception
         points_to_distribute_randomly -= additional_perception
-        ChosenAttributes.chosen_attributes[user_id]['perception'] = perception
+        ChosenAttributes.chosen_attributes[(user_id, token)]['perception'] = perception
 
         additional_action_points = random.randint(0, 2)
         action_points = character_class.base_action_points() + character_race.base_action_points() + additional_action_points
         points_to_distribute_randomly -= additional_action_points
-        ChosenAttributes.chosen_attributes[user_id]['action points'] = action_points
+        ChosenAttributes.chosen_attributes[(user_id, token)]['action points'] = action_points
 
         additional_initiative = random.randint(0, 2)
         initiative = character_class.base_initiative() + character_race.base_initiative() + additional_initiative
         points_to_distribute_randomly -= additional_initiative
-        ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
+        ChosenAttributes.chosen_attributes[(user_id, token)]['initiative'] = initiative
 
-        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp() + character_race.base_hp() + points_to_distribute_randomly
+        ChosenAttributes.chosen_attributes[(user_id, token)]['hp'] = character_class.base_hp() + character_race.base_hp() + points_to_distribute_randomly
 
     @staticmethod
     async def handle_character_creation_finished(user_id, token) -> (bool, bool, str):

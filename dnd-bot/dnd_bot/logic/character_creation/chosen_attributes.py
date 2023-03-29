@@ -7,21 +7,21 @@ class ChosenAttributes:
     chosen_attributes = {}
 
     @staticmethod
-    def add_empty_user(user_id):
-        ChosenAttributes.chosen_attributes[user_id] = {'name': None,
-                                                       'backstory': None,
-                                                       'alignment': [None, None],
-                                                       'class': None,
-                                                       'race': None,
-                                                       'hp': None,
-                                                       'strength': None,
-                                                       'dexterity': None,
-                                                       'intelligence': None,
-                                                       'charisma': None,
-                                                       'perception': None,
-                                                       'initiative': None,
-                                                       'action points': None}
+    def add_empty_user(user_id, token):
+        ChosenAttributes.chosen_attributes[(user_id, token)] = {'name': None,
+                                                                'backstory': None,
+                                                                'alignment': [None, None],
+                                                                'class': None,
+                                                                'race': None,
+                                                                'hp': None,
+                                                                'strength': None,
+                                                                'dexterity': None,
+                                                                'intelligence': None,
+                                                                'charisma': None,
+                                                                'perception': None,
+                                                                'initiative': None,
+                                                                'action points': None}
 
     @staticmethod
-    def delete_user(user_id):
-        del ChosenAttributes.chosen_attributes[user_id]
+    def delete_user(user_id, token):
+        del ChosenAttributes.chosen_attributes[(user_id, token)]
