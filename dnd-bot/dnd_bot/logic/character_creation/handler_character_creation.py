@@ -1,10 +1,13 @@
 import random
 
 from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
 class HandlerCharacterCreation:
@@ -51,58 +54,47 @@ class HandlerCharacterCreation:
             :param user_id: id of the user who finished character creation"""
 
         character = ChosenAttributes.chosen_attributes[user_id]
-        character_class = str.lower(character['class'])
-        character_race = str.lower(character['race'])
+        character_class = string_to_character_class(character['class'])
+        character_race = string_to_character_race(character['race'])
 
-        # TODO make new classes: Class and Warrior to keep following information about base attribute values
-        base_hp = {'human': 15, 'elf': 10, 'dwarf': 20}
-        base_strength = {'human': 6, 'elf': 3, 'dwarf': 10}
-        base_dexterity = {'human': 6, 'elf': 10, 'dwarf': 3}
-        base_intelligence = {'human': 10, 'elf': 6, 'dwarf': 3}
-        base_charisma = {'human': 6, 'elf': 3, 'dwarf': 10}
-        base_perception = {'human': 2, 'elf': 3, 'dwarf': 1}
-        base_action_points = {'human': 10, 'elf': 6, 'dwarf': 3}
-
-        base_initiative = {'warrior': 6, 'mage': 3, 'ranger': 10}
-
-        points_to_distribute_randomly = 10
+        points_to_distribute_randomly = 15
 
         additional_strength = random.randint(0, 2)
-        strength = base_strength[character_race] + additional_strength
+        strength = character_class.base_strength() + character_race.base_strength() + additional_strength
         points_to_distribute_randomly -= additional_strength
         ChosenAttributes.chosen_attributes[user_id]['strength'] = strength
 
         additional_dexterity = random.randint(0, 2)
-        dexterity = base_dexterity[character_race] + additional_dexterity
+        dexterity = character_class.base_dexterity() + character_race.base_dexterity() + additional_dexterity
         points_to_distribute_randomly -= additional_dexterity
         ChosenAttributes.chosen_attributes[user_id]['dexterity'] = dexterity
 
         additional_intelligence = random.randint(0, 2)
-        intelligence = base_intelligence[character_race] + additional_intelligence
+        intelligence = character_class.base_intelligence() + character_race.base_intelligence() + additional_intelligence
         points_to_distribute_randomly -= additional_intelligence
         ChosenAttributes.chosen_attributes[user_id]['intelligence'] = intelligence
 
         additional_charisma = random.randint(0, 2)
-        charisma = base_charisma[character_race] + additional_charisma
+        charisma = character_class.base_charisma() + character_race.base_charisma() + additional_charisma
         points_to_distribute_randomly -= additional_charisma
         ChosenAttributes.chosen_attributes[user_id]['charisma'] = charisma
 
         additional_perception = random.randint(0, 1)
-        perception = base_perception[character_race] + additional_perception
+        perception = character_class.base_perception() + character_race.base_perception() + additional_perception
         points_to_distribute_randomly -= additional_perception
         ChosenAttributes.chosen_attributes[user_id]['perception'] = perception
 
         additional_action_points = random.randint(0, 2)
-        action_points = base_action_points[character_race] + additional_action_points
+        action_points = character_class.base_action_points() + character_race.base_action_points() + additional_action_points
         points_to_distribute_randomly -= additional_action_points
         ChosenAttributes.chosen_attributes[user_id]['action points'] = action_points
 
         additional_initiative = random.randint(0, 2)
-        initiative = base_initiative[character_class] + additional_initiative
+        initiative = character_class.base_initiative() + character_race.base_initiative() + additional_initiative
         points_to_distribute_randomly -= additional_initiative
         ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
 
-        ChosenAttributes.chosen_attributes[user_id]['hp'] = base_hp[character_race] + points_to_distribute_randomly
+        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp() + character_race.base_hp() + points_to_distribute_randomly
 
     @staticmethod
     async def handle_character_creation_finished(user_id, token) -> (bool, bool, str):
@@ -122,6 +114,14 @@ class HandlerCharacterCreation:
         if game.all_users_ready():
             game.game_state = 'ACTIVE'
             DatabaseGame.update_game_state(game_id, 'ACTIVE')
+
+            # delete any error message from character creation
+            for user in game.user_list:
+                error_data = MessageHolder.read_last_error_data(user.discord_id)
+                if error_data is not None:
+                    MessageHolder.delete_last_error_data(user.discord_id)
+                    await Messager.delete_message(error_data[0], error_data[1])
+
             GameStart.start(token)
             await GameLoop.start_loop(token)
 
