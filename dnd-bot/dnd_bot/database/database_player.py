@@ -16,12 +16,12 @@ class DatabasePlayer:
                                                     dexterity=dexterity, intelligence=intelligence, charisma=charisma,
                                                     perception=perception, initiative=initiative,
                                                     action_points=action_points, level=level, id_game=id_game,
-                                                    experience=experience, id_equipment=id_equipment,
-                                                    creature_class=character_class)
+                                                    experience=experience)
         id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '
-                                                 'race,id_creature) VALUES (%s, %s, %s, %s, %s)',
-                                                 (id_user, alignment, backstory, character_race.upper(), id_creature),
+                                                 'race,id_creature, id_equipment, class) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                                                 (id_user, alignment, backstory, character_race.upper(), id_creature,
+                                                  id_equipment, character_class.upper()),
                                                  "Player")
         return id_player
 

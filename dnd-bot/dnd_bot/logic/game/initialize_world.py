@@ -213,14 +213,12 @@ class InitializeWorld:
 
     @staticmethod
     def add_creature(entity_row, creature_class, x: int = 0, y: int = 0, game_token: str = '', game_id: int = 0,
-                     entity_name: str = '', creature_class_attribute: str = None, equipment: Equipment = None,
-                     hp: int = 20):
-        if equipment is None:
-            equipment = InitializeWorld.add_equipment()
+                     entity_name: str = '', hp: int = 20):
+
         creature = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
-                                  name=creature_class.creature_name, hp=hp, equipment=equipment)
+                                  name=creature_class.creature_name, hp=hp)
         id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2,
-                                                    creature_class=creature_class_attribute, id_equipment=equipment.id)
+                                                    )
 
         creature.id = id_creature
         entity_row.append(creature)
