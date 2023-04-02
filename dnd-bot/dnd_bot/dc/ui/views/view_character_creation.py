@@ -4,6 +4,7 @@ from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.character_creation.handler_alignment import HandlerAlignment
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.prototype.classes.mage import Mage
 from dnd_bot.logic.prototype.classes.ranger import Ranger
@@ -116,50 +117,21 @@ class ViewAlignmentForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=2)
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.lawfulness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
-
-        if self.goodness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
-
-        # delete error messages
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
+        await HandlerAlignment.handle_back(self)
         await interaction.response.send_modal(ModalNameForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=2)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.lawfulness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] = self.lawfulness_axis_dropdown.values[0]
-
-        if self.goodness_axis_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1] = self.goodness_axis_dropdown.values[0]
-
-        # check for previous error messages
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-
-        # user hasn't made choice in at least one dropdown
-        if (not self.lawfulness_axis_dropdown.values or not self.goodness_axis_dropdown.values) and \
-            (not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] or
-             not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
-
+        try:
+            await HandlerAlignment.handle_next(self)
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  embed=MessageTemplates.class_form_view_message_template(),
+                                                  view=ViewClassForm(self.user_id, self.token))
+        except Exception as e:
+            # check for previous error messages
+            error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose an alignment!", error=True)
-            return
-
-        # delete error messages
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
-        await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.class_form_view_message_template(),
-                                              view=ViewClassForm(self.user_id, self.token))
+                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
 
 class ViewClassForm(nextcord.ui.View):
