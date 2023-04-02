@@ -2,13 +2,11 @@ import copy
 import cv2 as cv
 import numpy as np
 
-<<<<<<< HEAD
-from dnd_bot.logic.prototype.creature import Creature
-=======
+
 from dnd_bot.logic.prototype.classes.mage import Mage
 from dnd_bot.logic.prototype.classes.ranger import Ranger
 from dnd_bot.logic.prototype.classes.warrior import Warrior
->>>>>>> staging
+from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.multiverse import Multiverse as Mv
@@ -280,7 +278,6 @@ def rotate_image_to_direction(img, direction):
     return image
 
 
-<<<<<<< HEAD
 def get_non_visible_tiles_in_player_view(game: Game, player: Player):
     result = []
     obstacles = []
@@ -360,7 +357,7 @@ def find_position_to_check(x_src=0, y_src=0, x_dest=1, y_dest=1):
         find_positions(y_src, x_src, y_dest, x_dest, dy, dx, 1)
 
     return result[1:-1]
-=======
+
 def string_to_character_class(class_name: str):
     """
     returns class (not object) defining particular character class given its name
@@ -389,4 +386,4 @@ def string_to_character_race(race_name: str):
     if str.lower(race_name) == "dwarf":
         return Dwarf
     return None
->>>>>>> staging
+

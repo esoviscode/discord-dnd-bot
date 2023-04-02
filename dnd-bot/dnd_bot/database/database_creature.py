@@ -8,16 +8,19 @@ class DatabaseCreature:
     def add_creature(x: int = 0, y: int = 0, name: str = 'Creature', hp: int = 0, strength: int = 0,
                      dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                      initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
-                     id_game: int = 1, experience: int = 0) -> int | None:
+                     id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None) -> int | None:
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game)
+        if creature_class is not None:
+            creature_class = creature_class.upper()
+
         id_creature = DatabaseConnection.add_to_db('INSERT INTO public."Creature" (level, "HP", strength, dexterity, '
                                                    'intelligence, charisma, perception, initiative, action_points, '
-                                                   'money, id_entity, experience) VALUES'
-                                                   '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                                                   'money, id_entity, experience, id_equipment, class) VALUES'
+                                                   '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                                                    (
                                                        level, hp, strength, dexterity, intelligence,
                                                        charisma, perception, initiative, action_points,
-                                                       money, id_entity, experience),
+                                                       money, id_entity, experience, id_equipment, creature_class),
                                                    "creature")
         return id_creature
 

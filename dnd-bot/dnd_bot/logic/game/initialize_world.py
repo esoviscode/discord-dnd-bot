@@ -217,8 +217,7 @@ class InitializeWorld:
 
         creature = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
                                   name=creature_class.creature_name, hp=hp)
-        id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2,
-                                                    )
+        id_creature = DatabaseCreature.add_creature(name=entity_name, x=x, y=y, id_game=game_id, action_points=2)
 
         creature.id = id_creature
         entity_row.append(creature)
