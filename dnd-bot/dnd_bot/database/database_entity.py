@@ -4,7 +4,7 @@ from dnd_bot.database.database_connection import DatabaseConnection
 class DatabaseEntity:
 
     @staticmethod
-    def add_entity(name: str = "", x: int = 0, y: int = 0, id_game: int = 1, description: str = "") -> int | None:
+    def add_entity(name: str = "", x: int = 0, y: int = 0, id_game: int = None, description: str = "") -> int | None:
         return DatabaseConnection.add_to_db('INSERT INTO public."Entity" (name, x, y, id_game, description) VALUES'
                                             '(%s, %s, %s, %s, %s)', (name, x, y, id_game, description), "entity")
 
