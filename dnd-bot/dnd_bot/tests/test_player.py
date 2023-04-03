@@ -43,4 +43,4 @@ def test_add_player(postgresql):
     assert player_tuple[2] == p.alignment
     assert player_tuple[3] == p.backstory
     assert player_tuple[5] == p.character_race
-    assert player_tuple[6] == p.creature_class
+    assert creature_tuple[14] == p.creature_class

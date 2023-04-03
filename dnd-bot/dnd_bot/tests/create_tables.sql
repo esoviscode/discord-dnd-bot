@@ -161,9 +161,8 @@ CREATE TABLE public."Player"
     id_user BIGINT,
     alignment VARCHAR,
     backstory VARCHAR,
-    race VARCHAR,
-
     id_creature BIGINT NOT NULL,
+    race VARCHAR,
     PRIMARY KEY (id_player),
     CONSTRAINT id_user FOREIGN KEY (id_user)
         REFERENCES public."User" (id_user) MATCH SIMPLE
