@@ -8,6 +8,7 @@ from dnd_bot.logic.character_creation.handler_alignment import HandlerAlignment
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.character_creation.handler_class import HandlerClass
 from dnd_bot.logic.character_creation.handler_race import HandlerRace
+from dnd_bot.logic.character_creation.handler_stats_retrospective import HandlerStatsRetrospective
 from dnd_bot.logic.prototype.classes.mage import Mage
 from dnd_bot.logic.prototype.classes.ranger import Ranger
 from dnd_bot.logic.prototype.classes.warrior import Warrior
@@ -262,29 +263,8 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        status, finished, error_message = \
-            await HandlerCharacterCreation.handle_character_creation_finished(self.user_id, self.token)
-
-        if status:
-            if not finished:
-                for component in self.children:
-                    if isinstance(component, nextcord.ui.Button):
-                        component.disabled = True
-                await Messager.edit_last_user_message(user_id=self.user_id,
-                                                      embed=MessageTemplates.stats_retrospective_form_view_message_template(
-                                                          self.user_id),
-                                                      view=self)
-
-                await Messager.send_dm_message(user_id=self.user_id,
-                                               content="You created your character! Now wait for other players to "
-                                                       "finish!",
-                                               error=True)
-            else:
-                # delete error messages
-                error_data = MessageHolder.read_last_error_data(self.user_id)
-                if error_data is not None:
-                    MessageHolder.delete_last_error_data(self.user_id)
-                    await Messager.delete_message(error_data[0], error_data[1])
-
-        else:
-            await interaction.response.send_message(error_message, ephemeral=True)
+        try:
+            await HandlerStatsRetrospective.handle_confirm(self)
+        except Exception as e:
+            await Messager.delete_last_user_error_message(self.user_id)
+            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
