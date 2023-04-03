@@ -7,9 +7,17 @@ from dnd_bot.database.database_player_item import DatabasePlayerItem
 from dnd_bot.logic.prototype.item import Item
 from dnd_bot.logic.prototype.player import Player
 
+from dnd_bot.tests.autoconf import database_fixture
 
-def test_add_creature_item():
-    DatabaseConnection.connection_establish()
+postgresql, postgresql_in_docker = database_fixture('player_item')
+
+
+def test_add_creature_item(postgresql):
+    cur = postgresql.cursor()
+
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
     p = Player(x=0, y=0, name='Creature', hp=0, strength=0, dexterity=0, intelligence=0, charisma=0,
                perception=0, initiative=0, action_points=0, level=0, equipment=None, money=0, game_token='',
                experience=0)
@@ -25,4 +33,3 @@ def test_add_creature_item():
     list = DatabasePlayerItem.get_creature_items(p.id)
     assert list[0][0] == i.id
     assert list[0][1] == 2
-    DatabaseConnection.connection_close()
