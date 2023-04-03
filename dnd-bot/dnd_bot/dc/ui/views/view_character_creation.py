@@ -88,7 +88,8 @@ class ViewAlignmentForm(nextcord.ui.View):
         self.lawfulness_axis_dropdown = nextcord.ui.Select(
             placeholder="Law VS Chaos",
             options=[lawfulness_option1, lawfulness_option2, lawfulness_option3],
-            row=0)
+            row=0,
+            custom_id='lawfulness-dropdown')
 
         goodness_option1 = nextcord.SelectOption(
             label="Good",
@@ -111,7 +112,8 @@ class ViewAlignmentForm(nextcord.ui.View):
         self.goodness_axis_dropdown = nextcord.ui.Select(
             placeholder="Good VS Evil",
             options=[goodness_option1, goodness_option2, goodness_option3],
-            row=1)
+            row=1,
+            custom_id='goodness-dropdown')
 
         self.add_item(self.lawfulness_axis_dropdown)
         self.add_item(self.goodness_axis_dropdown)
@@ -193,7 +195,8 @@ class ViewClassForm(nextcord.ui.View):
         self.class_dropdown = nextcord.ui.Select(
             placeholder="Select a class.",
             options=[class_option1, class_option2, class_option3],
-            row=0)
+            row=0,
+            custom_id='class-dropdown')
 
         self.add_item(self.class_dropdown)
 
@@ -265,7 +268,8 @@ class ViewRaceForm(nextcord.ui.View):
         self.race_dropdown = nextcord.ui.Select(
             placeholder="Select a race.",
             options=[race_option1, race_option2, race_option3],
-            row=0)
+            row=0,
+            custom_id='race-dropdown')
 
         self.add_item(self.race_dropdown)
 
