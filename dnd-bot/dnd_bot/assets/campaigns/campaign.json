@@ -1,4 +1,50 @@
 {
+  "classes": {
+    "Warrior": {
+      "emoji": "⚔",
+      "description": "You like close encounters with your enemies.",
+      "stats": {
+        "initiative": 6
+      }
+    },
+    "Mage": {
+      "emoji": "\uD83E\uDDD9",
+      "description": "You're a magic freak.",
+      "stats": {
+        "initiative": 3
+      }
+    },
+    "Ranger": {
+      "emoji": "\uD83C\uDFF9",
+      "description": "A bow is your closest friend.",
+      "stats": {
+        "initiative": 10
+      }
+    }
+  },
+  "races": {
+    "Human": {
+      "emoji": "\uD83D\uDC68",
+      "description": "Just an ordinary offspring of Adam.",
+      "stats": {
+
+      }
+    },
+    "Elf": {
+      "emoji": "\uD83E\uDDDD",
+      "description": "You have a lot of grace.",
+      "stats": {
+
+      }
+    },
+    "Dwarf": {
+      "emoji": "\uD83E\uDD0F",
+      "description": "You're a hard, tough worker.",
+      "stats": {
+
+      }
+    }
+  },
   "items": {
     "armors": {
       "helmets": {},
