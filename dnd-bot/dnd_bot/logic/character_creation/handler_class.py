@@ -27,6 +27,6 @@ class HandlerClass:
 
         # user hasn't chosen any option
         if not view.class_dropdown.values and not ChosenAttributes.chosen_attributes[view.user_id]['class']:
-            raise Exception("You must choose a class")
+            raise Exception("You must choose a class!")
 
         await Messager.delete_last_user_error_message(view.user_id)

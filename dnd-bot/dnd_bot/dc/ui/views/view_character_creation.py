@@ -7,6 +7,7 @@ from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_alignment import HandlerAlignment
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
 from dnd_bot.logic.character_creation.handler_class import HandlerClass
+from dnd_bot.logic.character_creation.handler_race import HandlerRace
 from dnd_bot.logic.prototype.classes.mage import Mage
 from dnd_bot.logic.prototype.classes.ranger import Ranger
 from dnd_bot.logic.prototype.classes.warrior import Warrior
@@ -224,43 +225,23 @@ class ViewRaceForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=1)
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.race_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
-
-        # delete error messages
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
+        await HandlerRace.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.class_form_view_message_template(),
                                               view=ViewClassForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.race_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['race'] = self.race_dropdown.values[0]
-
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-        # user hasn't chosen any option
-        if not self.race_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['race']:
+        try:
+            await HandlerRace.handle_confirm(self)
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
+                                                  view=ViewStatsRetrospectiveForm(self.user_id, self.token))
+        except Exception as e:
+            # check for previous error messages
+            error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose a race!", error=True)
-            return
-
-        await HandlerCharacterCreation.assign_attribute_values(self.user_id)
-
-        # delete error messages
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
-        await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
-                                              view=ViewStatsRetrospectiveForm(self.user_id, self.token))
+                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
