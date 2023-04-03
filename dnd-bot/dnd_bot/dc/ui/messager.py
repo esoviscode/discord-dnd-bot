@@ -69,3 +69,15 @@ class Messager:
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
         await message.delete()
+
+    @staticmethod
+    async def delete_last_user_error_message(user_id: int):
+        """deletes last user error message and data about it in MessageHolder.
+        If there were no error messages the function does nothing"""
+        # check for previous error messages
+        error_data = MessageHolder.read_last_error_data(user_id)
+
+        # delete error messages
+        if error_data is not None:
+            MessageHolder.delete_last_error_data(user_id)
+            await Messager.delete_message(error_data[0], error_data[1])
