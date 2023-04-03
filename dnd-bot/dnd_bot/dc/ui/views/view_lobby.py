@@ -70,7 +70,7 @@ class ViewHost(nextcord.ui.View):
         start_button = nextcord.ui.Button(label='Start', style=nextcord.ButtonStyle.blurple,
                                           custom_id='host-start-button')
         start_button.callback = self.start_button
-        start_button.disabled = ready_to_start
+        start_button.disabled = not ready_to_start
         self.add_item(start_button)
 
         # add ready button if host has not clicked it yet

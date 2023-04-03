@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from nextcord import slash_command, InteractionMessage
+from nextcord import slash_command
 from nextcord.ext.commands import Cog, Bot
 
 
