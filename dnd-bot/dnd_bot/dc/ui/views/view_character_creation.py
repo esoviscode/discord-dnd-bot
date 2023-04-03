@@ -6,6 +6,7 @@ from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_alignment import HandlerAlignment
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+from dnd_bot.logic.character_creation.handler_class import HandlerClass
 from dnd_bot.logic.prototype.classes.mage import Mage
 from dnd_bot.logic.prototype.classes.ranger import Ranger
 from dnd_bot.logic.prototype.classes.warrior import Warrior
@@ -169,41 +170,23 @@ class ViewClassForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=1)
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.class_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['class'] = self.class_dropdown.values[0]
-
-        # delete error messages
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
+        await HandlerClass.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
                                               embed=MessageTemplates.alignment_form_view_message_template(),
                                               view=ViewAlignmentForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1)
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        # save user's choices if they were made
-        if self.class_dropdown.values:
-            ChosenAttributes.chosen_attributes[self.user_id]['class'] = self.class_dropdown.values[0]
-
-        error_data = MessageHolder.read_last_error_data(self.user_id)
-        # user hasn't chosen any option
-        if not self.class_dropdown.values and not ChosenAttributes.chosen_attributes[self.user_id]['class']:
+        try:
+            await HandlerClass.handle_next(self)
+            await Messager.edit_last_user_message(user_id=self.user_id,
+                                                  embed=MessageTemplates.race_form_view_message_template(),
+                                                  view=ViewRaceForm(self.user_id, self.token))
+        except Exception as e:
+            # check for previous error messages
+            error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose a class!", error=True)
-            return
-
-        # delete error messages
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(self.user_id)
-            await Messager.delete_message(error_data[0], error_data[1])
-
-        await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.race_form_view_message_template(),
-                                              view=ViewRaceForm(self.user_id, self.token))
+                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
 
 class ViewRaceForm(nextcord.ui.View):
