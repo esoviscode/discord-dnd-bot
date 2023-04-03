@@ -12,8 +12,11 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
 class ViewLobby:
+    """Class for helper methods used by multiple views"""
+
     @staticmethod
     async def resend_lobby_message(token, user, lobby_view_embed):
+        """method used to send refreshed message to user (e.g. after clicking ready)"""
         if user.is_host:
             await Messager.edit_last_user_message(user_id=user.discord_id, embed=lobby_view_embed,
                                                   view=ViewHost(user.discord_id, token,
@@ -61,6 +64,7 @@ class ViewJoin(nextcord.ui.View):
 
 
 class ViewHost(nextcord.ui.View):
+    """View of host during lobby, buttons state depends on host_ready and ready_to_start attributes"""
     def __init__(self, user_id, token, host_ready=False, ready_to_start=False):
         super().__init__(timeout=None)
         self.user_id = user_id
@@ -97,6 +101,7 @@ class ViewHost(nextcord.ui.View):
 
 
 class ReadyButton(nextcord.ui.View):
+    """Ready button view used by players in lobby"""
     def __init__(self, user_id, token):
         super().__init__(timeout=None)
         self.user_id = user_id

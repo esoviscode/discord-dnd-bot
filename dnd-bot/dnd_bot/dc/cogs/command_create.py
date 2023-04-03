@@ -4,12 +4,11 @@ from nextcord.ext.commands import Cog, Bot
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_lobby import ViewJoin, ViewHost
-from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 
 
 class CommandCreate(Cog):
-
+    """command used to create a new game"""
     def __init__(self, bot: Bot):
         self.bot = bot
 
