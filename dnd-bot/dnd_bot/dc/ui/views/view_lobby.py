@@ -6,55 +6,12 @@ from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_character_creation import ViewCharacterCreationStart
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-from dnd_bot.logic.game.game_loop import GameLoop
-from dnd_bot.logic.game.handler_game import HandlerGame
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
-from dnd_bot.logic.lobby.handler_start import HandlerStart
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.logic.utils.utils import get_player_view
 
 
 class ViewLobby:
-    @staticmethod
-    async def join_button_handler(token, interaction: nextcord.Interaction):
-        if interaction.user.dm_channel is None:
-            await interaction.user.create_dm()
-
-        status, lobby_players, error_message = await HandlerJoin.join_lobby(token, interaction.user.id,
-                                                                            interaction.user.dm_channel.id,
-                                                                            interaction.user.name)
-
-        if status:
-            await interaction.response.send_message("Check direct message!", ephemeral=True)
-
-            lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
-
-            # send messages about successful join operation
-            await Messager.send_dm_message(interaction.user.id,
-                                           f"Welcome to lobby of game {token}.\nNumber of players in lob"
-                                           f"by: **{len(lobby_players)}**", embed=lobby_view_embed,
-                                           view=ReadyButton(token))
-            for user in lobby_players:
-                if interaction.user.name != user[0]:
-                    if user[2]:
-                        if user[1]:
-                            if Multiverse.get_game(token).all_users_ready():
-                                view = StartButton(token)
-                            else:
-                                view = HostButtonDisabled(token)
-                        else:
-                            view = HostButtons(token)
-                    else:
-                        if user[1]:
-                            view = None
-                        else:
-                            view = ReadyButton(token)
-
-                    await Messager.edit_last_user_message(user[3], embed=lobby_view_embed, view=view)
-        else:
-            await interaction.response.send_message(error_message, ephemeral=True)
-
     @staticmethod
     async def lobby_readiness_handler(token, user, lobby_view_embed):
         if user[2]:
@@ -76,16 +33,50 @@ class ViewLobby:
                                                       view=ReadyButton(token))
 
 
-class JoinButton(nextcord.ui.View):
+class ViewJoin(nextcord.ui.View):
 
-    def __init__(self, token):
+    def __init__(self, user_id, token):
         super().__init__(timeout=None)
-        self.value = None
+        self.user_id = user_id
         self.token = token
 
     @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green, custom_id='join-button')
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await ViewLobby.join_button_handler(self.token, interaction)
+        try:
+            lobby_players = await HandlerJoin.join_lobby(self.token, interaction.user.id,
+                                                         interaction.user.dm_channel.id, interaction.user.name)
+            await interaction.response.send_message("Check direct message!", ephemeral=True)
+
+            # send messages about successful join operation
+            lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
+            await Messager.send_dm_message(interaction.user.id,
+                                           f"Welcome to lobby of game {self.token}.\n"
+                                           f"Number of players in lobby: **{len(lobby_players)}**",
+                                           embed=lobby_view_embed,
+                                           view=ReadyButton(self.token))
+
+            for user in lobby_players:
+                if interaction.user.id == user.discord_id:
+                    continue
+                if user.is_host:
+                    if user.is_ready:
+                        if Multiverse.get_game(self.token).all_users_ready():
+                            view = StartButton(self.token)
+                        else:
+                            view = HostButtonDisabled(self.token)
+                    else:
+                        view = HostButtons(self.token)
+                else:
+                    if user.is_ready:
+                        view = None
+                    else:
+                        view = ReadyButton(self.token)
+
+                await Messager.edit_last_user_message(user.discord_id, embed=lobby_view_embed, view=view)
+
+        except Exception as e:
+            await Messager.delete_last_user_error_message(self.user_id)
+            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
 
 class StartButton(nextcord.ui.View):
@@ -97,7 +88,7 @@ class StartButton(nextcord.ui.View):
     @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple, custom_id='start-button')
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
-        status, lobby_players_identities, error_message =\
+        status, lobby_players_identities, error_message = \
             await HandlerCharacterCreation.start_character_creation(self.token, interaction.user.id)
 
         if status:

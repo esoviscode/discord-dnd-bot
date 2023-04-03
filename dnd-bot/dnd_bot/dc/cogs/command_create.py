@@ -3,7 +3,7 @@ from nextcord.ext.commands import Cog, Bot
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.ui.views.view_lobby import HostButtons, JoinButton
+from dnd_bot.dc.ui.views.view_lobby import HostButtons, ViewJoin
 from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
 
@@ -32,14 +32,11 @@ class CommandCreate(Cog):
                                            embed=MessageTemplates.lobby_view_message_template(token, [
                                                (host_name, False, True)]), view=view)
 
-            view = JoinButton(token)
+            view = ViewJoin(interaction.user.id, token)
             await interaction.response.send_message(f"Hello {interaction.user.mention}!", view=view,
                                                     embed=MessageTemplates.lobby_creation_message(token))
 
             await view.wait()
-
-            if view.value is None:
-                return
 
         else:
             await interaction.response.send_message(error_message, ephemeral=True)
