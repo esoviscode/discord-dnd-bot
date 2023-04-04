@@ -70,41 +70,41 @@ class HandlerCharacterCreation:
         points_to_distribute_randomly = 15
 
         additional_strength = random.randint(0, 2)
-        strength = character_class.base_strength() + character_race.base_strength() + additional_strength
+        strength = character_class.base_strength + character_race.base_strength + additional_strength
         points_to_distribute_randomly -= additional_strength
         ChosenAttributes.chosen_attributes[user_id]['strength'] = strength
 
         additional_dexterity = random.randint(0, 2)
-        dexterity = character_class.base_dexterity() + character_race.base_dexterity() + additional_dexterity
+        dexterity = character_class.base_dexterity + character_race.base_dexterity + additional_dexterity
         points_to_distribute_randomly -= additional_dexterity
         ChosenAttributes.chosen_attributes[user_id]['dexterity'] = dexterity
 
         additional_intelligence = random.randint(0, 2)
-        intelligence = character_class.base_intelligence() + character_race.base_intelligence() + additional_intelligence
+        intelligence = character_class.base_intelligence + character_race.base_intelligence + additional_intelligence
         points_to_distribute_randomly -= additional_intelligence
         ChosenAttributes.chosen_attributes[user_id]['intelligence'] = intelligence
 
         additional_charisma = random.randint(0, 2)
-        charisma = character_class.base_charisma() + character_race.base_charisma() + additional_charisma
+        charisma = character_class.base_charisma + character_race.base_charisma + additional_charisma
         points_to_distribute_randomly -= additional_charisma
         ChosenAttributes.chosen_attributes[user_id]['charisma'] = charisma
 
         additional_perception = random.randint(0, 1)
-        perception = character_class.base_perception() + character_race.base_perception() + additional_perception
+        perception = character_class.base_perception + character_race.base_perception + additional_perception
         points_to_distribute_randomly -= additional_perception
         ChosenAttributes.chosen_attributes[user_id]['perception'] = perception
 
         additional_action_points = random.randint(0, 2)
-        action_points = character_class.base_action_points() + character_race.base_action_points() + additional_action_points
+        action_points = character_class.base_action_points + character_race.base_action_points + additional_action_points
         points_to_distribute_randomly -= additional_action_points
         ChosenAttributes.chosen_attributes[user_id]['action points'] = action_points
 
         additional_initiative = random.randint(0, 2)
-        initiative = character_class.base_initiative() + character_race.base_initiative() + additional_initiative
+        initiative = character_class.base_initiative + character_race.base_initiative + additional_initiative
         points_to_distribute_randomly -= additional_initiative
         ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
 
-        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp() + character_race.base_hp() + points_to_distribute_randomly
+        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
 
     @staticmethod
     async def handle_character_creation_finished(user_id, token) -> (bool, bool, str):
