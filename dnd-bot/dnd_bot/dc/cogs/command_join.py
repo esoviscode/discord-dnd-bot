@@ -3,7 +3,7 @@ import asyncio
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
-from dnd_bot.dc.ui.views.view_lobby import ReadyButton, ViewLobby
+from dnd_bot.dc.ui.views.view_lobby import ViewPlayer, ViewLobby
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
@@ -27,7 +27,7 @@ class CommandJoin(Cog):
                                            f"Welcome to lobby of game {token}.\n"
                                            f"Number of players in lobby: **{len(lobby_players)}**",
                                            embed=lobby_view_embed,
-                                           view=ReadyButton(interaction.user.discord_id, token))
+                                           view=ViewPlayer(interaction.user.discord_id, token))
 
             q = asyncio.Queue()
             tasks = [asyncio.create_task(ViewLobby.resend_lobby_message(token, user, lobby_view_embed))
