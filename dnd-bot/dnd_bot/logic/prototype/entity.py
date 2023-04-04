@@ -36,10 +36,10 @@ class Entity(DatabaseObject):
 
         if direction == 'right':
             if self.x + 1 >= game.world_width:
-                return False, 'You cannot go beyond the world border!'
+                raise Exception("You cannot go beyond the world border!")
 
             if game.entities[self.y][self.x + 1] is not None:
-                return False, 'This field is taken!'
+                raise Exception("This field is taken!")
 
             tmp = game.entities[self.y].pop(self.x + 1)
             this = game.entities[self.y].pop(self.x)
@@ -49,14 +49,13 @@ class Entity(DatabaseObject):
 
             self.x += 1
             self.look_direction = direction
-            return True, ''
-
+            return
         elif direction == 'left':
             if self.x - 1 < 0:
-                return False, 'You cannot go beyond the world border!'
+                raise Exception("You cannot go beyond the world border!")
 
             if game.entities[self.y][self.x - 1] is not None:
-                return False, 'This field is taken!'
+                raise Exception("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y].pop(self.x - 1)
@@ -66,14 +65,14 @@ class Entity(DatabaseObject):
 
             self.x -= 1
             self.look_direction = direction
-            return True, ''
+            return
 
         elif direction == 'up':
             if self.y - 1 < 0:
-                return False, 'You cannot go beyond the world border!'
+                raise Exception("You cannot go beyond the world border!")
 
             if game.entities[self.y - 1][self.x] is not None:
-                return False, 'This field is taken!'
+                raise Exception("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y - 1].pop(self.x)
@@ -83,13 +82,13 @@ class Entity(DatabaseObject):
 
             self.y -= 1
             self.look_direction = direction
-            return True, ''
+            return
         elif direction == 'down':
             if self.y + 1 >= game.world_width:
-                return False, 'You cannot go beyond the world border!'
+                raise Exception("You cannot go beyond the world border!")
 
             if game.entities[self.y + 1][self.x] is not None:
-                return False, 'This field is taken!'
+                raise Exception("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y + 1].pop(self.x)
@@ -99,6 +98,6 @@ class Entity(DatabaseObject):
 
             self.y += 1
             self.look_direction = direction
-            return True, ''
+            return
         else:
-            return False, 'Severe: this direction doesn\'t exist!'
+            raise Exception("Severe: this direction doesn't exist!")

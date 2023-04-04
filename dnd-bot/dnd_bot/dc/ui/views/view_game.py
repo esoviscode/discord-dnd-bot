@@ -132,9 +132,6 @@ class ViewMain(ViewGame):
         player = game.get_player_by_id_user(interaction.user.id)
         player.attack_mode = True
 
-        # TODO adding enemies in players range to the list
-        enemies = game.get_attackable_enemies_for_player(player)
-
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
         self.game.players_views[self.user_discord_id] = (ViewAttack, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
@@ -146,7 +143,6 @@ class ViewMain(ViewGame):
     async def move(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening move menu"""
         game = Multiverse.get_game(self.token)
-        player = game.get_player_by_id_user(interaction.user.id)
 
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
         await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
@@ -228,25 +224,19 @@ class ViewMovement(ViewGame):
     @staticmethod
     async def move_one_tile(direction, id_user, token):
         """shared function to move by one tile for all directions"""
-        status, error_message = await HandlerMovement.handle_movement(direction, 1, id_user, token)
+        try:
+            await HandlerMovement.handle_movement(direction, 1, id_user, token)
 
-        Multiverse.get_game(token).players_views[id_user] = (ViewMovement, [])
+            Multiverse.get_game(token).players_views[id_user] = (ViewMovement, [])
 
-        error_data = MessageHolder.read_last_error_data(id_user)
-        if not status:
-            if error_data is not None:
-                await Messager.edit_message(error_data[0], error_data[1], f"**{error_message}**")
-            else:
-                await Messager.send_dm_message(id_user, f"**{error_message}**", error=True)
-            return
+            await Messager.delete_last_user_error_message(id_user)
 
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(id_user)
-            await Messager.delete_message(error_data[0], error_data[1])
-
-        active_player = Multiverse.get_game(token).active_creature
-        recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
-        await ViewGame.display_views_for_users(token, recent_action)
+            active_player = Multiverse.get_game(token).active_creature
+            recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
+            await ViewGame.display_views_for_users(token, recent_action)
+        except Exception as e:
+            await Messager.delete_last_user_error_message(id_user)
+            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
 
 
 class ViewAttack(ViewGame):
