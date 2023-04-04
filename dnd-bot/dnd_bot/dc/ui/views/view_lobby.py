@@ -52,9 +52,6 @@ class ViewLobby(nextcord.ui.View):
 
 class ViewJoin(ViewLobby):
 
-    def __init__(self, user_id, token):
-        super().__init__(user_id, token)
-
     @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green, custom_id='join-button')
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         try:
@@ -115,8 +112,6 @@ class ViewHost(ViewLobby):
 
 class ViewPlayer(ViewLobby):
     """Ready button view used by players in lobby"""
-    def __init__(self, user_id, token):
-        super().__init__(user_id, token)
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
