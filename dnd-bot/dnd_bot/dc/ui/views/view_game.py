@@ -8,7 +8,6 @@ from nextcord.ui import View
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
-from dnd_bot.dc.utils.utils import get_user_by_id
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
@@ -35,11 +34,6 @@ class ViewGame(View):
     async def display_views_for_users(game_token, recent_action_message):
         """sends views for users and makes sure that the displayed view is correct"""
         game = Multiverse.get_game(game_token)
-        active_creature = game.active_creature
-
-        player_icon = None
-        if isinstance(active_creature, Player):
-            player_icon = (await get_user_by_id(active_creature.discord_identity)).display_avatar.url
 
         async def send_view(user):
             # get current view from player and resend it in case someone made an action
