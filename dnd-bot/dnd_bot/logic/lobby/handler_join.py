@@ -1,5 +1,6 @@
 from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.exceptions import JoinLobbyException
 
 
 class HandlerJoin:
@@ -17,14 +18,14 @@ class HandlerJoin:
 
         game = Multiverse.get_game(token)
         if game is None:
-            raise Exception(":warning: No game found using this token!")
+            raise JoinLobbyException(":warning: No game found using this token!")
 
         for user in game.user_list:
             if user.discord_id == user_id:
-                raise Exception(":no_entry: You have already joined this game!")
+                raise JoinLobbyException(":no_entry: You have already joined this game!")
 
         if game.game_state != 'LOBBY':
-            raise Exception(":no_entry: This game has already started!")
+            raise JoinLobbyException(":no_entry: This game has already started!")
 
         DatabaseUser.add_user(game.id, user_id)
         game.add_player(user_id, user_dm_channel, username, HandlerJoin.get_color_by_index(len(game.user_list)))

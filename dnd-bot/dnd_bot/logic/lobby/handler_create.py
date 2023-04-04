@@ -6,6 +6,7 @@ from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.user import User
+from dnd_bot.logic.utils.exceptions import CreateLobbyException
 
 generated_ids = []
 MAX_RANDOM_VALUE = 10000
@@ -58,12 +59,12 @@ class HandlerCreate:
         game = Game(token, host_id, "Storm King's Thunder", "LOBBY")
 
         if game.id is None:
-            raise Exception(":no_entry: Error creating game!")
+            raise CreateLobbyException(":no_entry: Error creating game!")
 
         DatabaseUser.add_user(game.id, host_id)
         user = User(token, host_id, host_dm_channel, host_username, HandlerJoin.get_color_by_index(0), True)
         if user.id is None:
-            raise Exception(":no_entry: Error creating host user")
+            raise CreateLobbyException(":no_entry: Error creating host user")
 
         if not Multiverse.masks:
             Multiverse.generate_masks()

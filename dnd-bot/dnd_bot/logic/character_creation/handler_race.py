@@ -1,6 +1,7 @@
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+from dnd_bot.logic.utils.exceptions import CharacterCreationInterfaceException
 
 
 class HandlerRace:
@@ -28,7 +29,7 @@ class HandlerRace:
 
         # user hasn't chosen any option
         if not view.race_dropdown.values and not ChosenAttributes.chosen_attributes[view.user_id]['race']:
-            raise Exception("You must choose a race!")
+            raise CharacterCreationInterfaceException("You must choose a race!")
 
         await HandlerCharacterCreation.assign_attribute_values(view.user_id)
         await Messager.delete_last_user_error_message(view.user_id)

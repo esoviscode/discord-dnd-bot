@@ -1,4 +1,5 @@
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.exceptions import OnReadyException
 
 
 class HandlerReady:
@@ -13,7 +14,7 @@ class HandlerReady:
 
         game = Multiverse.get_game(token)
         if game is None:
-            raise Exception(":warning: No game found using this token!")
+            raise OnReadyException(":warning: No game found using this token!")
 
         game.find_user(user_id).is_ready = True
 
