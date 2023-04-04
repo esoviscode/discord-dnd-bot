@@ -2,11 +2,7 @@ import json
 import random
 
 from dnd_bot.database.database_game import DatabaseGame
-from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
-from dnd_bot.logic.game.game_loop import GameLoop
-from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.prototype.character_class import CharacterClass
 from dnd_bot.logic.prototype.character_race import CharacterRace
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -105,39 +101,6 @@ class HandlerCharacterCreation:
         ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
 
         ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
-
-    @staticmethod
-    async def handle_character_creation_finished(user_id, token) -> (bool, bool, str):
-        """handles finishing of character creation process; if all the players finished it the game is started
-                        :param user_id: id of the user who finished character creation process
-                        :param token: game token
-                        :return: status, status of other players (if all of them are ready) optional error message
-                        """
-        game = Multiverse.get_game(token)
-        game_id = DatabaseGame.get_id_game_from_game_token(token)
-
-        if game is None:
-            return False, False, f':warning: Game of provided token doesn\'t exist!'
-
-        game.find_user(user_id).is_ready = True
-
-        if game.all_users_ready():
-            game.game_state = 'ACTIVE'
-            DatabaseGame.update_game_state(game_id, 'ACTIVE')
-
-            # delete any error message from character creation
-            for user in game.user_list:
-                error_data = MessageHolder.read_last_error_data(user.discord_id)
-                if error_data is not None:
-                    MessageHolder.delete_last_error_data(user.discord_id)
-                    await Messager.delete_message(error_data[0], error_data[1])
-
-            GameStart.start(token)
-            await GameLoop.start_loop(token)
-
-            return True, True, ''
-        else:
-            return True, False, ''
 
     @staticmethod
     def load_character_creation_json_data():

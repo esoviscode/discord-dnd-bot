@@ -42,7 +42,7 @@
       "description": "You have a lot of grace.",
       "long-description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry.\n\n\n ",
       "stats": {
-        "perception": 4,
+        "perception": 3,
         "dexterity": 5,
         "initiative": 2,
         "action-points": 17

@@ -79,22 +79,22 @@ class ViewLobby:
 class JoinButton(nextcord.ui.View):
 
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green, custom_id='join-button')
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await ViewLobby.join_button_handler(self.token, interaction)
 
 
 class StartButton(nextcord.ui.View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple)
+    @nextcord.ui.button(label="Start", style=nextcord.ButtonStyle.blurple, custom_id='start-button')
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
 
         status, lobby_players_identities, error_message =\
@@ -113,37 +113,38 @@ class StartButton(nextcord.ui.View):
 
 class HostButtonDisabled(nextcord.ui.View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True,
+                        custom_id='disabled-start-button')
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
 
 class HostButtons(nextcord.ui.View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True)
+    @nextcord.ui.button(label='Start', style=nextcord.ButtonStyle.blurple, disabled=True, custom_id='host-start-button')
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         pass
 
-    @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='host-ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await ReadyButton.ready(self, button, interaction)
 
 
 class ReadyButton(nextcord.ui.View):
     def __init__(self, token):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.token = token
 
-    @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """ready button"""
 
