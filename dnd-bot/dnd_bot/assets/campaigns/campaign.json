@@ -1,4 +1,65 @@
 {
+  "classes": {
+    "Warrior": {
+      "emoji": "⚔",
+      "description": "You like close encounters with your enemies.",
+      "long-description": "Warriors share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. They are well acquainted with death, both meting it out and staring it defiantly in the face.",
+      "stats": {
+        "initiative": 6
+      }
+    },
+    "Mage": {
+      "emoji": "\uD83E\uDDD9",
+      "description": "You're a magic freak.",
+      "long-description": "Mages are supreme magic-users, defined and united as a class by the spells they cast. Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of explosive fire, arcing lightning, subtle deception, brute-force mind control, and much more.\n\n\n ",
+      "stats": {
+        "initiative": 3
+      }
+    },
+    "Ranger": {
+      "emoji": "\uD83C\uDFF9",
+      "description": "A bow is your closest friend.",
+      "long-description": "Far from the bustle of cities and towns, past the hedges that shelter the most distant farms from the terrors of the wild, amid the dense-packed trees of trackless forests and across wide and empty plains, rangers keep their unending watch.\n\n\n ",
+      "stats": {
+        "initiative": 10
+      }
+    }
+  },
+  "races": {
+    "Human": {
+      "emoji": "\uD83D\uDC68",
+      "description": "Just an ordinary offspring of Adam.",
+      "long-description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.\n\n\n ",
+      "stats": {
+        "perception": 2,
+        "charisma": 6,
+        "intelligence": 8,
+        "action-points": 12
+      }
+    },
+    "Elf": {
+      "emoji": "\uD83E\uDDDD",
+      "description": "You have a lot of grace.",
+      "long-description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry.\n\n\n ",
+      "stats": {
+        "perception": 3,
+        "dexterity": 5,
+        "initiative": 2,
+        "action-points": 17
+      }
+    },
+    "Dwarf": {
+      "emoji": "\uD83E\uDD0F",
+      "description": "You're a hard, tough worker.",
+      "long-description": "Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, the echoing of picks and hammers in deep mines and blazing forges, a commitment to clan and tradition, and a burning hatred of goblins and orcs – these common threads unite all dwarves.\n\n\n",
+      "stats": {
+        "perception": 3,
+        "hp": 18,
+        "strength": 7,
+        "action-points": 9
+      }
+    }
+  },
   "items": {
     "armors": {
       "helmets": {},
