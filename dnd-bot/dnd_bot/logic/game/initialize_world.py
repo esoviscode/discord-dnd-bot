@@ -178,6 +178,12 @@ class InitializeWorld:
 
     @staticmethod
     def add_entity(entity_row, entity_class, x, y, game_token, game_id):
+        """adds entity of class to entity matrix in game
+        :param entity_row: representing row of entity matrix
+        :param entity_class: class of entity to be added
+        :param x: entity x position
+        :param x: entity y position
+        """
 
         if issubclass(entity_class, Creature):  # add a creature
             entity_row = InitializeWorld.add_creature(entity_row, entity_class, x, y, game_token, game_id,
