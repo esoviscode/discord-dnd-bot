@@ -266,9 +266,9 @@ def rotate_image_to_direction(img, direction):
 
 def string_to_character_class(class_name: str):
     """
-    returns class (not object) defining particular character class given its name
+    returns object of python class defining particular character class given its name
     :param class_name: name of character class
-    :return class: class defining character class
+    :return class: object defining character class
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
     for character_class in HandlerCharacterCreation.classes:
@@ -279,9 +279,9 @@ def string_to_character_class(class_name: str):
 
 def string_to_character_race(race_name: str):
     """
-        returns class (not object) defining particular character race given its name
+        returns object of class defining particular character race given its name
         :param race_name: name of character class
-        :return class: class defining character race
+        :return class: object defining character race
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
     for character_race in HandlerCharacterCreation.races:

@@ -1,6 +1,5 @@
-
 class CharacterClass:
-    """Abstract interface defining methods which must be overriden by classes defining particular character classes"""
+    """Class representing any class in a campaign"""
 
     def __init__(self, name: str = ''):
         self.name = name

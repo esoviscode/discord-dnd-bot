@@ -1,8 +1,5 @@
-from abc import abstractmethod
-
-
 class CharacterRace:
-    """Abstract interface defining methods which must be overriden by classes defining particular character races"""
+    """Class representing any race in a campaign"""
 
     def __init__(self, name: str = ''):
         self.name = name

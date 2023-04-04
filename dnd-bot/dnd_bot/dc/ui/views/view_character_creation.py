@@ -5,12 +5,6 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-from dnd_bot.logic.prototype.classes.mage import Mage
-from dnd_bot.logic.prototype.classes.ranger import Ranger
-from dnd_bot.logic.prototype.classes.warrior import Warrior
-from dnd_bot.logic.prototype.races.dwarf import Dwarf
-from dnd_bot.logic.prototype.races.elf import Elf
-from dnd_bot.logic.prototype.races.human import Human
 
 
 class ViewCharacterCreationStart(nextcord.ui.View):
