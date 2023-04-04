@@ -49,6 +49,8 @@ class HandlerGame:
 
     @staticmethod
     async def pause_game(token: str = ''):
+        """pauses game based on the token.
+           Game is saved to db and state is set to INACTIVE"""
         game = Multiverse.get_game(token)
 
         if not game:
@@ -60,6 +62,8 @@ class HandlerGame:
 
     @staticmethod
     async def resume_game(token: str = ''):
+        """resumes game based on a token.
+           Game is loaded from db and state is set to ACTIVE"""
         game = Multiverse.get_game(token)
 
         if not game:
