@@ -6,10 +6,6 @@ from dnd_bot.tests.autoconf import database_fixture
 postgresql, postgresql_in_docker = database_fixture('dialog')
 
 
-# def test_add_entity(postgresql):
-#     pass
-
-
 def test_get_entity(postgresql):
     cur = postgresql.cursor()
 
