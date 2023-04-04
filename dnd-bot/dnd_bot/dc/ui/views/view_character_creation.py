@@ -27,6 +27,7 @@ class ViewCharacterCreationStart(nextcord.ui.View):
 
 class ModalNameForm(nextcord.ui.Modal):
     """First form in character creation process"""
+
     def __init__(self, user_id, token):
         super().__init__("Name Form")
         self.user_id = user_id
@@ -58,6 +59,7 @@ class ModalNameForm(nextcord.ui.Modal):
 
 class ViewAlignmentForm(nextcord.ui.View):
     """View with dropdowns for two axes of alignment"""
+
     def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
@@ -145,11 +147,12 @@ class ViewAlignmentForm(nextcord.ui.View):
 
         # user hasn't made choice in at least one dropdown
         if (not self.lawfulness_axis_dropdown.values or not self.goodness_axis_dropdown.values) and \
-            (not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] or
-             not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
+                (not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0] or
+                 not ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]):
 
             if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content="You must choose an alignment!", error=True)
+                await Messager.send_dm_message(user_id=self.user_id, content="You must choose an alignment!",
+                                               error=True)
             return
 
         # delete error messages
@@ -164,33 +167,21 @@ class ViewAlignmentForm(nextcord.ui.View):
 
 class ViewClassForm(nextcord.ui.View):
     """View with dropdown for selecting a class"""
+
     def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
         self.token = token
         self.class_value = ChosenAttributes.chosen_attributes[self.user_id]['class']
 
-        class_option1 = nextcord.SelectOption(
-            label="Warrior",
-            description="You like close encounters with your enemies.",
-            emoji=Warrior.emoji(),
-            default=True if self.class_value == 'Warrior' else False)
-
-        class_option2 = nextcord.SelectOption(
-            label="Mage",
-            description="You're a magic freak.",
-            emoji=Mage.emoji(),
-            default=True if self.class_value == 'Mage' else False)
-
-        class_option3 = nextcord.SelectOption(
-            label="Ranger",
-            description="A bow is your closest friend.",
-            emoji=Ranger.emoji(),
-            default=True if self.class_value == 'Ranger' else False)
+        class_options = [nextcord.SelectOption(label=chr_class.name, description=chr_class.description,
+                                               emoji=chr_class.emoji,
+                                               default=True if self.class_value == chr_class.name else False)
+                         for chr_class in HandlerCharacterCreation.classes]
 
         self.class_dropdown = nextcord.ui.Select(
             placeholder="Select a class.",
-            options=[class_option1, class_option2, class_option3],
+            options=class_options,
             row=0)
 
         self.add_item(self.class_dropdown)
@@ -236,33 +227,21 @@ class ViewClassForm(nextcord.ui.View):
 
 class ViewRaceForm(nextcord.ui.View):
     """View with dropdown for selecting a race"""
+
     def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id
         self.token = token
         self.race_value = ChosenAttributes.chosen_attributes[self.user_id]['race']
 
-        race_option1 = nextcord.SelectOption(
-            label="Human",
-            description="Just an ordinary offspring of Adam.",
-            emoji=Human.emoji(),
-            default=True if self.race_value == 'Human' else False)
-
-        race_option2 = nextcord.SelectOption(
-            label="Elf",
-            description="You have a lot of grace.",
-            emoji=Elf.emoji(),
-            default=True if self.race_value == 'Elf' else False)
-
-        race_option3 = nextcord.SelectOption(
-            label="Dwarf",
-            description="You're a hard, tough worker.",
-            emoji=Dwarf.emoji(),
-            default=True if self.race_value == 'Dwarf' else False)
+        race_options = [nextcord.SelectOption(label=chr_race.name, description=chr_race.description,
+                                              emoji=chr_race.emoji,
+                                              default=True if self.race_value == chr_race.name else False)
+                        for chr_race in HandlerCharacterCreation.races]
 
         self.race_dropdown = nextcord.ui.Select(
             placeholder="Select a race.",
-            options=[race_option1, race_option2, race_option3],
+            options=race_options,
             row=0)
 
         self.add_item(self.race_dropdown)
@@ -304,12 +283,14 @@ class ViewRaceForm(nextcord.ui.View):
             await Messager.delete_message(error_data[0], error_data[1])
 
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
+                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(
+                                                  self.user_id),
                                               view=ViewStatsRetrospectiveForm(self.user_id, self.token))
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
     """View that allows to see stats and re-roll them once in a character creation process"""
+
     def __init__(self, user_id, token):
         super().__init__()
         self.user_id = user_id

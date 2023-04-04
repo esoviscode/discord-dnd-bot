@@ -1,3 +1,4 @@
+import json
 import random
 
 from dnd_bot.database.database_game import DatabaseGame
@@ -6,12 +7,19 @@ from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
+from dnd_bot.logic.prototype.character_class import CharacterClass
+from dnd_bot.logic.prototype.character_race import CharacterRace
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
 class HandlerCharacterCreation:
     """Handles character creation process"""
+
+    CAMPAIGN_JSON_PATH = 'dnd_bot/assets/campaigns/campaign.json'
+
+    classes: list[CharacterClass] = []
+    races: list[CharacterRace] = []
 
     @staticmethod
     async def start_character_creation(token, user_id):
@@ -20,6 +28,8 @@ class HandlerCharacterCreation:
             :param user_id: id of the user who ran the command or the host that pressed the start button
             :return: status, (if start was successful, users list, optional error message)
             """
+        HandlerCharacterCreation.load_character_creation_json_data()
+
         game = Multiverse.get_game(token)
         game_id = DatabaseGame.get_id_game_from_game_token(token)
 
@@ -128,3 +138,41 @@ class HandlerCharacterCreation:
             return True, True, ''
         else:
             return True, False, ''
+
+    @staticmethod
+    def load_character_creation_json_data():
+        """
+        function loads information about classes and races in a campaign from a json
+        """
+        with open(HandlerCharacterCreation.CAMPAIGN_JSON_PATH) as file:
+            json_dict = json.load(file)
+            for character_race_or_class in [(CharacterClass, 'classes'), (CharacterRace, 'races')]:
+                json_races_or_classes = json_dict[character_race_or_class[1]]
+                for json_class in json_races_or_classes:
+                    character_class = character_race_or_class[0](name=json_class)
+                    character_class.emoji = json_races_or_classes[json_class]['emoji']
+                    character_class.description = json_races_or_classes[json_class]['description']
+                    character_class.long_description = json_races_or_classes[json_class]['long-description']
+                    stats = json_races_or_classes[json_class]['stats']
+
+                    if 'action-points' in stats:
+                        character_class.base_action_points = stats['action-points']
+                    if 'initiative' in stats:
+                        character_class.base_initiative = stats['initiative']
+                    if 'hp' in stats:
+                        character_class.base_hp = stats['hp']
+                    if 'strength' in stats:
+                        character_class.base_strength = stats['strength']
+                    if 'dexterity' in stats:
+                        character_class.base_dexterity = stats['dexterity']
+                    if 'intelligence' in stats:
+                        character_class.base_intelligence = stats['intelligence']
+                    if 'charisma' in stats:
+                        character_class.base_charisma = stats['charisma']
+                    if 'perception' in stats:
+                        character_class.base_perception = stats['perception']
+
+                    if character_race_or_class[1] == 'classes':
+                        HandlerCharacterCreation.classes.append(character_class)
+                    if character_race_or_class[1] == 'races':
+                        HandlerCharacterCreation.races.append(character_class)

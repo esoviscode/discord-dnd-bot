@@ -4,47 +4,17 @@ from abc import abstractmethod
 class CharacterRace:
     """Abstract interface defining methods which must be overriden by classes defining particular character races"""
 
-    @staticmethod
-    @abstractmethod
-    def emoji():
-        pass
+    def __init__(self, name: str = ''):
+        self.name = name
+        self.description = ''
+        self.long_description = ''
 
-    @staticmethod
-    @abstractmethod
-    def base_hp():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_strength():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_dexterity():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_intelligence():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_charisma():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_perception():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_action_points():
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def base_initiative():
-        pass
+        self.emoji = ''
+        self.base_hp = 0
+        self.base_strength = 0
+        self.base_dexterity = 0
+        self.base_intelligence = 0
+        self.base_charisma = 0
+        self.base_perception = 0
+        self.base_action_points = 0
+        self.base_initiative = 0
