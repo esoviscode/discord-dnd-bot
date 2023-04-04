@@ -12,7 +12,7 @@ class CommandResume(Cog):
     @slash_command(name='resume', description='Resumes a game by providing a game token')
     async def resume(self, interaction, token: str):
         try:
-            await HandlerGame.pause_game(token)
+            await HandlerGame.resume_game(token)
         except Exception as e:
             await interaction.response.send_message(f'⚠️ {e}')
 
