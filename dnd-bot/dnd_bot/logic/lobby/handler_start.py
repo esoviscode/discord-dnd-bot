@@ -42,6 +42,6 @@ class HandlerStart:
                 raise StartGameException(':warning: Error creating game!')
 
             users = [user.discord_id for user in game.user_list]
-            return True, users, ''
+            return users
         else:
             raise StartGameException(':no_entry: This game has already started!')
