@@ -1,6 +1,5 @@
 import random
 
-from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
@@ -43,12 +42,12 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(host_id, host_dm_channel, host_username) -> (bool, int, str):
+    async def create_lobby(host_id, host_dm_channel, host_username) -> (str, User):
         """creates an actual lobby
         :param host_id: discord id of the host/user who used the command
         :param host_dm_channel: discord private message channel with host
         :param host_username: discord username
-        :return: status, (if creation was successful, new game token, optional error message)
+        :return: (new game token, User object of host)
         """
         tokens = DatabaseGame.get_all_game_tokens()
         token = await HandlerCreate.generate_token()
@@ -59,19 +58,19 @@ class HandlerCreate:
         game = Game(token, host_id, "Storm King's Thunder", "LOBBY")
 
         if game.id is None:
-            return False, -1, ":no_entry: Error creating game!"
+            raise Exception(":no_entry: Error creating game!")
 
         DatabaseUser.add_user(game.id, host_id)
         user = User(token, host_id, host_dm_channel, host_username, HandlerJoin.get_color_by_index(0), True)
         if user.id is None:
-            return False, -1, ":no_entry: Error creating host user"
+            raise Exception(":no_entry: Error creating host user")
 
         if not Multiverse.masks:
             Multiverse.generate_masks()
         Multiverse.add_game(game)
         Multiverse.get_game(token).add_host(user)
 
-        return True, token, ""
+        return token, user
 
     @staticmethod
     async def generate_token() -> str:

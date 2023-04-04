@@ -4,21 +4,17 @@ from dnd_bot.logic.prototype.multiverse import Multiverse
 class HandlerReady:
 
     @staticmethod
-    async def on_ready(token, user_id) -> (bool, list, str):
-        """on_ready
-            returns users in lobby
-                - list consisting of (player name, readiness, is_host, id_player) tuple
+    async def on_ready(token, user_id) -> list:
+        """ tries to join the player to the lobby
+        :param token: token of the lobby/game
+        :param user_id: user discord id
+        :return: list of users in lobby
         """
 
-        try:
-            game = Multiverse.get_game(token)
-        except KeyError:
-            return False, [], f':warning: No game found using this token!'
+        game = Multiverse.get_game(token)
+        if game is None:
+            raise Exception(":warning: No game found using this token!")
 
         game.find_user(user_id).is_ready = True
-        users = Multiverse.get_game(token).user_list
-        lobby_players = []
-        for user in users:
-            lobby_players.append((user.username, user.is_ready, user.is_host, user.discord_id))
 
-        return True, lobby_players, ""
+        return game.user_list

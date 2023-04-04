@@ -22,7 +22,7 @@ class HandlerCharacterCreation:
         """Called when host clicks start in lobby
             :param token: game token
             :param user_id: id of the user who ran the command or the host that pressed the start button
-            :return: status, (if start was successful, users list, optional error message)
+            :return: user list
             """
         HandlerCharacterCreation.load_character_creation_json_data()
 
@@ -30,29 +30,25 @@ class HandlerCharacterCreation:
         game_id = DatabaseGame.get_id_game_from_game_token(token)
 
         if game_id is None:
-            return False, [], ":no_entry: Error creating game!"
+            raise Exception(":no_entry: Error creating game!")
 
         if user_id != game.id_host:
-            return False, [], f':warning: Only the host can start the game!'
+            raise Exception(":warning: Only the host can start the game!")
 
         if not game.all_users_ready():
-            return False, [], f':warning: Not all the players are ready!'
+            raise Exception(":warning: Not all the players are ready!")
 
-        if game.game_state == 'LOBBY':
-            game.game_state = "STARTING"
-            DatabaseGame.update_game_state(game_id, 'STARTING')
+        if game.game_state != 'LOBBY':
+            raise Exception(":no_entry: This game has already started!")
 
-            if game_id is None:
-                game.game_state = 'LOBBY'
-                return False, [], ":warning: Error creating game!"
-            for user in game.user_list:
-                ChosenAttributes.add_empty_user(user.discord_id)
-                game.find_user(user.discord_id).is_ready = False
+        game.game_state = 'STARTING'
+        DatabaseGame.update_game_state(game_id, 'STARTING')
 
-            users = [user.discord_id for user in game.user_list]
-            return True, users, ''
-        else:
-            return False, [], f':no_entry: This game has already started!'
+        for user in game.user_list:
+            ChosenAttributes.add_empty_user(user.discord_id)
+            game.find_user(user.discord_id).is_ready = False
+
+        return game.user_list
 
     @staticmethod
     async def assign_attribute_values(user_id):

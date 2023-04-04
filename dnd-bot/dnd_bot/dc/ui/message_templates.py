@@ -20,11 +20,11 @@ class MessageTemplates:
         desc = f'\nCampaign: {campaign}'
 
         for i, player in enumerate(players):
-            if player[2]:
-                desc += f'{MessageTemplates.color_emojis[i]} {player[0]} 👑'
+            if player.is_host:
+                desc += f'{MessageTemplates.color_emojis[i]} {player.username} 👑'
             else:
-                desc += f'{MessageTemplates.color_emojis[i]} {player[0]}'
-            readiness = " :white_check_mark:" if player[1] else " :x:"
+                desc += f'{MessageTemplates.color_emojis[i]} {player.username}'
+            readiness = " :white_check_mark:" if player.is_ready else " :x:"
             desc += readiness + "\n\n"
 
         embed = nextcord.Embed(title=f'Dungeons&Dragons 🐉 Lobby #{lobby_token}',
