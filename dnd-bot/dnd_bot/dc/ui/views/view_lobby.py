@@ -9,6 +9,7 @@ from dnd_bot.logic.character_creation.handler_character_creation import HandlerC
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.lobby.handler_ready import HandlerReady
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class ViewLobby(nextcord.ui.View):
@@ -45,7 +46,7 @@ class ViewLobby(nextcord.ui.View):
                      for user in lobby_players]
             await asyncio.gather(*tasks)
             await q.join()
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
@@ -55,6 +56,9 @@ class ViewJoin(ViewLobby):
     @nextcord.ui.button(label="Join", style=nextcord.ButtonStyle.green, custom_id='join-button')
     async def join(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         try:
+            if interaction.user.dm_channel is None:
+                await interaction.user.create_dm()
+
             lobby_players = await HandlerJoin.join_lobby(self.token, interaction.user.id,
                                                          interaction.user.dm_channel.id, interaction.user.name)
             await interaction.response.send_message("Check direct message!", ephemeral=True)
@@ -73,7 +77,7 @@ class ViewJoin(ViewLobby):
             await asyncio.gather(*tasks)
             await q.join()
 
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 
@@ -105,7 +109,7 @@ class ViewHost(ViewLobby):
                                                content=None,
                                                embed=MessageTemplates.character_creation_start_message_template(),
                                                view=ViewCharacterCreationStart(self.token))
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
 

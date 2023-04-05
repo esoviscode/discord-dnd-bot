@@ -6,6 +6,7 @@ from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.prototype.character_class import CharacterClass
 from dnd_bot.logic.prototype.character_race import CharacterRace
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.utils.exceptions import StartCharacterCreationException
 from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
 
 
@@ -30,16 +31,16 @@ class HandlerCharacterCreation:
         game_id = DatabaseGame.get_id_game_from_game_token(token)
 
         if game_id is None:
-            raise Exception(":no_entry: Error creating game!")
+            raise StartCharacterCreationException(":no_entry: Error creating game!")
 
         if user_id != game.id_host:
-            raise Exception(":warning: Only the host can start the game!")
+            raise StartCharacterCreationException(":warning: Only the host can start the game!")
 
         if not game.all_users_ready():
-            raise Exception(":warning: Not all the players are ready!")
+            raise StartCharacterCreationException(":warning: Not all the players are ready!")
 
         if game.game_state != 'LOBBY':
-            raise Exception(":no_entry: This game has already started!")
+            raise StartCharacterCreationException(":no_entry: This game has already started!")
 
         game.game_state = 'STARTING'
         DatabaseGame.update_game_state(game_id, 'STARTING')

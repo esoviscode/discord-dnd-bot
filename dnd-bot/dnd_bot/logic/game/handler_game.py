@@ -2,6 +2,7 @@ import asyncio
 from datetime import time
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
+from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame, ViewMain
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -23,6 +24,9 @@ class HandlerGame:
 
         if isinstance(game.active_creature, Player):
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
+
+            # delete any error messages that were left out
+            await Messager.delete_last_user_error_message(game.active_creature.discord_identity)
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
 

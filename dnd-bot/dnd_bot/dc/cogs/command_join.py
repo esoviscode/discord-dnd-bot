@@ -7,6 +7,7 @@ from dnd_bot.dc.ui.views.view_lobby import ViewPlayer, ViewLobby
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.lobby.handler_join import HandlerJoin
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class CommandJoin(Cog):
@@ -17,6 +18,9 @@ class CommandJoin(Cog):
     @slash_command(name="join", description="Joins to the lobby by its id")
     async def join(self, interaction, token: str):
         try:
+            if interaction.user.dm_channel is None:
+                await interaction.user.create_dm()
+
             lobby_players = await HandlerJoin.join_lobby(token, interaction.user.id,
                                                          interaction.user.dm_channel.id, interaction.user.name)
             await interaction.response.send_message("Check direct message!", ephemeral=True)
@@ -35,7 +39,7 @@ class CommandJoin(Cog):
             await asyncio.gather(*tasks)
             await q.join()
 
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(interaction.user.discord_id)
             await Messager.send_dm_message(user_id=interaction.user.discord_id, content=str(e), error=True)
 

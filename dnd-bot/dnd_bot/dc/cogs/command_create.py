@@ -5,6 +5,7 @@ from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_lobby import ViewJoin, ViewHost
 from dnd_bot.logic.lobby.handler_create import HandlerCreate
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class CommandCreate(Cog):
@@ -15,6 +16,9 @@ class CommandCreate(Cog):
     @slash_command(name="create", description="Creates new lobby")
     async def create(self, interaction):
         try:
+            if interaction.user.dm_channel is None:
+                await interaction.user.create_dm()
+
             token, user = await HandlerCreate.create_lobby(interaction.user.id, interaction.user.dm_channel,
                                                            interaction.user.name)
 
@@ -29,7 +33,7 @@ class CommandCreate(Cog):
             view = ViewJoin(interaction.user.id, token)
             await interaction.response.send_message(f"Hello {interaction.user.mention}!", view=view,
                                                     embed=MessageTemplates.lobby_creation_message(token))
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.send_dm_message(user_id=interaction.user.id, content=str(e), error=True)
 
 

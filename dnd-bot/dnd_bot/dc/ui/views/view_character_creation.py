@@ -9,6 +9,7 @@ from dnd_bot.logic.character_creation.handler_character_creation import HandlerC
 from dnd_bot.logic.character_creation.handler_class import HandlerClass
 from dnd_bot.logic.character_creation.handler_race import HandlerRace
 from dnd_bot.logic.character_creation.handler_stats_retrospective import HandlerStatsRetrospective
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class ViewCharacterCreationStart(nextcord.ui.View):
@@ -130,7 +131,7 @@ class ViewAlignmentForm(nextcord.ui.View):
             await Messager.edit_last_user_message(user_id=self.user_id,
                                                   embed=MessageTemplates.class_form_view_message_template(),
                                                   view=ViewClassForm(self.user_id, self.token))
-        except Exception as e:
+        except DiscordDndBotException as e:
             # check for previous error messages
             error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
@@ -173,7 +174,7 @@ class ViewClassForm(nextcord.ui.View):
             await Messager.edit_last_user_message(user_id=self.user_id,
                                                   embed=MessageTemplates.race_form_view_message_template(),
                                                   view=ViewRaceForm(self.user_id, self.token))
-        except Exception as e:
+        except DiscordDndBotException as e:
             # check for previous error messages
             error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
@@ -216,7 +217,7 @@ class ViewRaceForm(nextcord.ui.View):
             await Messager.edit_last_user_message(user_id=self.user_id,
                                                   embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
                                                   view=ViewStatsRetrospectiveForm(self.user_id, self.token))
-        except Exception as e:
+        except DiscordDndBotException as e:
             # check for previous error messages
             error_data = MessageHolder.read_last_error_data(self.user_id)
             if error_data is None:
@@ -244,6 +245,6 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         try:
             await HandlerStatsRetrospective.handle_confirm(self)
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)

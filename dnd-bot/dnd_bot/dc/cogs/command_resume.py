@@ -2,6 +2,7 @@ from nextcord import slash_command
 from nextcord.ext.commands import Cog, Bot
 
 from dnd_bot.logic.game.handler_game import HandlerGame
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class CommandResume(Cog):
@@ -13,7 +14,7 @@ class CommandResume(Cog):
     async def resume(self, interaction, token: str):
         try:
             await HandlerGame.resume_game(token)
-        except Exception as e:
+        except DiscordDndBotException as e:
             await interaction.response.send_message(f'⚠️ {e}')
 
 
