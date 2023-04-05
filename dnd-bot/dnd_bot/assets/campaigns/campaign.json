@@ -1,7 +1,7 @@
 {
   "classes": {
     "Warrior": {
-      "emoji": "⚔",
+      "emoji": "\u2694",
       "description": "You like close encounters with your enemies.",
       "long-description": "Warriors share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. They are well acquainted with death, both meting it out and staring it defiantly in the face.",
       "stats": {
