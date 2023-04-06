@@ -15,6 +15,7 @@ from dnd_bot.logic.prototype.entities.creatures.nothic import Nothic
 from dnd_bot.logic.prototype.entities.creatures.skeleton_morningstar import SkeletonMorningstar
 from dnd_bot.logic.prototype.entities.creatures.skeleton_warrior import SkeletonWarrior
 from dnd_bot.logic.prototype.entities.hole import Hole
+from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.entities.rock import Rock
 from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
 from dnd_bot.logic.prototype.entities.walls.dungeon_connector import DungeonConnector
