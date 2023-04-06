@@ -1,7 +1,7 @@
 import random
 
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.entities.misc.dead_body import DeadBody
+from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -54,12 +54,12 @@ class HandlerAttack:
 
         target.hp -= (base_damage + weapon_damage)
 
-        # dead of the creature
+        # death of the creature
         if target.hp <= 0:
             target_name = target.name
             game.delete_entity(target.id)
             # if you want the dead body to have other sprite pass its path below
-            game.add_entity(DeadBody(target.x, target.y, token, sprite_path=None))
+            game.add_entity(Corpse(target.x, target.y, token, sprite_path=None))
             return True, attack_status_message[:-3] + f' for ' \
                                                       f'**`{base_damage + weapon_damage}`**  damage!\n\n' + \
                                                       f'> 💀 **{target_name}** has been defeated!'
