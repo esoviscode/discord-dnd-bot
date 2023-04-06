@@ -7,25 +7,7 @@ from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.entities.creatures.frost_mage import FrostMage
-from dnd_bot.logic.prototype.entities.creatures.half_dragon_assassin import HalfDragonAssassin
-from dnd_bot.logic.prototype.entities.creatures.half_dragon_warrior import HalfDragonWarrior
-from dnd_bot.logic.prototype.entities.creatures.lizardfolk_archer import LizardfolkArcher
-from dnd_bot.logic.prototype.entities.creatures.nothic import Nothic
-from dnd_bot.logic.prototype.entities.creatures.skeleton_morningstar import SkeletonMorningstar
-from dnd_bot.logic.prototype.entities.creatures.skeleton_warrior import SkeletonWarrior
-from dnd_bot.logic.prototype.entities.hole import Hole
-from dnd_bot.logic.prototype.entities.rock import Rock
-from dnd_bot.logic.prototype.entities.mushrooms import Mushrooms
-from dnd_bot.logic.prototype.entities.walls.dungeon_connector import DungeonConnector
-from dnd_bot.logic.prototype.entities.walls.dungeon_corner_in import DungeonCornerIn
-from dnd_bot.logic.prototype.entities.walls.dungeon_corner_out import DungeonCornerOut
-from dnd_bot.logic.prototype.entities.walls.dungeon_crossroads import DungeonCrossroads
-from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_a import DungeonPillarA
-from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_b import DungeonPillarB
-from dnd_bot.logic.prototype.entities.walls.dungeon_pillar_c import DungeonPillarC
-from dnd_bot.logic.prototype.entities.walls.dungeon_straight_a import DungeonStraightA
-from dnd_bot.logic.prototype.entities.walls.dungeon_straight_b import DungeonStraightB
+from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.equipment import Equipment
 from dnd_bot.logic.prototype.items.bow import Bow
 from dnd_bot.logic.prototype.items.item import Item
@@ -36,30 +18,9 @@ from dnd_bot.logic.utils.utils import get_game_view
 
 
 class InitializeWorld:
-    entity_classes_by_name: dict = {
-        'Rock': Rock,
-        'Hole': Hole,
-        'Mushrooms': Mushrooms,
-        'Frost mage': FrostMage,
-        'Half dragon assassin': HalfDragonAssassin,
-        'Half dragon warrior': HalfDragonWarrior,
-        'Lizardfolk archer': LizardfolkArcher,
-        'Nothic': Nothic,
-        'Skeleton morningstar': SkeletonMorningstar,
-        'Skeleton warrior': SkeletonWarrior,
-        'Dungeon connector': DungeonConnector,
-        'Dungeon corner in': DungeonCornerIn,
-        'Dungeon corner out': DungeonCornerOut,
-        'Dungeon crossroads': DungeonCrossroads,
-        'Dungeon pillar A': DungeonPillarA,
-        'Dungeon pillar B': DungeonPillarB,
-        'Dungeon pillar C': DungeonPillarC,
-        'Dungeon straight A': DungeonStraightA,
-        'Dungeon straight B': DungeonStraightB,
-    }
 
     @staticmethod
-    def load_entities(game, map_path):
+    def load_entities(game, map_path, campaign_path):
         """loads entities from json, players will be placed in random available spawning spots"""
         with open(map_path) as file:
             map_json = json.load(file)
@@ -68,22 +29,27 @@ class InitializeWorld:
             # load entity types dict
             entity_types = map_json['entity_types']
 
-            entities = []
-            player_spawning_points = []
-            for y, row in enumerate(entities_json):
-                entities_row = []
-                for x, entity in enumerate(row):
-                    if str(entity) not in entity_types:
-                        entities_row.append(None)
+            # load enemies and map elements from campaign json
+            with open(campaign_path) as file:
+                campaign_json = json.load(file)
+                enemies_json = campaign_json['entities']['enemies']
+                map_elements_json = campaign_json['entities']['map_elements']
 
-                    elif entity_types[str(entity)] == 'Player':
-                        player_spawning_points.append((x, y))
-                        entities_row.append(None)
-                    else:
-                        entities_row = InitializeWorld.add_entity(entities_row, InitializeWorld.entity_classes_by_name[
-                            entity_types[str(entity)]], x, y, game.token, game.id)
+                entities = []
+                player_spawning_points = []
+                for y, row in enumerate(entities_json):
+                    entities_row = []
+                    for x, entity in enumerate(row):
+                        if str(entity) not in entity_types:
+                            entities_row.append(None)
 
-                entities.append(entities_row)
+                        elif entity_types[str(entity)] == 'Player':
+                            player_spawning_points.append((x, y))
+                            entities_row.append(None)
+                        else:
+                            entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y, game.token, game.id, enemies_json, map_elements_json)
+
+                    entities.append(entities_row)
 
         game.entities = copy.deepcopy(entities)
         InitializeWorld.load_entity_rotations(game, map_path)
@@ -177,31 +143,35 @@ class InitializeWorld:
         return players_positions
 
     @staticmethod
-    def add_entity(entity_row, entity_class, x, y, game_token, game_id):
+    def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, map_elements_json):
         """adds entity of class to entity matrix in game
+        :param game_token:
         :param entity_row: representing row of entity matrix
-        :param entity_class: class of entity to be added
+        :param entity_name: name of entity to be added
         :param x: entity x position
-        :param x: entity y position
+        :param y: entity y position
         """
 
-        if issubclass(entity_class, Creature):  # add a creature
-            entity_row = InitializeWorld.add_creature(entity_row, entity_class, x, y, game_token, game_id,
-                                                      entity_class.creature_name)
+        if entity_name in enemies_json:
+            entity_row = InitializeWorld.add_creature(entity_row, x, y, entity_name, game_token, game_id,
+                                                      enemies_json[entity_name])
             return entity_row
 
-        entity = entity_class(x=x, y=y, game_token=game_token, name=entity_class.entity_name,
-                              sprite=entity_class.sprite_path)
-        id_entity = DatabaseEntity.add_entity(name=entity_class.entity_name, x=x, y=y, id_game=game_id)
+        entity = Entity(x=x, y=y, sprite=map_elements_json[entity_name], name=entity_name, game_token=game_token)
+        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity_row.append(entity)
         return entity_row
 
     @staticmethod
-    def add_creature(entity_row, creature_class, x, y, game_token, game_id, entity_name):
-        entity = creature_class(x=x, y=y, game_token=game_token, action_points=2, sprite=creature_class.sprite_path,
-                                name=creature_class.creature_name, hp=20)
-        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id)
+    def add_creature(entity_row, x, y, name, game_token, game_id, entity_data):
+        entity = Creature(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name, hp=entity_data['hp'],
+                          strength=entity_data['strength'], dexterity=entity_data['dexterity'], intelligence=entity_data['intelligence'],
+                          charisma=entity_data['charisma'], perception=entity_data['perception'], initiative=entity_data['initiative'],
+                          action_points=entity_data['action_points'], level=entity_data['level'], equipment=entity_data['equipment'],
+                          drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
+
+        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity_row.append(entity)
         return entity_row
