@@ -81,6 +81,9 @@ class Game(DatabaseObject):
         self.entities[y].remove(entity)
         self.entities[y].insert(x, None)
 
+    def add_entity(self, entity: Entity):
+        self.entities[entity.y][entity.x] = entity
+
     def all_users_ready(self):
         """checks if all users in lobby are ready"""
         for user in self.user_list:
