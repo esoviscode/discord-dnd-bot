@@ -135,5 +135,94 @@
         "perception": 1
       }
     }
+  },
+  "entities": {
+    "enemies": {
+      "Frost mage": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/frost_mage_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 5,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 2,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Ring of vitality": 0.2
+        },
+        "ai": 0
+      },
+      "Half dragon assassin": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_assassin_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 5,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 2,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Hunting necklace": 0.2
+        },
+        "ai": 0
+      },
+      "Nothic": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/nothic_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 5,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 2,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Holy Bible": 0.2
+        },
+        "ai": 0
+      },
+      "Skeleton warrior": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/skeleton_warrior_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 5,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 2,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Light crossbow": 0.2
+        },
+        "ai": 0
+      }
+    },
+    "map_elements": {
+      "Rock": "dnd_bot/assets/gfx/entities/mushrooms.png",
+      "Mushrooms": "dnd_bot/assets/gfx/entities/rock.png",
+      "Dungeon connector": "dnd_bot/assets/gfx/walls/dungeon_connector.png",
+      "Dungeon corner in": "dnd_bot/assets/gfx/walls/dungeon_corner_in_black.png",
+      "Dungeon corner out": "dnd_bot/assets/gfx/walls/dungeon_corner_out_black.png",
+      "Dungeon crossroads": "dnd_bot/assets/gfx/walls/dungeon_crossroads.png",
+      "Dungeon pillar A": "dnd_bot/assets/gfx/walls/dungeon_pillar.png",
+      "Dungeon pillar B": "dnd_bot/assets/gfx/walls/dungeon_pillar_2.png",
+      "Dungeon pillar C": "dnd_bot/assets/gfx/walls/dungeon_pillar_3.png",
+      "Dungeon straight A": "dnd_bot/assets/gfx/walls/dungeon_straight_1_black.png",
+      "Dungeon straight B": "dnd_bot/assets/gfx/walls/dungeon_straight_2_black.png"
+    }
   }
 }
