@@ -25,7 +25,8 @@ class CommandCreate(Cog):
             view = ViewHost(interaction.user.id, token)
             await Messager.send_dm_message(user_id=interaction.user.id,
                                            content=None,
-                                           embed=MessageTemplates.lobby_view_message_template(token, [user]), view=view)
+                                           embeds=[MessageTemplates.lobby_view_message_template(token, [user])],
+                                           view=view)
 
             view = ViewJoin(interaction.user.id, token)
             await interaction.response.send_message(f"Hello {interaction.user.mention}!", view=view,

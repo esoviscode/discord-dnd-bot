@@ -30,7 +30,7 @@ class CommandJoin(Cog):
             await Messager.send_dm_message(interaction.user.id,
                                            f"Welcome to lobby of game {token}.\n"
                                            f"Number of players in lobby: **{len(lobby_players)}**",
-                                           embed=lobby_view_embed,
+                                           embeds=[lobby_view_embed],
                                            view=ViewPlayer(interaction.user.discord_id, token))
 
             q = asyncio.Queue()
