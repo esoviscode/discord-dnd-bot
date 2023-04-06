@@ -40,8 +40,7 @@ class CommandJoin(Cog):
             await q.join()
 
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(interaction.user.discord_id)
-            await Messager.send_dm_message(user_id=interaction.user.discord_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=interaction.user.discord_id, content=str(e))
 
 
 def setup(bot):

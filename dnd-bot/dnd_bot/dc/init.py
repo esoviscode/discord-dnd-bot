@@ -71,6 +71,6 @@ async def on_command_error(interaction, error):
                           value="Don't worry we will forward this message to the devs.",
                           inline=False)
     error_embed.set_footer(
-        text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
+        text=f"Command requested by {interaction.author.name}", icon_url=interaction.author.display_avatar)
 
     await interaction.response.send_message(embed=error_embed)

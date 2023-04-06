@@ -67,12 +67,9 @@ class ViewGame(View):
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         self.game.players_views[self.user_discord_id] = (ViewMain, [])
-        if files:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                                  view=ViewMain(self.token, interaction.user.id), files=files)
-        else:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                                  view=ViewMain(self.token, interaction.user.id))
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
+                                              view=ViewMain(self.token, interaction.user.id),
+                                              files=files)
 
     async def character_view_options(self, interaction: nextcord.Interaction):
         """shared handler for character view"""
@@ -86,10 +83,10 @@ class ViewGame(View):
         self.game.players_views[self.user_discord_id] = (ViewCharacterNonActive, [])
 
         if isinstance(active_creature, Player) and player.discord_identity == active_creature.discord_identity:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                                   view=ViewCharacter(self.token, interaction.user.id))
         else:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                                   view=ViewCharacterNonActive(self.token, interaction.user.id))
 
     async def character_view_equipment(self, interaction: nextcord.Interaction):
@@ -155,7 +152,7 @@ class ViewMain(ViewGame):
         player = game.get_player_by_id_user(interaction.user.id)
 
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
-        await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                               view=ViewMovement(self.token, interaction.user.id))
         game.players_views[str(interaction.user.id)] = (ViewMovement, [])
 
@@ -238,18 +235,12 @@ class ViewMovement(ViewGame):
 
         Multiverse.get_game(token).players_views[id_user] = (ViewMovement, [])
 
-        error_data = MessageHolder.read_last_error_data(id_user)
         if not status:
-            if error_data is not None:
-                await Messager.edit_message(error_data[0], error_data[1], f"**{error_message}**")
-            else:
-                await Messager.send_dm_message(id_user, f"**{error_message}**", error=True)
+            await Messager.delete_last_user_error_message(id_user)
+            await Messager.send_dm_error_message(id_user, f"**{error_message}**")
             return
 
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(id_user)
-            await Messager.delete_message(error_data[0], error_data[1])
-
+        await Messager.delete_last_user_error_message(id_user)
         active_player = Multiverse.get_game(token).active_creature
         recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
         await ViewGame.display_views_for_users(token, recent_action)
@@ -277,7 +268,8 @@ class ViewAttack(ViewGame):
 
             self.add_item(self.select_enemy_to_attack_list)
 
-        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1, custom_id='attack-action-button')
+        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1,
+                               custom_id='attack-action-button')
         attack_button.callback = self.attack_button
         attack_button.disabled = self.enemies_to_attack == 0
         self.add_item(attack_button)
@@ -312,12 +304,12 @@ class ViewAttack(ViewGame):
             if error_data is not None:
                 await Messager.edit_message(error_data[0], error_data[1], f"**{message}**")
             else:
-                await Messager.send_dm_message(id_user, f"**{message}**", error=True)
+                await Messager.send_dm_error_message(id_user, f"**{message}**")
             return
 
         if error_data is not None:
             MessageHolder.delete_last_error_data(id_user)
-            await Messager.delete_message(error_data[0], error_data[1])
+            await Messager.__delete_message(error_data[0], error_data[1])
 
         await ViewGame.display_views_for_users(token, message)
 
@@ -472,6 +464,6 @@ class ViewSkills(ViewGame):
             player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
             if player.active:
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message,
-                                                      embed=skills_list_embed, view=ViewSkills(token, player.skills))
+                                                      embeds=[skills_list_embed], view=ViewSkills(token, player.skills))
             else:
                 await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message)
