@@ -9,4 +9,4 @@ class DeadBody(Entity):
     def __init__(self, x, y, game_token, sprite_path=None):
         if sprite_path is not None:
             DeadBody.sprite_path = sprite_path
-        super().__init__(x=x, y=y, game_token=game_token, name=DeadBody.entity_name, sprite=DeadBody.sprite_path)
+        super().__init__(x=x, y=y, game_token=game_token, name=DeadBody.entity_name, sprite=DeadBody.sprite_path, fragile=True)
