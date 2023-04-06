@@ -41,7 +41,6 @@ class InitializeWorld:
         'Rock': Rock,
         'Hole': Hole,
         'Mushrooms': Mushrooms,
-        'Dead body': DeadBody,
         'Frost mage': FrostMage,
         'Half dragon assassin': HalfDragonAssassin,
         'Half dragon warrior': HalfDragonWarrior,
