@@ -5,25 +5,27 @@ from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.utils.exceptions import AttackException
 
 
 class HandlerAttack:
     @staticmethod
-    async def handle_attack(source: Creature, target: Creature, token) -> (bool, str):
+    async def handle_attack(source: Creature, target: Creature, token) -> str:
         """
         handler for attacking enemy with main weapon
+        return: message describing attack process which will be sent to users
         """
 
         game: Game = Multiverse.get_game(token)
 
         if target is None or not isinstance(target, Creature):
-            return False, 'The target does not exist!'
+            raise AttackException("The target does not exist!")
 
         if source != game.active_creature:
-            return False, 'You can\'t perform a move right now!'
+            raise AttackException("You can't perform a move right now!")
 
         if source.action_points < source.equipment.right_hand.action_points:
-            return False, 'You have an insufficient number of action points!'
+            raise AttackException("You have an insufficient number of action points!")
 
         if isinstance(source, Player):
             attack_status_message = f'**{source.name}** has attacked **{target.name}** at ({target.x},{target.y})\n' \
@@ -36,7 +38,7 @@ class HandlerAttack:
         # dodging an attack
         # the chance is (source dexterity)%
         if random.randint(0, 99) <= source.dexterity:  # evasion
-            return True, attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
+            return attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
 
         # calculating damage
         # damage = main class attribute + damage from weapon
@@ -60,9 +62,9 @@ class HandlerAttack:
             game.delete_entity(target.id)
             # if you want the dead body to have other sprite pass its path below
             game.add_entity(Corpse(target.x, target.y, token, sprite_path=None))
-            return True, attack_status_message[:-3] + f' for ' \
-                                                      f'**`{base_damage + weapon_damage}`**  damage!\n\n' + \
-                                                      f'> 💀 **{target_name}** has been defeated!'
+            return attack_status_message[:-3] + f' for ' \
+                                                f'**`{base_damage + weapon_damage}`**  damage!\n\n' + \
+                                                f'> 💀 **{target_name}** has been defeated!'
 
-        return True, attack_status_message[:-3] + f' for **`{base_damage + weapon_damage}`** damage!\n\n' + \
-                                                  f'> **{target.name}** has `{target.hp}` HP left!'
+        return attack_status_message[:-3] + f' for **`{base_damage + weapon_damage}`** damage!\n\n' + \
+                                            f'> **{target.name}** has `{target.hp}` HP left!'

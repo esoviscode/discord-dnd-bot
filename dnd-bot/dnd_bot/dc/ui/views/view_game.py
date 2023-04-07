@@ -7,12 +7,12 @@ from nextcord.ui import View
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 from dnd_bot.logic.utils.utils import get_player_view
 
 s_print_lock = Lock()
@@ -173,13 +173,13 @@ class ViewMain(ViewGame):
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger, custom_id='end-turn-main-button')
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for ending turn"""
-
-        status, error_message = await HandlerMovement.handle_end_turn(interaction.user.id, self.token)
-        if not status:
-            await interaction.response.send_message(error_message)
-
-        from dnd_bot.logic.game.handler_game import HandlerGame
-        await HandlerGame.end_turn(self.token)
+        try:
+            await HandlerMovement.handle_end_turn(interaction.user.id, self.token)
+            from dnd_bot.logic.game.handler_game import HandlerGame
+            await HandlerGame.end_turn(self.token)
+        except DiscordDndBotException as e:
+            await Messager.delete_last_user_error_message(interaction.user.id)
+            await Messager.send_dm_message(user_id=interaction.user.id, content=str(e), error=True)
 
 
 class ViewMovement(ViewGame):
@@ -234,7 +234,7 @@ class ViewMovement(ViewGame):
             active_player = Multiverse.get_game(token).active_creature
             recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
             await ViewGame.display_views_for_users(token, recent_action)
-        except Exception as e:
+        except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(id_user)
             await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
 
@@ -285,25 +285,17 @@ class ViewAttack(ViewGame):
     @staticmethod
     async def attack(target_id, id_user, token, interaction: nextcord.Interaction):
         """attack enemy nr enemy_number from the available enemy list with the main weapon"""
-        game = Multiverse.get_game(token)
-        player = game.get_player_by_id_user(id_user)
-        target = game.get_entity_by_id(target_id)
+        try:
+            game = Multiverse.get_game(token)
+            player = game.get_player_by_id_user(id_user)
+            target = game.get_entity_by_id(target_id)
 
-        status, message = await HandlerAttack.handle_attack(player, target, token)
+            message = await HandlerAttack.handle_attack(player, target, token)
 
-        error_data = MessageHolder.read_last_error_data(id_user)
-        if not status:
-            if error_data is not None:
-                await Messager.edit_message(error_data[0], error_data[1], f"**{message}**")
-            else:
-                await Messager.send_dm_message(id_user, f"**{message}**", error=True)
-            return
-
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(id_user)
-            await Messager.delete_message(error_data[0], error_data[1])
-
-        await ViewGame.display_views_for_users(token, message)
+            await ViewGame.display_views_for_users(token, message)
+        except DiscordDndBotException as e:
+            await Messager.delete_last_user_error_message(id_user)
+            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
 
 
 class ViewCharacter(ViewGame):
@@ -441,21 +433,9 @@ class ViewSkills(ViewGame):
     @staticmethod
     async def use_skill(skill, id_user, token, interaction: nextcord.Interaction):
         """attack enemy nr enemy_number from the available enemy list with the main weapon"""
-        status, error_message = await HandlerSkills.handle_use_skill(skill, id_user, token)
-
-        if not status:
-            await interaction.response.send_message(error_message)
-            return
-
-        turn_view_message = MessageTemplates.turn_view_template(token)
-
-        player = Multiverse.get_game(token).get_player_by_id_user(interaction.user.id)
-        skills_list_embed = MessageTemplates.skills_message_template(player)
-        lobby_players = Multiverse.get_game(token).user_list
-        for user in lobby_players:
-            player = Multiverse.get_game(token).get_player_by_id_user(user.discord_id)
-            if player.active:
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message,
-                                                      embed=skills_list_embed, view=ViewSkills(token, player.skills))
-            else:
-                await Messager.edit_last_user_message(user_id=user.discord_id, content=turn_view_message)
+        try:
+            message = await HandlerSkills.handle_use_skill(skill, id_user, token)
+            await ViewGame.display_views_for_users(token, message)
+        except DiscordDndBotException as e:
+            await Messager.delete_last_user_error_message(id_user)
+            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)

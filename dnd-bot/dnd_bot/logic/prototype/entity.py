@@ -1,6 +1,7 @@
 import cv2 as cv
 
 from dnd_bot.logic.prototype.database_object import DatabaseObject
+from dnd_bot.logic.utils.exceptions import MovementException
 
 
 class Entity(DatabaseObject):
@@ -36,10 +37,10 @@ class Entity(DatabaseObject):
 
         if direction == 'right':
             if self.x + 1 >= game.world_width:
-                raise Exception("You cannot go beyond the world border!")
+                raise MovementException("You cannot go beyond the world border!")
 
             if game.entities[self.y][self.x + 1] is not None:
-                raise Exception("This field is taken!")
+                raise MovementException("This field is taken!")
 
             tmp = game.entities[self.y].pop(self.x + 1)
             this = game.entities[self.y].pop(self.x)
@@ -52,10 +53,10 @@ class Entity(DatabaseObject):
             return
         elif direction == 'left':
             if self.x - 1 < 0:
-                raise Exception("You cannot go beyond the world border!")
+                raise MovementException("You cannot go beyond the world border!")
 
             if game.entities[self.y][self.x - 1] is not None:
-                raise Exception("This field is taken!")
+                raise MovementException("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y].pop(self.x - 1)
@@ -69,10 +70,10 @@ class Entity(DatabaseObject):
 
         elif direction == 'up':
             if self.y - 1 < 0:
-                raise Exception("You cannot go beyond the world border!")
+                raise MovementException("You cannot go beyond the world border!")
 
             if game.entities[self.y - 1][self.x] is not None:
-                raise Exception("This field is taken!")
+                raise MovementException("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y - 1].pop(self.x)
@@ -85,10 +86,10 @@ class Entity(DatabaseObject):
             return
         elif direction == 'down':
             if self.y + 1 >= game.world_width:
-                raise Exception("You cannot go beyond the world border!")
+                raise MovementException("You cannot go beyond the world border!")
 
             if game.entities[self.y + 1][self.x] is not None:
-                raise Exception("This field is taken!")
+                raise MovementException("This field is taken!")
 
             this = game.entities[self.y].pop(self.x)
             tmp = game.entities[self.y + 1].pop(self.x)
@@ -100,4 +101,4 @@ class Entity(DatabaseObject):
             self.look_direction = direction
             return
         else:
-            raise Exception("Severe: this direction doesn't exist!")
+            raise MovementException("Severe: this direction doesn't exist!")
