@@ -47,7 +47,9 @@ class InitializeWorld:
                             player_spawning_points.append((x, y))
                             entities_row.append(None)
                         else:
-                            entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y, game.token, game.id, enemies_json, map_elements_json)
+                            entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y,
+                                                                      game.token, game.id, enemies_json,
+                                                                      map_elements_json)
 
                     entities.append(entities_row)
 
@@ -145,11 +147,14 @@ class InitializeWorld:
     @staticmethod
     def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, map_elements_json):
         """adds entity of class to entity matrix in game
-        :param game_token:
         :param entity_row: representing row of entity matrix
         :param entity_name: name of entity to be added
         :param x: entity x position
         :param y: entity y position
+        :param map_elements_json: data of map elements
+        :param enemies_json: data of enemies
+        :param game_id: id from database
+        :param game_token: game token
         """
 
         if entity_name in enemies_json:
@@ -165,10 +170,14 @@ class InitializeWorld:
 
     @staticmethod
     def add_creature(entity_row, x, y, name, game_token, game_id, entity_data):
-        entity = Creature(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name, hp=entity_data['hp'],
-                          strength=entity_data['strength'], dexterity=entity_data['dexterity'], intelligence=entity_data['intelligence'],
-                          charisma=entity_data['charisma'], perception=entity_data['perception'], initiative=entity_data['initiative'],
-                          action_points=entity_data['action_points'], level=entity_data['level'], equipment=entity_data['equipment'],
+        entity = Creature(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name,
+                          hp=entity_data['hp'],
+                          strength=entity_data['strength'], dexterity=entity_data['dexterity'],
+                          intelligence=entity_data['intelligence'],
+                          charisma=entity_data['charisma'], perception=entity_data['perception'],
+                          initiative=entity_data['initiative'],
+                          action_points=entity_data['action_points'], level=entity_data['level'],
+                          equipment=entity_data['equipment'],
                           drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
 
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
