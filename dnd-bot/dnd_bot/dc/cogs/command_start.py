@@ -4,6 +4,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.game_start import GameStart
 from dnd_bot.logic.lobby.handler_start import HandlerStart
+from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
 
 class CommandStart(Cog):
@@ -13,12 +14,9 @@ class CommandStart(Cog):
 
     @slash_command(name="start", description="Exits from lobby and starts game")
     async def start(self, interaction, token: str):
-        if interaction.user.dm_channel is None:
-            await interaction.user.create_dm()
+        try:
+            lobby_players_identities = await HandlerStart.start_game(token, interaction.user.id)
 
-        status, lobby_players_identities, error_message = await HandlerStart.start_game(token, interaction.user.id)
-
-        if status:
             await interaction.response.send_message('Starting the game!', ephemeral=True)
 
             # send messages about successful start operation
@@ -27,8 +25,8 @@ class CommandStart(Cog):
 
             GameStart.start(token)
             await GameLoop.start_loop(token)
-        else:
-            await interaction.response.send_message(error_message, ephemeral=True)
+        except DiscordDndBotException as e:
+            await interaction.response.send_message(f'{e}', ephemeral=True)
 
 
 def setup(bot):

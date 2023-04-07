@@ -1,5 +1,6 @@
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
+from dnd_bot.logic.utils.exceptions import CharacterCreationInterfaceException
 
 
 class HandlerAlignment:
@@ -35,6 +36,6 @@ class HandlerAlignment:
         if (not view.lawfulness_axis_dropdown.values or not view.goodness_axis_dropdown.values) and \
                 (not ChosenAttributes.chosen_attributes[view.user_id]['alignment'][0] or
                  not ChosenAttributes.chosen_attributes[view.user_id]['alignment'][1]):
-            raise Exception("You must choose an alignment!")
+            raise CharacterCreationInterfaceException("You must choose an alignment!")
 
         await Messager.delete_last_user_error_message(view.user_id)
