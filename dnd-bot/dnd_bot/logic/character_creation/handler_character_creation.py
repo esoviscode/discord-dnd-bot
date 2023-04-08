@@ -42,20 +42,11 @@ class HandlerCharacterCreation:
         if game.game_state != 'LOBBY':
             raise StartCharacterCreationException(":no_entry: This game has already started!")
 
-<<<<<<< HEAD
-            if game_id is None:
-                game.game_state = 'LOBBY'
-                return False, [], ":warning: Error creating game!"
-            for user in game.user_list:
-                ChosenAttributes.add_empty_user(user.discord_id, token)
-                game.find_user(user.discord_id).is_ready = False
-=======
         game.game_state = 'STARTING'
         DatabaseGame.update_game_state(game_id, 'STARTING')
->>>>>>> staging
 
         for user in game.user_list:
-            ChosenAttributes.add_empty_user(user.discord_id)
+            ChosenAttributes.add_empty_user(user.discord_id, token)
             game.find_user(user.discord_id).is_ready = False
 
         return game.user_list
@@ -107,11 +98,7 @@ class HandlerCharacterCreation:
         points_to_distribute_randomly -= additional_initiative
         ChosenAttributes.chosen_attributes[(user_id, token)]['initiative'] = initiative
 
-<<<<<<< HEAD
-        ChosenAttributes.chosen_attributes[(user_id, token)]['hp'] = character_class.base_hp() + character_race.base_hp() + points_to_distribute_randomly
-=======
-        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
->>>>>>> staging
+        ChosenAttributes.chosen_attributes[(user_id, token)]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
 
     @staticmethod
     def load_character_creation_json_data():

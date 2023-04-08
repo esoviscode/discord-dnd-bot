@@ -215,7 +215,7 @@ class ViewRaceForm(nextcord.ui.View):
         try:
             await HandlerRace.handle_confirm(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
+                                                  embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id, self.token),
                                                   view=ViewStatsRetrospectiveForm(self.user_id, self.token))
         except DiscordDndBotException as e:
             # check for previous error messages
