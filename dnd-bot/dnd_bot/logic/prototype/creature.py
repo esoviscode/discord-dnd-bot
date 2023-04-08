@@ -9,8 +9,10 @@ class Creature(Entity):
                  dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
                  action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money: int = 0,
                  items=None, game_token: str = '', look_direction: str = 'down', experience: int = 0,
-                 creature_class: str = ''):
+                 creature_class: str = '', drops=None, ai=0):
         super().__init__(x=x, y=y, sprite=sprite, name=name, fragile=True, game_token=game_token, look_direction=look_direction)
+        if drops is None:
+            drops = []
         if items is None:
             items = []
         self.hp = hp
@@ -29,6 +31,12 @@ class Creature(Entity):
         self.experience = experience
         self.creature_class = creature_class
 
+        # TODO set ai function depending on ai argument
+        self.ai = self.ai_simple_move
+
     def ai_action(self):
         self.action_points -= 1
+        return self.ai()
+
+    def ai_simple_move(self):
         return "Made simple move"
