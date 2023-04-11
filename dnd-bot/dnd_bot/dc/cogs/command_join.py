@@ -30,7 +30,7 @@ class CommandJoin(Cog):
             await Messager.send_dm_message(interaction.user.id,
                                            f"Welcome to lobby of game {token}.\n"
                                            f"Number of players in lobby: **{len(lobby_players)}**",
-                                           embed=lobby_view_embed,
+                                           embeds=[lobby_view_embed],
                                            view=ViewPlayer(interaction.user.discord_id, token))
 
             q = asyncio.Queue()
@@ -40,8 +40,7 @@ class CommandJoin(Cog):
             await q.join()
 
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(interaction.user.discord_id)
-            await Messager.send_dm_message(user_id=interaction.user.discord_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=interaction.user.discord_id, content=str(e))
 
 
 def setup(bot):

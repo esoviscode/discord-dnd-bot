@@ -16,9 +16,6 @@ class CommandCreate(Cog):
     @slash_command(name="create", description="Creates new lobby")
     async def create(self, interaction):
         try:
-            if interaction.user.dm_channel is None:
-                await interaction.user.create_dm()
-
             token, user = await HandlerCreate.create_lobby(interaction.user.id, interaction.user.dm_channel,
                                                            interaction.user.name)
 
@@ -28,13 +25,14 @@ class CommandCreate(Cog):
             view = ViewHost(interaction.user.id, token)
             await Messager.send_dm_message(user_id=interaction.user.id,
                                            content=None,
-                                           embed=MessageTemplates.lobby_view_message_template(token, [user]), view=view)
+                                           embeds=[MessageTemplates.lobby_view_message_template(token, [user])],
+                                           view=view)
 
             view = ViewJoin(interaction.user.id, token)
             await interaction.response.send_message(f"Hello {interaction.user.mention}!", view=view,
                                                     embed=MessageTemplates.lobby_creation_message(token))
         except DiscordDndBotException as e:
-            await Messager.send_dm_message(user_id=interaction.user.id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e))
 
 
 def setup(bot):
