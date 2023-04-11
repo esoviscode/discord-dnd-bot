@@ -1,5 +1,6 @@
 import nextcord
 
+from dnd_bot.dc.init import on_error
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.message_holder import MessageHolder
@@ -18,6 +19,7 @@ class ViewCharacterCreationStart(nextcord.ui.View):
     def __init__(self, token):
         super().__init__(timeout=None)
         self.token = token
+        self.on_error = on_error
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, custom_id='start-next')
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -65,6 +67,7 @@ class ViewAlignmentForm(nextcord.ui.View):
         super().__init__(timeout=None)
         self.user_id = user_id
         self.token = token
+        self.on_error = on_error
         self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0]
         self.goodness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]
 
@@ -142,6 +145,7 @@ class ViewClassForm(nextcord.ui.View):
         super().__init__(timeout=None)
         self.user_id = user_id
         self.token = token
+        self.on_error = on_error
         self.class_value = ChosenAttributes.chosen_attributes[self.user_id]['class']
 
         class_options = [nextcord.SelectOption(label=chr_class.name, description=chr_class.description,
@@ -182,6 +186,7 @@ class ViewRaceForm(nextcord.ui.View):
         super().__init__(timeout=None)
         self.user_id = user_id
         self.token = token
+        self.on_error = on_error
         self.race_value = ChosenAttributes.chosen_attributes[self.user_id]['race']
 
         race_options = [nextcord.SelectOption(label=chr_race.name, description=chr_race.description,
@@ -222,6 +227,7 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
         super().__init__(timeout=None)
         self.user_id = user_id
         self.token = token
+        self.on_error = on_error
 
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1, custom_id='retrospective-reroll')
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):

@@ -5,6 +5,7 @@ import nextcord
 from nextcord.ui import Button
 from nextcord.ui import View
 
+from dnd_bot.dc.init import on_error
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.game.handler_attack import HandlerAttack
@@ -29,6 +30,7 @@ class ViewGame(View):
         self.token = token
         self.user_discord_id = user_discord_id
         self.game = Multiverse.get_game(token)
+        self.on_error = on_error
 
     @staticmethod
     async def display_views_for_users(game_token, recent_action_message):

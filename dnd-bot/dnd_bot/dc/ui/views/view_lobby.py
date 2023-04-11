@@ -2,6 +2,7 @@ import asyncio
 
 import nextcord
 
+from dnd_bot.dc.init import on_error
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_character_creation import ViewCharacterCreationStart
@@ -17,6 +18,7 @@ class ViewLobby(nextcord.ui.View):
 
     def __init__(self, user_id, token):
         super().__init__(timeout=None)
+        self.on_error = on_error
         self.user_id = user_id
         self.token = token
 
@@ -38,6 +40,7 @@ class ViewLobby(nextcord.ui.View):
 
     async def ready(self, interaction: nextcord.Interaction):
         """Callback to ready button (in host and player views)"""
+        print(interaction.bot.name)
         try:
             lobby_players = await HandlerReady.on_ready(self.token, self.user_id)
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
