@@ -175,8 +175,7 @@ class ViewMain(ViewGame):
             from dnd_bot.logic.game.handler_game import HandlerGame
             await HandlerGame.end_turn(self.token)
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(interaction.user.id)
-            await Messager.send_dm_message(user_id=interaction.user.id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e))
 
 
 class ViewMovement(ViewGame):
@@ -291,7 +290,7 @@ class ViewAttack(ViewGame):
 
             await ViewGame.display_views_for_users(token, message)
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(id_user, f"**{message}**")
+            await Messager.send_dm_error_message(id_user, f"**{e}**")
 
 
 class ViewCharacter(ViewGame):
@@ -433,4 +432,4 @@ class ViewSkills(ViewGame):
             message = await HandlerSkills.handle_use_skill(skill, id_user, token)
             await ViewGame.display_views_for_users(token, message)
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(id_user, f"**{str(e)}**")
+            await Messager.send_dm_error_message(id_user, f"**{e}**")
