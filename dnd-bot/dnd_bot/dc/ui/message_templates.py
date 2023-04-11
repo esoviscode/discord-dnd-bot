@@ -179,59 +179,41 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Alignment Form', description=desc)
 
-        embed.add_field(name="Lawful Good",
-                        value="A lawful good character typically acts with compassion and always with honor and a "
-                              "sense of duty. However, lawful good characters will often regret taking any action "
-                              "they fear would violate their code, even if they recognize such action as being good.")
+        embed.add_field(name="🏛️👼 Lawful Good",
+                        value="Believes in the value of order, rules, and justice. Strives to help others and do the "
+                              "right thing.")
 
-        embed.add_field(name="Neutral good",
-                        value="A neutral good character typically acts altruistically, without regard for or against "
-                              "lawful precepts such as rules or tradition. A neutral good character has no problems "
-                              "with cooperating with lawful officials, but does not feel beholden to them. In the "
-                              "event that doing the right thing requires the bending or breaking of rules, "
-                              "they do not suffer the same inner conflict that a lawful good character would.")
+        embed.add_field(name="🕊️💕 Neutral good",
+                        value="Values freedom, fairness, and compassion. Tries to do good without necessarily "
+                              "following strict codes or laws.")
 
-        embed.add_field(name="Chaotic good",
-                        value="A chaotic good character does what is necessary to bring about change for the better, "
-                              "disdains bureaucratic organizations that get in the way of social improvement, "
-                              "and places a high value on personal freedom, not only for oneself, but for others as "
-                              "well. Chaotic good characters usually intend to do the right thing, but their methods "
-                              "are generally disorganized and often out of sync with the rest of society.")
+        embed.add_field(name="🗽👥 Chaotic good",
+                        value="Values personal freedom and autonomy, and sees themselves as a champion for the "
+                              "oppressed or underdog.")
 
-        embed.add_field(name="Lawful neutral",
-                        value="A lawful neutral character typically believes strongly in lawful concepts such as "
-                              "honor, order, rules, and tradition, but often follows a personal code in addition to, "
-                              "or even in preference to, one set down by a benevolent authority.")
+        embed.add_field(name="📜⚖️ Lawful neutral",
+                        value="Values order and structure above all else, and seeks to maintain a balanced society, "
+                              "regardless of personal feelings or beliefs.")
 
-        embed.add_field(name="True neutral",
-                        value="A neutral character (also called \"true neutral\") is neutral on both axes and tends "
-                              "not to feel strongly towards any alignment, or actively seeks their balance.")
+        embed.add_field(name="🤔💭 True neutral",
+                        value="Has no strong moral compass, and values balance above all else, sometimes to the point "
+                              "of indecision or neutrality in difficult situations.")
 
-        embed.add_field(name="Chaotic neutral",
-                        value="A chaotic neutral character is an individualist who follows their own heart and "
-                              "generally shirks rules and traditions. Although chaotic neutral characters promote the "
-                              "ideals of freedom, it is their own freedom that comes first; good and evil come second "
-                              "to their need to be free.")
+        embed.add_field(name="🌪️😜 Chaotic neutral",
+                        value="Values personal freedom and individuality above all else, often at the expense of "
+                              "others or social order.")
 
-        embed.add_field(name="Lawful evil",
-                        value="A lawful evil character sees a well-ordered system as being easier to exploit than to "
-                              "necessarily follow.")
+        embed.add_field(name="💼💰 Lawful evil",
+                        value="Values power and order above all else, and is willing to commit evil acts in service "
+                              "of their own goals or to maintain their own power.")
 
-        embed.add_field(name="Neutral evil",
-                        value="A neutral evil character is typically selfish and has no qualms about turning on "
-                              "allies-of-the-moment, and usually makes allies primarily to further their own goals. A "
-                              "neutral evil character has no compunctions about harming others to get what they want, "
-                              "but neither will they go out of their way to cause carnage or mayhem when they see no "
-                              "direct benefit for themselves. Another valid interpretation of neutral evil holds up "
-                              "evil as an ideal, doing evil for evil's sake and trying to spread its influence.")
+        embed.add_field(name="💀😈 Neutral evil",
+                        value="Values personal gain above all else, and will do whatever it takes to achieve it, "
+                              "regardless of the consequences or harm to others.")
 
-        embed.add_field(name="Chaotic evil",
-                        value="A chaotic evil character tends to have no respect for rules, other people's lives, "
-                              "or anything but their own desires, which are typically selfish and cruel. They set a "
-                              "high value on personal freedom, but do not have much regard for the lives or freedom "
-                              "of other people. Chaotic evil characters do not work well in groups because they "
-                              "resent being given orders and usually do not behave themselves unless there is no "
-                              "alternative.")
+        embed.add_field(name="🔥👹Chaotic evil",
+                        value="Values personal freedom and individuality above all else, and seeks to destroy order "
+                              "and sow chaos wherever they go, often through violent and destructive means.")
 
         return embed
 
