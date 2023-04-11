@@ -58,6 +58,21 @@ class InitializeWorldException(GameException):
     pass
 
 
+class MovementException(GameException):
+    """thrown where there is an issue or error during movement process during game"""
+    pass
+
+
+class AttackException(GameException):
+    """thrown where there is an issue or error during attack process during game"""
+    pass
+
+
+class SkillException(GameException):
+    """thrown where there is an issue or error during skill using process during game"""
+    pass
+
+
 # messager exceptions
 
 class MessagerException(DiscordDndBotException):
@@ -68,4 +83,3 @@ class MessagerException(DiscordDndBotException):
 class DMCreationException(MessagerException):
     """thrown when the bot cant create a dm with a user"""
     pass
-
