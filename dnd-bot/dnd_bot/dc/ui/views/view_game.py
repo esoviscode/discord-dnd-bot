@@ -236,7 +236,6 @@ class ViewMovement(ViewGame):
         Multiverse.get_game(token).players_views[id_user] = (ViewMovement, [])
 
         if not status:
-            await Messager.delete_last_user_error_message(id_user)
             await Messager.send_dm_error_message(id_user, f"**{error_message}**")
             return
 
@@ -307,9 +306,7 @@ class ViewAttack(ViewGame):
                 await Messager.send_dm_error_message(id_user, f"**{message}**")
             return
 
-        if error_data is not None:
-            MessageHolder.delete_last_error_data(id_user)
-            await Messager.__delete_message(error_data[0], error_data[1])
+        await Messager.delete_last_user_error_message(id_user)
 
         await ViewGame.display_views_for_users(token, message)
 

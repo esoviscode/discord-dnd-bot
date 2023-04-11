@@ -132,10 +132,7 @@ class ViewAlignmentForm(nextcord.ui.View):
                                                   embeds=[MessageTemplates.class_form_view_message_template()],
                                                   view=ViewClassForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewClassForm(nextcord.ui.View):
@@ -175,10 +172,7 @@ class ViewClassForm(nextcord.ui.View):
                                                   embeds=[MessageTemplates.race_form_view_message_template()],
                                                   view=ViewRaceForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewRaceForm(nextcord.ui.View):
@@ -218,10 +212,7 @@ class ViewRaceForm(nextcord.ui.View):
                                                   embeds=[MessageTemplates.stats_retrospective_form_view_message_template(self.user_id)],
                                                   view=ViewStatsRetrospectiveForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
