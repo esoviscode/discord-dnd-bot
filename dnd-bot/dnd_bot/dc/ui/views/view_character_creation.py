@@ -54,7 +54,7 @@ class ModalNameForm(nextcord.ui.Modal):
         ChosenAttributes.chosen_attributes[self.user_id]['name'] = self.name_textbox.value
         ChosenAttributes.chosen_attributes[self.user_id]['backstory'] = self.backstory_textbox.value
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.alignment_form_view_message_template(),
+                                              embeds=[MessageTemplates.alignment_form_view_message_template()],
                                               view=ViewAlignmentForm(self.user_id, self.token))
 
 
@@ -129,13 +129,10 @@ class ViewAlignmentForm(nextcord.ui.View):
         try:
             await HandlerAlignment.handle_next(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embed=MessageTemplates.class_form_view_message_template(),
+                                                  embeds=[MessageTemplates.class_form_view_message_template()],
                                                   view=ViewClassForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewClassForm(nextcord.ui.View):
@@ -164,7 +161,7 @@ class ViewClassForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await HandlerClass.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.alignment_form_view_message_template(),
+                                              embeds=[MessageTemplates.alignment_form_view_message_template()],
                                               view=ViewAlignmentForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1, custom_id='class-next')
@@ -172,13 +169,10 @@ class ViewClassForm(nextcord.ui.View):
         try:
             await HandlerClass.handle_next(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embed=MessageTemplates.race_form_view_message_template(),
+                                                  embeds=[MessageTemplates.race_form_view_message_template()],
                                                   view=ViewRaceForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewRaceForm(nextcord.ui.View):
@@ -207,7 +201,7 @@ class ViewRaceForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await HandlerRace.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.class_form_view_message_template(),
+                                              embeds=[MessageTemplates.class_form_view_message_template()],
                                               view=ViewClassForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1, custom_id='race-confirm')
@@ -215,13 +209,10 @@ class ViewRaceForm(nextcord.ui.View):
         try:
             await HandlerRace.handle_confirm(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embed=MessageTemplates.stats_retrospective_form_view_message_template(self.user_id),
+                                                  embeds=[MessageTemplates.stats_retrospective_form_view_message_template(self.user_id)],
                                                   view=ViewStatsRetrospectiveForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            # check for previous error messages
-            error_data = MessageHolder.read_last_error_data(self.user_id)
-            if error_data is None:
-                await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
@@ -237,8 +228,8 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
         button.disabled = True
         await HandlerCharacterCreation.assign_attribute_values(self.user_id)
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embed=MessageTemplates.stats_retrospective_form_view_message_template(
-                                                  self.user_id),
+                                              embeds=[MessageTemplates.stats_retrospective_form_view_message_template(
+                                                  self.user_id)],
                                               view=self)
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1, custom_id='retrospective-confirm')
@@ -247,4 +238,4 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
             await HandlerStatsRetrospective.handle_confirm(self)
         except DiscordDndBotException as e:
             await Messager.delete_last_user_error_message(self.user_id)
-            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))

@@ -13,7 +13,7 @@ class GameStart:
         game.game_state = 'ACTIVE'
         DatabaseGame.update_game_state(game_id, 'ACTIVE')
 
-        InitializeWorld.load_entities(game, 'dnd_bot/assets/maps/map.json')
+        InitializeWorld.load_entities(game, 'dnd_bot/assets/maps/map.json', 'dnd_bot/assets/campaigns/campaign.json')
 
 
 

@@ -61,12 +61,9 @@ class ViewGame(View):
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
 
         self.game.players_views[self.user_discord_id] = (ViewMain, [])
-        if files:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                                  view=ViewMain(self.token, interaction.user.id), files=files)
-        else:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
-                                                  view=ViewMain(self.token, interaction.user.id))
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
+                                              view=ViewMain(self.token, interaction.user.id),
+                                              files=files)
 
     async def character_view_options(self, interaction: nextcord.Interaction):
         """shared handler for character view"""
@@ -80,10 +77,10 @@ class ViewGame(View):
         self.game.players_views[self.user_discord_id] = (ViewCharacterNonActive, [])
 
         if isinstance(active_creature, Player) and player.discord_identity == active_creature.discord_identity:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                                   view=ViewCharacter(self.token, interaction.user.id))
         else:
-            await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+            await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                                   view=ViewCharacterNonActive(self.token, interaction.user.id))
 
     async def character_view_equipment(self, interaction: nextcord.Interaction):
@@ -145,7 +142,7 @@ class ViewMain(ViewGame):
         game = Multiverse.get_game(self.token)
 
         turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
-        await Messager.edit_last_user_message(user_id=interaction.user.id, embed=turn_view_embed,
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
                                               view=ViewMovement(self.token, interaction.user.id))
         game.players_views[str(interaction.user.id)] = (ViewMovement, [])
 
@@ -235,8 +232,7 @@ class ViewMovement(ViewGame):
             recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
             await ViewGame.display_views_for_users(token, recent_action)
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(id_user)
-            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
+            await Messager.send_dm_error_message(id_user, f"**{e}**")
 
 
 class ViewAttack(ViewGame):
@@ -261,7 +257,8 @@ class ViewAttack(ViewGame):
 
             self.add_item(self.select_enemy_to_attack_list)
 
-        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1, custom_id='attack-action-button')
+        attack_button = Button(label='Attack', style=nextcord.ButtonStyle.green, row=1,
+                               custom_id='attack-action-button')
         attack_button.callback = self.attack_button
         attack_button.disabled = self.enemies_to_attack == 0
         self.add_item(attack_button)
@@ -294,8 +291,7 @@ class ViewAttack(ViewGame):
 
             await ViewGame.display_views_for_users(token, message)
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(id_user)
-            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
+            await Messager.send_dm_error_message(id_user, f"**{message}**")
 
 
 class ViewCharacter(ViewGame):
@@ -437,5 +433,4 @@ class ViewSkills(ViewGame):
             message = await HandlerSkills.handle_use_skill(skill, id_user, token)
             await ViewGame.display_views_for_users(token, message)
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(id_user)
-            await Messager.send_dm_message(id_user, f"**{str(e)}**", error=True)
+            await Messager.send_dm_error_message(id_user, f"**{str(e)}**")
