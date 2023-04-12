@@ -1,6 +1,5 @@
 import json
 
-from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.logic.prototype.database_object import DatabaseObject
 
 

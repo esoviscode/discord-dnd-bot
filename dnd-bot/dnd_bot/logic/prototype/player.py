@@ -1,5 +1,4 @@
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.equipment import Equipment
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 

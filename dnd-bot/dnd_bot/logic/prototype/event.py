@@ -1,4 +1,3 @@
-from dnd_bot.database.database_event import DatabaseEvent
 from dnd_bot.logic.prototype.database_object import DatabaseObject
 
 

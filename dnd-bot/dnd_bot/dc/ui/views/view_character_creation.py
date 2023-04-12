@@ -2,7 +2,6 @@ import nextcord
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.message_holder import MessageHolder
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.character_creation.handler_alignment import HandlerAlignment
 from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation

@@ -1,7 +1,4 @@
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
-import asyncio
-import copy
-
 from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game

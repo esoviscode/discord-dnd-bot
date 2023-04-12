@@ -1,5 +1,4 @@
 import asyncio
-from datetime import time
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
