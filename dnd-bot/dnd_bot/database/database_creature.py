@@ -8,15 +8,16 @@ class DatabaseCreature:
     def add_creature(x: int = 0, y: int = 0, name: str = 'Creature', hp: int = 0, strength: int = 0,
                      dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                      initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
-                     id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None) -> int | None:
-        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game)
+                     id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None,
+                     description: str = '') -> int | None:
+        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game, description=description)
         if creature_class is not None:
             creature_class = creature_class.upper()
 
         id_creature = DatabaseConnection.add_to_db('INSERT INTO public."Creature" (level, "HP", strength, dexterity, '
                                                    'intelligence, charisma, perception, initiative, action_points, '
-                                                   'money, id_entity, experience, id_equipment, class) VALUES'
-                                                   '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                                                   'money, id_entity, experience, id_equipment, class) '
+                                                   'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                                                    (
                                                        level, hp, strength, dexterity, intelligence,
                                                        charisma, perception, initiative, action_points,
@@ -35,11 +36,16 @@ class DatabaseCreature:
 
     @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
-        pass
-
-    @staticmethod
-    def get_creature_items(id_creature) -> list | None:
-        pass
+        query = f'SELECT * FROM public."Creature" WHERE id_creature = (%s)'
+        db_l = DatabaseConnection.get_object_from_db(query, (id_creature,), "Creature")
+        creature = {'id_creature': db_l[0], 'level': db_l[1], 'hp': db_l[2], 'strength': db_l[3], 'dexterity': db_l[4],
+                    'intelligence': db_l[5], 'charisma': db_l[6], 'perception': db_l[7], 'initiative': db_l[8],
+                    'action_points': db_l[9], 'money': db_l[10], 'id_entity': db_l[11], 'experience': db_l[12],
+                    'id_equipment': db_l[13], 'class': db_l[14]}
+        entity = DatabaseEntity.get_entity(creature['id_entity'])
+        for key, value in entity.items():
+            creature[key] = value
+        return creature
 
     @staticmethod
     def get_creature_id_entity(id_creature: int = 0) -> int | None:
