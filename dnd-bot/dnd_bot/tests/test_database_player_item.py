@@ -12,9 +12,8 @@ from dnd_bot.tests.autoconf import database_fixture
 postgresql, postgresql_in_docker = database_fixture('player_item')
 
 
-def test_add_creature_item(postgresql):
+def test_add_player_item(postgresql):
     cur = postgresql.cursor()
-
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
@@ -30,6 +29,6 @@ def test_add_creature_item(postgresql):
              effect='efekt', base_price=8, use_range=1, description="test item")
     i.id = DatabaseItem.add_item(i.name)
     DatabasePlayerItem.add_player_item(p.id, i.id, 2)
-    list = DatabasePlayerItem.get_creature_items(p.id)
+    list = DatabasePlayerItem.get_player_items(p.id)
     assert list[0][0] == i.id
     assert list[0][1] == 2

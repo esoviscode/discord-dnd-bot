@@ -66,9 +66,9 @@ class DatabasePlayer:
 
         return DatabaseConnection.get_object_from_db(
             'SELECT id_entity FROM public."Creature" WHERE id_creature = (%s)',
-            (id_creature,))
+            (id_creature,), "Creature")[0]
 
     @staticmethod
     def get_players_id_creature(id_player: int = 0) -> int:
         return DatabaseConnection.get_object_from_db('SELECT id_creature FROM public."Player" WHERE '
-                                                     'id_player = (%s)', (id_player,), "Player")
+                                                     'id_player = (%s)', (id_player,), "Player")[0]
