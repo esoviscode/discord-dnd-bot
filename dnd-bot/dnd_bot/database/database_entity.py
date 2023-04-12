@@ -16,9 +16,9 @@ class DatabaseEntity:
     @staticmethod
     def get_entity(id_entity: int) -> dict | None:
         query = f'SELECT * FROM public."Entity" WHERE id_entity = (%s)'
-        entity_tuple = DatabaseConnection.get_object_from_db(query,(id_entity,), "Entity")
-        return {'id_entity': entity_tuple[0], 'name': entity_tuple[1], 'x': entity_tuple[2], 'y': entity_tuple[3],
-                'id_game': entity_tuple[4], 'description': entity_tuple[5]}
+        db_t = DatabaseConnection.get_object_from_db(query,(id_entity,), "Entity")
+        return {'id_entity': db_t[0], 'name': db_t[1], 'x': db_t[2], 'y': db_t[3],
+                'id_game': db_t[4], 'description': db_t[5]}
 
     @staticmethod
     def get_entity_skills(id_entity: int = 0) -> list | None:

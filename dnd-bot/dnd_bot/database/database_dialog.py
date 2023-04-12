@@ -17,10 +17,10 @@ class DatabaseDialog:
 
     @staticmethod
     def get_dialog(id_dialog: int = 0) -> dict | None:
-        db_d = DatabaseConnection.get_object_from_db(f'SELECT * FROM public."Dialog" WHERE id_dialog = (%s)',
+        db_t = DatabaseConnection.get_object_from_db(f'SELECT * FROM public."Dialog" WHERE id_dialog = (%s)',
                                                      (id_dialog,), "Dialog")
-        return {'id_dialog': db_d[0], 'id_speaker': db_d[1], 'id_listener': db_d[2], 'content': db_d[3],
-                'status': db_d[4], 'json_id': db_d[5]}
+        return {'id_dialog': db_t[0], 'id_speaker': db_t[1], 'id_listener': db_t[2], 'content': db_t[3],
+                'status': db_t[4], 'json_id': db_t[5]}
 
     @staticmethod
     def get_speakers_dialogs(id_speaker: int = None) -> list | None:

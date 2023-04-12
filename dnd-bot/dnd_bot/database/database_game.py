@@ -6,7 +6,8 @@ from dnd_bot.database.database_connection import DatabaseConnection
 class DatabaseGame:
 
     @staticmethod
-    def add_game(token: str, id_host: int, game_state: str, campaign_name: str) -> int | None:
+    def add_game(token: str = '', id_host: int = None, game_state: str = 'LOBBY', campaign_name: str = ''
+                 ) -> int | None:
         """start game and add game to database
         :param token: lobby/game token (5 digit password)
         :param id_host: discord id of host
@@ -65,7 +66,7 @@ class DatabaseGame:
         DatabaseConnection.cursor.execute(f'SELECT token FROM public."Game" WHERE id_game = (%s)', (id_game,))
         game_token = DatabaseConnection.cursor.fetchone()
         DatabaseConnection.connection.commit()
-        
+
         if game_token is None:
             return None
 
@@ -94,3 +95,9 @@ class DatabaseGame:
 
         return {'id_game': game_tuple[0], 'token': game_tuple[1], 'id_host': game_tuple[2],
                 'game_state': game_tuple[3], 'campaign_name': game_tuple[4], 'players': users}
+
+    @staticmethod
+    def get_game(id_game: int) -> dict | None:
+        query = f'SELECT *  FROM public."Game" WHERE id_game = (%s)'
+        db_t = DatabaseConnection.get_object_from_db(query, (id_game,), "Game")
+        return {'id_game': db_t[0], 'token': db_t[1], 'id_host': db_t[2], 'game_state': db_t[3], 'campaign_name': db_t[4]}

@@ -37,11 +37,11 @@ class DatabaseCreature:
     @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
         query = f'SELECT * FROM public."Creature" WHERE id_creature = (%s)'
-        db_l = DatabaseConnection.get_object_from_db(query, (id_creature,), "Creature")
-        creature = {'id_creature': db_l[0], 'level': db_l[1], 'hp': db_l[2], 'strength': db_l[3], 'dexterity': db_l[4],
-                    'intelligence': db_l[5], 'charisma': db_l[6], 'perception': db_l[7], 'initiative': db_l[8],
-                    'action_points': db_l[9], 'money': db_l[10], 'id_entity': db_l[11], 'experience': db_l[12],
-                    'id_equipment': db_l[13], 'class': db_l[14]}
+        db_t = DatabaseConnection.get_object_from_db(query, (id_creature,), "Creature")
+        creature = {'id_creature': db_t[0], 'level': db_t[1], 'hp': db_t[2], 'strength': db_t[3], 'dexterity': db_t[4],
+                    'intelligence': db_t[5], 'charisma': db_t[6], 'perception': db_t[7], 'initiative': db_t[8],
+                    'action_points': db_t[9], 'money': db_t[10], 'id_entity': db_t[11], 'experience': db_t[12],
+                    'id_equipment': db_t[13], 'class': db_t[14]}
         entity = DatabaseEntity.get_entity(creature['id_entity'])
         for key, value in entity.items():
             creature[key] = value

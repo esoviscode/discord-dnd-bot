@@ -11,17 +11,17 @@ class DatabaseEvent:
     @staticmethod
     def get_event(id_event) -> dict | None:
         query = f'SELECT * FROM public."Event" WHERE id_event = (%s)'
-        db_e = DatabaseConnection.get_object_from_db(query, (id_event,), "Event")
-        if db_e is None:
+        db_t = DatabaseConnection.get_object_from_db(query, (id_event,), "Event")
+        if db_t is None:
             return None
-        return {'id_event': db_e[0], 'status': db_e[1], 'id_game': db_e[2], 'json_id': db_e[3]}
+        return {'id_event': db_t[0], 'status': db_t[1], 'id_game': db_t[2], 'json_id': db_t[3]}
     
     @staticmethod
     def get_game_events(id_game) -> list | None:
         query = f'SELECT id_event FROM public."Event" WHERE id_game = (%s)'
-        db_e = DatabaseConnection.get_multiple_objects_from_db(query, (id_game,), "Event")
+        db_l = DatabaseConnection.get_multiple_objects_from_db(query, (id_game,), "Event")
         game_events = []
-        for element in db_e:
+        for element in db_l:
             game_events.append(DatabaseEvent.get_event(element[0]))
 
         return game_events

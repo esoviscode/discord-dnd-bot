@@ -4,7 +4,7 @@ from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('event')
+postgresql, postgresql_in_docker = database_fixture('item')
 
 
 def test_get_item(postgresql):
