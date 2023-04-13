@@ -26,7 +26,7 @@ class HandlerStatsRetrospective:
         if game.all_users_ready():
             # delete error messages for all users
             for user in game.user_list:
-                await Messager.delete_last_user_error_message(user.discord_id)
+                await Messager.delete_last_user_error_message(user.discord_id, view.token)
 
             GameStart.start(view.token)
             await GameLoop.start_loop(view.token)
@@ -35,8 +35,9 @@ class HandlerStatsRetrospective:
                 if isinstance(component, nextcord.ui.Button):
                     component.disabled = True
             await Messager.edit_last_user_message(user_id=view.user_id,
-                                                  embed=MessageTemplates.stats_retrospective_form_view_message_template(
-                                                      view.user_id),
+                                                  token=view.token,
+                                                  embeds=[MessageTemplates.stats_retrospective_form_view_message_template(
+                                                      view.user_id)],
                                                   view=view)
             raise CharacterCreationInterfaceException("You created your character! Now wait for other players to "
                                                       "finish!")
