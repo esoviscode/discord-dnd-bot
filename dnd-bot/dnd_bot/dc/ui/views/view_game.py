@@ -32,7 +32,6 @@ class ViewGame(View):
         self.user_discord_id = user_discord_id
         self.game = Multiverse.get_game(token)
 
-
     async def cancel(self, interaction: nextcord.Interaction, files=None):
         """button for moving back to main menu"""
 
@@ -238,7 +237,10 @@ class ViewMoreActions(ViewGame):
         self.add_item(cancel_button)
 
     async def loot_corpse(self, interaction: nextcord.Interaction):
-        await HandlerLootCorpse.handle_loot_corpse(self.player)
+        try:
+            await HandlerLootCorpse.handle_loot_corpse(self.player)
+        except DiscordDndBotException as e:
+            await Messager.send_dm_error_message(interaction.user.id, f"**{e}**")
 
     async def cancel(self, interaction: nextcord.Interaction):
         """button for moving back to main menu"""

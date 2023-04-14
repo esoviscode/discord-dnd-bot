@@ -16,7 +16,7 @@ class HandlerLootCorpse:
                 corpse = entity
                 break
         if not corpse:
-            raise LootCorpseException("Player tried to loot the corpse when there is not one nearby!")
+            raise Exception("Player tried to loot the corpse when there is not one nearby!")
 
         money = corpse.dropped_money
         items = corpse.dropped_items
