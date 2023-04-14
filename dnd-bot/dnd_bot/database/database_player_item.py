@@ -10,6 +10,12 @@ class DatabasePlayerItem:
             (id_player, id_item, amount), "Player_Item")
 
     @staticmethod
-    def get_player_items(id_player: int):
-        return DatabaseConnection.get_multiple_objects_from_db(f'SELECT id_item, amount FROM public."Player_Item" WHERE'
+    def get_player_items(id_player: int) -> list | None:
+        db_l = DatabaseConnection.get_multiple_objects_from_db(f'SELECT id_item, amount FROM public."Player_Item" WHERE'
                                                                f' id_player = (%s)', (id_player,), "Player_Item")
+        items = []
+        for element in db_l:
+            items.append({'id_player': id_player, 'id_item': element[0], 'amount': element[1]})
+
+        return items
+

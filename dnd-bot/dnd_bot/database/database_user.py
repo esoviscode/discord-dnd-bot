@@ -20,13 +20,6 @@ class DatabaseUser:
 
     @staticmethod
     def get_user_id_from_discord_id(discord_id: int = 0, id_game: int = 0) -> int | None:
-        DatabaseConnection.cursor.execute(f'SELECT id_user FROM public."User" WHERE discord_id = (%s) AND id_game = (%s)',
-                                          (discord_id, id_game))
-        id_user = DatabaseConnection.cursor.fetchone()
-        DatabaseConnection.connection.commit()
-
-        if not id_user:
-            return None
-
-        return id_user
+        query = f'SELECT id_user FROM public."User" WHERE discord_id = (%s) AND id_game = (%s)'
+        return DatabaseConnection.get_object_from_db(query, (discord_id, id_game), "User")[0]
 
