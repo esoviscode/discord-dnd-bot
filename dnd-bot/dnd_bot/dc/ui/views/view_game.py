@@ -1,4 +1,3 @@
-import asyncio
 from threading import Lock
 
 import nextcord
@@ -7,9 +6,12 @@ from nextcord.ui import View
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.handler_attack import HandlerAttack
+from dnd_bot.logic.game.handler_loot_corpse import HandlerLootCorpse
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
+from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.exceptions import DiscordDndBotException
@@ -29,31 +31,6 @@ class ViewGame(View):
         self.token = token
         self.user_discord_id = user_discord_id
         self.game = Multiverse.get_game(token)
-
-    @staticmethod
-    async def display_views_for_users(game_token, recent_action_message):
-        """sends views for users and makes sure that the displayed view is correct"""
-        game = Multiverse.get_game(game_token)
-
-        async def send_view(user):
-            # get current view from player and resend it in case someone made an action
-            player_current_view, player_current_embeds = game.players_views[user.discord_id]
-            view_to_show = player_current_view(game_token, user.discord_id)
-
-            player = game.get_player_by_id_user(user.discord_id)
-            player_view = get_player_view(Multiverse.get_game(game_token), player, player.attack_mode)
-            turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
-                                                                         recent_action=recent_action_message)
-            await Messager.edit_last_user_message(user.discord_id, embeds=[turn_view_embed] + player_current_embeds,
-                                                  view=view_to_show, files=[player_view])
-
-        q = asyncio.Queue()
-        tasks = []
-        for u in game.user_list:
-            tasks.append(asyncio.create_task(send_view(u)))
-
-        await asyncio.gather(*tasks)
-        await q.join()
 
     async def cancel(self, interaction: nextcord.Interaction, files=None):
         """button for moving back to main menu"""
@@ -165,7 +142,12 @@ class ViewMain(ViewGame):
     @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger, custom_id='more-main-button')
     async def more_actions(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening more actions menu"""
-        pass
+        game = Multiverse.get_game(self.token)
+
+        embed = MessageTemplates.more_actions_template()
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewMoreActions(self.token, interaction.user.id))
+        game.players_views[str(interaction.user.id)] = (ViewMoreActions, [])
 
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger, custom_id='end-turn-main-button')
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -229,9 +211,41 @@ class ViewMovement(ViewGame):
 
             active_player = Multiverse.get_game(token).active_creature
             recent_action = f'{active_player.name} has moved to ({active_player.x},{active_player.y})'
-            await ViewGame.display_views_for_users(token, recent_action)
+            await HandlerViews.display_views_for_users(token, recent_action)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(id_user, f"**{e}**")
+
+
+class ViewMoreActions(ViewGame):
+    def __init__(self, token, user_discord_id):
+        super().__init__(token, user_discord_id)
+
+        loot_corpse_button = Button(label='Loot corpse', style=nextcord.ButtonStyle.blurple, row=0,
+                                    custom_id='more-actions-loot')
+        loot_corpse_button.callback = self.loot_corpse
+
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1,
+                               custom_id='more-actions-cancel')
+        cancel_button.callback = self.cancel
+
+        game: Game = Multiverse.get_game(token)
+        self.player = game.get_player_by_id_user(user_discord_id)
+        # determine if looting corpses is available
+        if self.player.can_loot_corpse:
+            self.add_item(loot_corpse_button)
+
+        self.add_item(cancel_button)
+
+    async def loot_corpse(self, interaction: nextcord.Interaction):
+        """ button callback for looting the corpse"""
+        try:
+            await HandlerLootCorpse.handle_loot_corpse(self.player)
+        except DiscordDndBotException as e:
+            await Messager.send_dm_error_message(interaction.user.id, f"**{e}**")
+
+    async def cancel(self, interaction: nextcord.Interaction):
+        """button for moving back to main menu"""
+        await super().cancel(interaction)
 
 
 class ViewAttack(ViewGame):
@@ -288,7 +302,7 @@ class ViewAttack(ViewGame):
 
             message = await HandlerAttack.handle_attack(player, target, token)
 
-            await ViewGame.display_views_for_users(token, message)
+            await HandlerViews.display_views_for_users(token, message)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(id_user, f"**{e}**")
 
@@ -430,6 +444,6 @@ class ViewSkills(ViewGame):
         """attack enemy nr enemy_number from the available enemy list with the main weapon"""
         try:
             message = await HandlerSkills.handle_use_skill(skill, id_user, token)
-            await ViewGame.display_views_for_users(token, message)
+            await HandlerViews.display_views_for_users(token, message)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(id_user, f"**{e}**")

@@ -14,6 +14,13 @@ class MessageTemplates:
     color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 
     @staticmethod
+    def basic_embed(title="", description="", footer=""):
+        """ returns simple embed """
+        embed = nextcord.Embed(title=title, description=description)
+        embed.set_footer(text=footer)
+        return embed
+
+    @staticmethod
     def lobby_view_message_template(lobby_token, players, campaign="📜 Storm King's Thunder\n\n"):
         """message template that is sent to each player, showing the current state of the lobby"""
 
@@ -65,20 +72,23 @@ class MessageTemplates:
     def equipment_message_template(player: Player):
         """message segment that shows the equipment of the player"""
 
-        desc = "🛡️ Equipped items:\n\n"
-        desc += f'Helmet: {MessageTemplates.item_to_string_template(player.equipment.helmet)}\n'
-        desc += f'Chest: {MessageTemplates.item_to_string_template(player.equipment.chest)}\n'
-        desc += f'Leg Armor: {MessageTemplates.item_to_string_template(player.equipment.leg_armor)}\n'
-        desc += f'Boots: {MessageTemplates.item_to_string_template(player.equipment.boots)}\n'
-        desc += f'Left Hand: {MessageTemplates.item_to_string_template(player.equipment.left_hand)}\n'
-        desc += f'Right Hand: {MessageTemplates.item_to_string_template(player.equipment.right_hand)}\n'
-        desc += f'Accessory: {MessageTemplates.item_to_string_template(player.equipment.accessory)}\n'
-        #
-        # desc = "\n\n Your Items:\n"
-        # for i, item in enumerate(player.items):
-        #     desc += f'{i+1}. {item.name}'
-        #
-        embed = nextcord.Embed(title='Your equipment:', description=desc)
+        eq = f'Helmet: *{MessageTemplates.item_to_string_template(player.equipment.helmet)}⠀*\n'
+        eq += f'Chest: *{MessageTemplates.item_to_string_template(player.equipment.chest)}⠀*\n'
+        eq += f'Leg Armor: *{MessageTemplates.item_to_string_template(player.equipment.leg_armor)}⠀*\n'
+        eq += f'Boots: *{MessageTemplates.item_to_string_template(player.equipment.boots)}⠀*\n'
+        eq += f'Left Hand: *{MessageTemplates.item_to_string_template(player.equipment.left_hand)}⠀*\n'
+        eq += f'Right Hand: *{MessageTemplates.item_to_string_template(player.equipment.right_hand)}⠀*\n'
+        eq += f'Accessory: *{MessageTemplates.item_to_string_template(player.equipment.accessory)}⠀*\n'
+
+        backpack = "" if len(player.backpack) == 0 else "⠀\n"
+        for item in player.backpack:
+            backpack += f"*{item.name}*\n"
+
+        backpack += f"⠀\n:moneybag: Money: **{player.money}**\n"
+
+        embed = nextcord.Embed(title='Your equipment:', description="")
+        embed.add_field(name="🛡️ **Equipment:**", value=eq, inline=True)
+        embed.add_field(name=":school_satchel: **Backpack:**", value=backpack, inline=True)
         return embed
 
     @staticmethod
@@ -351,3 +361,23 @@ class MessageTemplates:
                         inline=False)
 
         return embed
+
+    @staticmethod
+    def more_actions_template():
+        """ returns embed for more actions menu"""
+        title = "More actions"
+        description = "If available, here you can find more actions"
+        embed = nextcord.Embed(title=title, description=description)
+        return embed
+
+    @staticmethod
+    def loot_corpse_action(player_name="", name="", money="", items=None):
+        """ returns message template for recent action after looting the corpse """
+        if items is None:
+            items = []
+        message = f"{player_name} found **{money}** coin{'' if money == 1 else 's'} :coin: while looting {name}!\n"
+        if len(items) > 0:
+            message += f"\nThey also found:\n"
+            for item in items:
+                message += f"ㅤ- *{item.name}*\n"
+        return message
