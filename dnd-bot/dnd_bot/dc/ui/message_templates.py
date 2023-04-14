@@ -14,7 +14,8 @@ class MessageTemplates:
     color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 
     @staticmethod
-    def basic_embed(title, description, footer):
+    def basic_embed(title="", description="", footer=""):
+        """ returns simple embed """
         embed = nextcord.Embed(title=title, description=description)
         embed.set_footer(text=footer)
         return embed
@@ -363,13 +364,17 @@ class MessageTemplates:
 
     @staticmethod
     def more_actions_template():
+        """ returns embed for more actions menu"""
         title = "More actions"
         description = "If available, here you can find more actions"
         embed = nextcord.Embed(title=title, description=description)
         return embed
 
     @staticmethod
-    def loot_corpse_action(player_name, name, money, items):
+    def loot_corpse_action(player_name="", name="", money="", items=None):
+        """ returns message template for recent action after looting the corpse """
+        if items is None:
+            items = []
         message = f"{player_name} found **{money}** coin{'' if money == 1 else 's'} :coin: while looting {name}!\n"
         if len(items) > 0:
             message += f"\nThey also found:\n"

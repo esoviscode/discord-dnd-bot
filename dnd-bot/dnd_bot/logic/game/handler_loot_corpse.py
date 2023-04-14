@@ -10,6 +10,7 @@ class HandlerLootCorpse:
 
     @staticmethod
     async def handle_loot_corpse(player):
+        """ handles giving loot for the player and removing the corpse from the world """
         corpse: Corpse = None
         for entity in player.get_entities_around(cross_only=True):
             if isinstance(entity, Corpse):

@@ -52,7 +52,8 @@ class Player(Creature):
             return 'dnd_bot/assets/gfx/entities/player.png'
 
     def get_entities_around(self, cross_only=False):
-        """ returns all entities around the player. if option cross_only is True it won't return entities on diagonal"""
+        """ returns all entities around(next to) the player.
+        :param cross_only: if True function won't return entities on diagonal"""
         game = Multiverse.get_game(self.game_token)
         result = []
 
