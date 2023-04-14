@@ -23,6 +23,7 @@ class HandlerKillEnemy:
                 chance = enemy.drops[item_name]
                 if random.randint(0, 1000) <= chance * 1000:
                     dropped_items.append(Item(name=item_name))
+                    print(f"Dropped {item_name} ({chance*100}% chance)")
 
         # creating corpse entity
         # if you want the corpse to have other sprite pass its path below

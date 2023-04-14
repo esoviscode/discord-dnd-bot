@@ -10,6 +10,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
+from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.exceptions import DiscordDndBotException
@@ -165,7 +166,12 @@ class ViewMain(ViewGame):
     @nextcord.ui.button(label='More actions', style=nextcord.ButtonStyle.danger, custom_id='more-main-button')
     async def more_actions(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for opening more actions menu"""
-        pass
+        game = Multiverse.get_game(self.token)
+
+        embed = MessageTemplates.more_actions_template()
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewMoreActions(self.token, interaction.user.id))
+        game.players_views[str(interaction.user.id)] = (ViewMoreActions, [])
 
     @nextcord.ui.button(label='End turn', style=nextcord.ButtonStyle.danger, custom_id='end-turn-main-button')
     async def end_turn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -232,6 +238,35 @@ class ViewMovement(ViewGame):
             await ViewGame.display_views_for_users(token, recent_action)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(id_user, f"**{e}**")
+
+
+class ViewMoreActions(ViewGame):
+    def __init__(self, token, user_discord_id):
+        super().__init__(token, user_discord_id)
+
+        loot_corpse_button = Button(label='Loot corpse', style=nextcord.ButtonStyle.blurple, row=0,
+                                    custom_id='more-actions-loot')
+        loot_corpse_button.callback = self.loot_bodies
+
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1,
+                                    custom_id='more-actions-cancel')
+        cancel_button.callback = self.cancel
+
+        game: Game = Multiverse.get_game(token)
+        player = game.get_player_by_id_user(user_discord_id)
+        # determine if looting corpses is available
+        if player.can_loot_corpse:
+            self.add_item(loot_corpse_button)
+
+        self.add_item(cancel_button)
+
+
+    async def loot_bodies(self, interaction: nextcord.Interaction):
+        pass
+
+    async def cancel(self, interaction: nextcord.Interaction):
+        """button for moving back to main menu"""
+        await super().cancel(interaction)
 
 
 class ViewAttack(ViewGame):

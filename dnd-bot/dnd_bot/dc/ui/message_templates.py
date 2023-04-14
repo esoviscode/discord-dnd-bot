@@ -14,6 +14,12 @@ class MessageTemplates:
     color_emojis = ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣"]
 
     @staticmethod
+    def basic_embed(title, description, footer):
+        embed = nextcord.Embed(title=title, description=description)
+        embed.set_footer(text=footer)
+        return embed
+
+    @staticmethod
     def lobby_view_message_template(lobby_token, players, campaign="📜 Storm King's Thunder\n\n"):
         """message template that is sent to each player, showing the current state of the lobby"""
 
@@ -350,4 +356,11 @@ class MessageTemplates:
                               f"{character['action points'] - character_class.base_action_points - character_race.base_action_points}) \n\n ",
                         inline=False)
 
+        return embed
+
+    @staticmethod
+    def more_actions_template():
+        title = "More actions"
+        description = "If available, here you can find more actions"
+        embed = nextcord.Embed(title=title, description=description)
         return embed
