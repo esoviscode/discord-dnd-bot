@@ -27,4 +27,4 @@ class HandlerKillEnemy:
 
         # creating corpse entity
         # if you want the corpse to have other sprite pass its path below
-        game.add_entity(Corpse(enemy.x, enemy.y, game.token, dropped_money, dropped_items, sprite_path=None))
+        game.add_entity(Corpse(enemy.x, enemy.y, game.token, enemy.name, dropped_money, dropped_items, sprite_path=None))

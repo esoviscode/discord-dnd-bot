@@ -364,3 +364,12 @@ class MessageTemplates:
         description = "If available, here you can find more actions"
         embed = nextcord.Embed(title=title, description=description)
         return embed
+
+    @staticmethod
+    def loot_corpse_action(player_name, name, money, items):
+        message = f"{player_name} found **{money}** coin{'' if money == 1 else 's'} :coin: while looting {name}!\n"
+        if len(items) > 0:
+            message += f"\nThey also found:\n"
+            for item in items:
+                message += f"ㅤ- *{item.name}*\n"
+        return message
