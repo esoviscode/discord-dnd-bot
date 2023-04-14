@@ -21,3 +21,22 @@ def test_get_user_id_from_discord_id(postgresql):
 
     assert id_user == test_user_id
 
+
+def test_get_user(postgresql):
+    cur = postgresql.cursor()
+    DatabaseConnection.connection = postgresql
+    DatabaseConnection.cursor = cur
+
+    id_game = DatabaseGame.add_game('shhesh')
+    um = {'id_game': id_game, 'discord_id': 78}
+    id_user = DatabaseUser.add_user(um['id_game'], um['discord_id'])
+
+    db_d = DatabaseUser.get_user(id_user)
+
+    for key, value in db_d.items():
+        if key == 'id_user':
+            assert value == id_user
+        else:
+            assert value == um[key]
+
+

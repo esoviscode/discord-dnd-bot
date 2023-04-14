@@ -15,8 +15,10 @@ class DatabaseUser:
                                             (id_game, discord_id), "user")
 
     @staticmethod
-    def get_user(discord_id: int = 0) -> dict | None:
-        pass
+    def get_user(id_user: int = 0) -> dict | None:
+        query = f'SELECT id_game, discord_id FROM public."User" WHERE id_user = (%s)'
+        db_t = DatabaseConnection.get_object_from_db(query, (id_user,), "User")
+        return {'id_user': id_user, 'id_game': db_t[0], 'discord_id': db_t[1]}
 
     @staticmethod
     def get_user_id_from_discord_id(discord_id: int = 0, id_game: int = 0) -> int | None:
