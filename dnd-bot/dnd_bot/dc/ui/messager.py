@@ -91,7 +91,7 @@ class Messager:
 
         user = Messager.bot.get_user(user_id)
 
-        sent_message = await Messager.__send_dm_message(user, f'⚠️ {content}' if content is not '' else None,
+        sent_message = await Messager.__send_dm_message(user, f'⚠️ {content}' if content != '' else None,
                                                         embeds, view, files)
 
         MessageHolder.register_last_error_data(user_id, user.dm_channel.id, sent_message.id)
