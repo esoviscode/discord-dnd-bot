@@ -4,7 +4,7 @@ from dnd_bot.logic.prototype.entity import Entity
 class Corpse(Entity):
 
     entity_name = "Corpse"
-    sprite_path = "dnd_bot/assets/gfx/entities/hole.png"
+    sprite_path = "dnd_bot/assets/gfx/entities/corpse.png"
 
     def __init__(self, x, y, game_token, sprite_path=None):
         """creates corpse entity with default sprite, but you can pass path to other sprite"""
