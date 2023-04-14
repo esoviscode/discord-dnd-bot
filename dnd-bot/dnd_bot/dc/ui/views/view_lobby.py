@@ -40,7 +40,6 @@ class ViewLobby(nextcord.ui.View):
 
     async def ready(self, interaction: nextcord.Interaction):
         """Callback to ready button (in host and player views)"""
-        print(interaction.bot.name)
         try:
             lobby_players = await HandlerReady.on_ready(self.token, self.user_id)
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
@@ -50,7 +49,6 @@ class ViewLobby(nextcord.ui.View):
             await asyncio.gather(*tasks)
             await q.join()
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
@@ -122,4 +120,4 @@ class ViewPlayer(ViewLobby):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await self.ready(interaction)
+        await super().ready(interaction)

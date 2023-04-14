@@ -107,4 +107,6 @@ async def on_error(event_name, *args, **kwargs):
     error_embed.set_footer(
         text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
 
-    await interaction.response.send_message(embed=error_embed)
+    await interaction.response.defer()
+
+    await Messager.send_dm_error_message(user_id=interaction.user.id, content='', embeds=[error_embed])
