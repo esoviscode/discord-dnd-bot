@@ -1,4 +1,5 @@
-from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
+from dnd_bot.dc.utils.handler_views import HandlerViews
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
 from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
@@ -54,7 +55,7 @@ class GameLoop:
         if isinstance(first_creature, Player):
             game.players_views[first_creature.discord_identity] = (ViewMain, [])
 
-        await ViewGame.display_views_for_users(game_token, "Let the adventure begin!")
+        await HandlerViews.display_views_for_users(game_token, "Let the adventure begin!")
 
         # move of non player creature
         if not isinstance(first_creature, Player):

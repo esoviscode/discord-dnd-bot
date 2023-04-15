@@ -170,7 +170,8 @@
         "equipment": {},
         "drop_money": [1, 3],
         "drops": {
-          "Hunting necklace": 0.2
+          "Hunting necklace": 0.2,
+          "Necklace of prudence": 0.15
         },
         "ai": 0
       },

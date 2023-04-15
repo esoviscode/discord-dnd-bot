@@ -1,4 +1,5 @@
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -9,9 +10,12 @@ class Player(Creature):
                  hp: int = 0, strength: int = 0, dexterity: int = 0, intelligence: int = 0, charisma: int = 0,
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
                  discord_identity: int = 0, alignment: str = '', backstory: str = '',
-                 game_token: str = '', character_race: str = '', character_class: str = '', experience: int = 0):
+                 game_token: str = '', character_race: str = '', character_class: str = '', experience: int = 0,
+                 backpack=None, money: int = 0):
 
         # request a sprite path for the player based on the user
+        if backpack is None:
+            backpack = []
         self.sprite = None
         game = Multiverse.get_game(game_token)
         if game is None:
@@ -34,6 +38,8 @@ class Player(Creature):
         self.character_race = character_race
         self.active = False
         self.attack_mode = False
+        self.backpack = backpack  # Player_item in database
+        self.money = money
 
     def get_sprite_path_by_color(self, color: str, character_class: str):
         import os
@@ -43,3 +49,25 @@ class Player(Creature):
             return path
         else:
             return 'dnd_bot/assets/gfx/entities/player.png'
+
+    def get_entities_around(self, cross_only=False):
+        """ returns all entities around(next to) the player.
+        :param cross_only: if True function won't return entities on diagonal"""
+        game = Multiverse.get_game(self.game_token)
+        result = []
+
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                if (x == 0 and y == 0) or (cross_only and (x + y == 0 or x + y == -2 or x + y == 2)):
+                    continue
+                if game.entities[self.y + y][self.x + x]:
+                    result.append(game.entities[self.y + y][self.x + x])
+
+        return result
+
+    @property
+    def can_loot_corpse(self):
+        for entity in self.get_entities_around(cross_only=True):
+            if isinstance(entity, Corpse):
+                return True
+        return False
