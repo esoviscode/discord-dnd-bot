@@ -2,6 +2,7 @@ import json
 
 from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.logic.prototype.database_object import DatabaseObject
+from dnd_bot.logic.prototype.items.equipable import Equipable
 
 
 class Item(DatabaseObject):
@@ -26,6 +27,7 @@ class Item(DatabaseObject):
         self.charisma = 0
         self.perception = 0
         self.action_points = 0
+        self.equipable: Equipable = Equipable.NO
 
         self.load_attributes_from_json()
 
@@ -42,7 +44,7 @@ class Item(DatabaseObject):
                 item_subtype_dict = items[item_type]
                 for item_subtype in item_subtype_dict:
                     if self.name in item_subtype_dict[item_subtype]:  # items with a subtype
-
+                        print(item_subtype)
                         item = item_subtype_dict[item_subtype][self.name]
                         if item:
                             if 'damage' in item:
