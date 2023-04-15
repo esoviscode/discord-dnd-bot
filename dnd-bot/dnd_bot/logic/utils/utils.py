@@ -2,15 +2,9 @@ import copy
 import cv2 as cv
 import numpy as np
 
-from dnd_bot.logic.prototype.classes.mage import Mage
-from dnd_bot.logic.prototype.classes.ranger import Ranger
-from dnd_bot.logic.prototype.classes.warrior import Warrior
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.multiverse import Multiverse as Mv
-from dnd_bot.logic.prototype.races.dwarf import Dwarf
-from dnd_bot.logic.prototype.races.elf import Elf
-from dnd_bot.logic.prototype.races.human import Human
 
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
