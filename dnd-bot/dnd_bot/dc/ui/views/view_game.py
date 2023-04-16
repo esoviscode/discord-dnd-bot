@@ -398,7 +398,11 @@ class ViewManageItems(ViewGame):
                                               view=ViewManageItems(self.token, interaction.user.id))
 
     async def cancel(self, interaction: nextcord.Interaction):
-        await super().cancel(interaction, [get_player_view(self.game, self.player)])
+        turn_view_embed = MessageTemplates.equipment_message_template(self.player)
+
+        self.game.players_views[self.user_discord_id] = (ViewMain, [])
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
+                                              view=ViewEquipment(self.token, interaction.user.id))
 
 
 class ViewEquipment(ViewGame):
