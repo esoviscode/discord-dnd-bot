@@ -2,6 +2,7 @@ import asyncio
 
 import nextcord
 
+from dnd_bot.dc.init import on_error
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_character_creation import ViewCharacterCreationStart
@@ -17,6 +18,7 @@ class ViewLobby(nextcord.ui.View):
 
     def __init__(self, user_id, token):
         super().__init__(timeout=None)
+        self.on_error = on_error
         self.user_id = user_id
         self.token = token
 
@@ -47,7 +49,6 @@ class ViewLobby(nextcord.ui.View):
             await asyncio.gather(*tasks)
             await q.join()
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
             await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
 
 
@@ -119,4 +120,4 @@ class ViewPlayer(ViewLobby):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await self.ready(interaction)
+        await super().ready(interaction)
