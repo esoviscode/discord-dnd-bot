@@ -40,11 +40,11 @@ class Item(DatabaseObject):
 
             for item_type in items.keys():
                 if self.name in items[item_type]:  # items without a subtype
-                    pass
+                    print(f"{self.name} is without a subtype")
                 item_subtype_dict = items[item_type]
                 for item_subtype in item_subtype_dict:
                     if self.name in item_subtype_dict[item_subtype]:  # items with a subtype
-
+                        print(item_type)
                         if item_type == "weapons":
                             self.equipable = Equipable.WEAPON
                         elif item_type == "armors":
