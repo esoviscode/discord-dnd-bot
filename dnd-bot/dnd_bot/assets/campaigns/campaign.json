@@ -62,7 +62,11 @@
   },
   "items": {
     "armors": {
-      "helmets": {},
+      "helmets": {
+        "Plate Helmet": {
+          "hp": 5
+        }
+      },
       "chestplates": {},
       "leg armors": {},
       "boots: ": {}
@@ -114,28 +118,37 @@
     },
     "off-hands": {
       "shields": {
+        "Wooden shield": {
+          "dexterity": -2,
+          "strength": 2
+        }
       }
     },
     "accessories": {
-      "Ring of vitality" :{
-        "hp": 4,
-        "charisma": 2,
-        "base-price": 9
-      },
-      "Necklace of prudence": {
-        "intelligence": 5,
-        "base-price": 10
-      },
-      "Holy Bible": {
-        "hp": 10,
-        "strength": 3,
-        "base-price": 35
-      },
-      "Hunting necklace": {
-        "dexterity": 6,
-        "perception": 1
+      "type1": {
+        "Ring of vitality" :{
+          "hp": 4,
+          "charisma": 2,
+          "base-price": 9
+        },
+        "Necklace of prudence": {
+          "intelligence": 5,
+          "base-price": 10
+        },
+        "Holy Bible": {
+          "hp": 10,
+          "strength": 3,
+          "base-price": 35
+        },
+        "Hunting necklace": {
+          "dexterity": 6,
+          "perception": 1
+        },
+        "Glasses": {
+          "perception": 1
+        }
       }
-    }
+      }
   },
   "entities": {
     "enemies": {
@@ -153,7 +166,8 @@
         "equipment": {},
         "drop_money": [1, 3],
         "drops": {
-          "Ring of vitality": 0.2
+          "Plate Helmet": 0.95,
+          "Wooden shield": 0.9
         },
         "ai": 0
       },
@@ -171,8 +185,8 @@
         "equipment": {},
         "drop_money": [1, 3],
         "drops": {
-          "Hunting necklace": 0.2,
-          "Necklace of prudence": 0.15
+          "Hunting necklace": 0.9,
+          "Necklace of prudence": 0.85
         },
         "ai": 0
       },

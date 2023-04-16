@@ -349,6 +349,7 @@ class ViewCharacterNonActive(ViewGame):
 
 
 class ViewManageItems(ViewGame):
+    """ view for managing player's equipment"""
     def __init__(self, token, user_discord_id):
         super().__init__(token, user_discord_id)
 
@@ -392,6 +393,9 @@ class ViewManageItems(ViewGame):
 
     async def remove(self, interaction: nextcord.Interaction):
         await HandlerManageItems.remove_item(self.player, int(self.select_list.values[0]))
+        embed = MessageTemplates.equipment_message_template(self.player)
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewManageItems(self.token, interaction.user.id))
 
     async def cancel(self, interaction: nextcord.Interaction):
         await super().cancel(interaction, [get_player_view(self.game, self.player)])

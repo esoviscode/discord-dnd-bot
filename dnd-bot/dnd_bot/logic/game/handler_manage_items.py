@@ -50,6 +50,6 @@ class HandlerManageItems:
         equip(item)
 
     @staticmethod
-    async def remove_item(player, index_of_item_in_backapck):
+    async def remove_item(player, index_of_item_in_backpack):
         """handles removing an item"""
-        pass
+        del player.backpack[index_of_item_in_backpack]
