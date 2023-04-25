@@ -16,6 +16,7 @@ class Creature(Entity):
         if drops is None:
             drops = []
         self.hp = hp
+        self.max_hp = hp
         self.strength = strength
         self.dexterity = dexterity
         self.intelligence = intelligence
@@ -34,7 +35,7 @@ class Creature(Entity):
         # TODO set ai function depending on ai argument
         self.ai = self.ai_simple_move
 
-    def ai_action(self):
+    async def ai_action(self):
         from dnd_bot.logic.prototype.multiverse import Multiverse
         from dnd_bot.logic.utils.utils import find_position_to_check
 
@@ -59,12 +60,9 @@ class Creature(Entity):
         path = path[1:]
 
         mod = 1
-        try:
-            if not self.equipment.right_hand:
-                attack_range = 1
-            else:
-                attack_range = min(self.perception, self.equipment.right_hand.use_range)
-        except Exception:
+        if 'right_hand' in self.equipment:
+            attack_range = min(self.perception, self.equipment.right_hand.use_range)
+        else:
             attack_range = 1
 
         if 3 < attack_range < 6:
@@ -90,6 +88,11 @@ class Creature(Entity):
             print(self.name, "moved to", (self.x, self.y))
             path.pop(0)
             self.action_points -= 1
+
+        from dnd_bot.logic.game.handler_attack import HandlerAttack
+        while self.action_points > 0:
+            resp = await HandlerAttack.handle_attack(self, foes[0], self.game_token)
+            print(resp, self.action_points)
 
         self.action_points = 0
         return "Pathing to target"
