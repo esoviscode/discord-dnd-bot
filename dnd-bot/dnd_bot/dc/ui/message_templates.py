@@ -112,7 +112,7 @@ class MessageTemplates:
 
         desc = f'Strength: {player.strength}\n'
         desc += f'Dexterity: {player.dexterity}\n'
-        desc += f'Max HP: {player.hp}\n'
+        desc += f'Max HP: {player.max_hp}\n'
         desc += f'Intelligence: {player.intelligence}\n'
         desc += f'Charisma: {player.charisma}\n'
         desc += f'Perception: {player.perception}\n'
@@ -142,7 +142,7 @@ class MessageTemplates:
 
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | '
-                                     f'HP: {player.hp}/{player.hp}', description=recent_action)
+                                     f'HP: {player.hp}/{player.max_hp}', description=recent_action)
         if isinstance(active_creature, Player):
             active_user = await get_user_by_id(active_creature.discord_identity)
             active_user_icon = active_user.display_avatar.url
@@ -157,7 +157,7 @@ class MessageTemplates:
         """message embed representing the active player actions and the player's stats"""
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | '
-                                     f'HP: {player.hp}/{player.hp}', description=recent_action)
+                                     f'HP: {player.hp}/{player.max_hp}', description=recent_action)
         embed.set_footer(text=f'{active_player.name}\'s turn', icon_url=active_user_icon)
 
         return embed
