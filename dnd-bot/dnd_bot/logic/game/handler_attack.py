@@ -25,7 +25,7 @@ class HandlerAttack:
         if source != game.active_creature:
             raise AttackException("You can't perform a move right now!")
 
-        if 'right_hand' in source.equipment:
+        if source.equipment.right_hand:
             if source.action_points < source.equipment.right_hand.action_points:
                 raise AttackException("You have an insufficient number of action points!")
 
@@ -38,7 +38,7 @@ class HandlerAttack:
             source.action_points -= source.equipment.right_hand.action_points
 
         else:
-            if source.action_points < 1:
+            if source.action_points < 2:
                 raise AttackException("You have an insufficient number of action points!")
 
             if isinstance(source, Player):
@@ -47,7 +47,7 @@ class HandlerAttack:
             else:
                 attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 
-            source.action_points -= 1
+            source.action_points -= 2
 
         # dodging an attack
         # the chance is (source dexterity)%
@@ -66,7 +66,7 @@ class HandlerAttack:
             base_damage = 1
 
         weapon_damage = 0
-        if 'right_hand' in source.equipment:
+        if source.equipment.right_hand:
             weapon_damage += random.randint(*source.equipment.right_hand.damage)
 
         target.hp -= (base_damage + weapon_damage)

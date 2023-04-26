@@ -7,7 +7,7 @@ class Creature(Entity):
 
     def __init__(self, x=0, y=0, sprite: str = '', name: str = 'Creature', hp: int = 0, strength: int = 0,
                  dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
-                 action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money = None,
+                 action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money=None,
                  game_token: str = '', look_direction: str = 'down', experience: int = 0,
                  creature_class: str = '', drops=None, ai=0):
         super().__init__(x=x, y=y, sprite=sprite, name=name, fragile=True, game_token=game_token, look_direction=look_direction)
@@ -33,69 +33,40 @@ class Creature(Entity):
         self.drops = drops
 
         # TODO set ai function depending on ai argument
-        self.ai = self.ai_simple_move
+        self.ai = ai
+        self.move_queue = []
 
     async def ai_action(self):
         from dnd_bot.logic.prototype.multiverse import Multiverse
-        from dnd_bot.logic.utils.utils import find_position_to_check
-
-        foes = self.search_for_foes()
-        if not foes:
-            self.action_points = 0
-            return self.ai()
-
-        print(self.name, "has foes in range")
-        path_exists = False
-        for f in foes:
-            path = Creature.a_star_path(self.x, self.y, f.x, f.y, Multiverse.get_game(self.game_token).entities)
-            if path:
-                path_exists = True
-            print(f"Foe: {f.name}, path: {path}")
-
-        if not path_exists:
-            self.action_points = 0
-            return self.ai()
-
-        path = Creature.a_star_path(self.x, self.y, foes[0].x, foes[0].y, Multiverse.get_game(self.game_token).entities)
-        path = path[1:]
-
-        mod = 1
-        if 'right_hand' in self.equipment:
-            attack_range = min(self.perception, self.equipment.right_hand.use_range)
-        else:
-            attack_range = 1
-
-        if 3 < attack_range < 6:
-            mod = 4
-        elif attack_range >= 6:
-            mod = 5
-
-        def attackable(from_x, from_y, to_x, to_y):
-            positions = find_position_to_check(from_x, from_y, to_x, to_y)
-            for pos in positions:
-                if Multiverse.get_game(self.game_token).entities[pos[1]][pos[0]]:
-                    return False
-            return True
-
-        while (not (attackable(self.x, self.y, path[-1][0], path[-1][1])
-                    and ((self.x - path[-1][0]) ** 2 + (self.y - path[-1][1]) ** 2 <= attack_range ** 2 + mod))
-               ) and (self.action_points > 0):
-            if self.x - path[0][0] != 0:
-                direction = "right" if self.x < path[0][0] else "left"
-            else:
-                direction = "down" if self.y < path[0][1] else "up"
-            self.move_one_tile(direction, Multiverse.get_game(self.game_token))
-            print(self.name, "moved to", (self.x, self.y))
-            path.pop(0)
-            self.action_points -= 1
-
         from dnd_bot.logic.game.handler_attack import HandlerAttack
-        while self.action_points > 0:
-            resp = await HandlerAttack.handle_attack(self, foes[0], self.game_token)
-            print(resp, self.action_points)
+
+        if not self.move_queue:
+            self.move_queue = self.prepare_move_queue()
+
+        while self.move_queue[0]:
+            if self.move_queue[0][0] == 'M':
+                self.move_one_tile(self.move_queue[0][1], Multiverse.get_game(self.game_token))
+                self.action_points -= 1
+                self.move_queue.pop(0)
+                return f"{self.name} has moved to ({self.x},{self.y})"
+
+            elif self.move_queue[0][0] == 'A':
+                if (self.equipment.right_hand and self.equipment.right_hand.action_points >= self.action_points) \
+                        or self.action_points >= 2:
+                    # attack foe
+                    if Multiverse.get_game(self.game_token).entities[self.move_queue[0][1].y][self.move_queue[0][1].x]:
+                        resp = await HandlerAttack.handle_attack(self, self.move_queue[0][1], self.game_token)
+                        return resp
+                    # foe killed
+                    else:
+                        self.move_queue = self.prepare_move_queue()
+                # end turn
+                else:
+                    self.move_queue = [None]
 
         self.action_points = 0
-        return "Pathing to target"
+        self.move_queue = []
+        return "Idle"
 
     def ai_simple_move(self):
         return "Made simple move"
@@ -128,3 +99,105 @@ class Creature(Entity):
         end = grid.node(to_x, to_y)
 
         return AStarFinder().find_path(start, end, grid)[0]
+
+    def prepare_move_queue(self):
+        if self.action_points == 0:
+            return [None]
+
+        action_points = self.action_points
+
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        from dnd_bot.logic.utils.utils import find_position_to_check
+
+        foes = self.search_for_foes()
+        if not foes:
+            return [None]
+
+        target, path = self.choose_aggro(foes)
+        if not target:
+            return [None]
+
+        move_queue = []
+
+        if self.equipment.right_hand:
+            attack_range = min(self.perception, self.equipment.right_hand.use_range)
+        else:
+            attack_range = 1
+
+        mod = 1
+        if 3 < attack_range < 6:
+            mod = 4
+        elif attack_range >= 6:
+            mod = 5
+
+        def attackable(from_x, from_y, to_x, to_y):
+            positions = find_position_to_check(from_x, from_y, to_x, to_y)
+            for pos in positions:
+                if Multiverse.get_game(self.game_token).entities[pos[1]][pos[0]]:
+                    return False
+            return True
+
+        while (not (attackable(path[0][0], path[0][1], path[-1][0], path[-1][1])
+                    and ((path[0][0] - path[-1][0]) ** 2 + (path[0][1] - path[-1][1]) ** 2 <= attack_range ** 2 + mod))
+               ) and (action_points > 0):
+            if path[0][0] - path[1][0] != 0:
+                direction = "right" if path[0][0] < path[1][0] else "left"
+            else:
+                direction = "down" if path[0][1] < path[1][1] else "up"
+
+            move_queue.append(('M', direction))
+            path.pop(0)
+            action_points -= 1
+
+        if action_points >= 2:
+            move_queue.append(('A', foes[0]))
+
+        return move_queue
+
+    def choose_aggro(self, foes):
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+
+        intelligence = "high" if self.intelligence >= 10 else ("low" if self.intelligence <= 3 else "medium")
+        if intelligence != "low":
+            class_priority = ["Mage", "Ranger", "Warrior"]
+        sorted_foes = []
+
+        for f in foes:
+            path = Creature.a_star_path(self.x, self.y, f.x, f.y, Multiverse.get_game(self.game_token).entities)
+            path_len = len(path)
+            if path:
+                i = 0
+                if intelligence == "low":
+                    while i < len(sorted_foes):
+                        if len(sorted_foes[i][1]) < path_len:
+                            i += 1
+                        else:
+                            break
+                    sorted_foes.insert(i, (f, path))
+                elif intelligence == "medium":
+                    while i < len(sorted_foes):
+                        if class_priority.index(sorted_foes[i][0].creature_class) < \
+                                class_priority.index(f.creature_class):
+                            i += 1
+                        elif len(sorted_foes[i][1]) < path_len:
+                            i += 1
+                        else:
+                            break
+                    sorted_foes.insert(i, (f, path))
+                else:
+                    while i < len(sorted_foes):
+                        if sorted_foes[i][0].hp < f.hp:
+                            i += 1
+                        elif class_priority.index(sorted_foes[i][0].creature_class) < \
+                                class_priority.index(f.creature_class):
+                            i += 1
+                        elif len(sorted_foes[i][1]) < path_len:
+                            i += 1
+                        else:
+                            break
+                    sorted_foes.insert(i, (f, path))
+
+        if sorted_foes:
+            return sorted_foes[0]
+        else:
+            return None, []
