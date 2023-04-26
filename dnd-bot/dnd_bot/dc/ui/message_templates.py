@@ -80,15 +80,16 @@ class MessageTemplates:
         eq += f'Right Hand: *{MessageTemplates.item_to_string_template(player.equipment.right_hand)}⠀*\n'
         eq += f'Accessory: *{MessageTemplates.item_to_string_template(player.equipment.accessory)}⠀*\n'
 
-        backpack = "" if len(player.backpack) == 0 else "⠀\n"
+        backpack = f"⠀\n:school_satchel: **Backpack:**"
+
+        backpack += "" if len(player.backpack) == 0 else "⠀\n"
+
         for item in player.backpack:
             backpack += f"*{item.name}*\n"
 
-        backpack += f"⠀\n:moneybag: Money: **{player.money}**\n"
-
         embed = nextcord.Embed(title='Your equipment:', description="")
         embed.add_field(name="🛡️ **Equipment:**", value=eq, inline=True)
-        embed.add_field(name=":school_satchel: **Backpack:**", value=backpack, inline=True)
+        embed.add_field(name=f":moneybag: **Money: {player.money}**", value=backpack, inline=True)
         return embed
 
     @staticmethod

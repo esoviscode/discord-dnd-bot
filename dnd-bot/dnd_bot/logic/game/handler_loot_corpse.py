@@ -26,8 +26,8 @@ class HandlerLootCorpse:
         game: Game = Multiverse.get_game(player.game_token)
         game.delete_entity(corpse.id)
 
-        player.money += money
-        player.backpack += items
+        player.add_money(money)
+        player.add_items(items)
 
         await HandlerViews.display_views_for_users(player.game_token,
                                                    MessageTemplates.loot_corpse_action(

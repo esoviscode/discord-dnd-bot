@@ -1,6 +1,6 @@
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
-from dnd_bot.logic.prototype.equipment import Equipment
+from dnd_bot.logic.prototype.items.item import Item
 from dnd_bot.logic.prototype.multiverse import Multiverse
 
 
@@ -72,3 +72,14 @@ class Player(Creature):
             if isinstance(entity, Corpse):
                 return True
         return False
+
+    def add_items(self, dropped_items):
+        """ universal system for adding items
+        :param dropped_items - LIST of items to add
+        """
+        self.backpack += dropped_items
+        self.backpack.sort(key=Item.compare_items)
+
+    def add_money(self, money):
+        """ universal system for adding money """
+        self.money += money

@@ -85,3 +85,8 @@ class Item(DatabaseObject):
                                 self.charisma = item['charisma']
                             if 'perception' in item:
                                 self.perception = item['perception']
+
+    @staticmethod
+    def compare_items(item):
+        """ this method is to return compare value fe for sorting items in backpack"""
+        return item.name
