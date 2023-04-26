@@ -1,4 +1,3 @@
-import math
 from collections import deque
 
 from dnd_bot.database.database_game import DatabaseGame
