@@ -44,6 +44,8 @@ class HandlerManageItems:
                     player.backpack.append(player.equipment.left_hand)
                 player.equipment.left_hand = to_be_equipped
 
+            player.backpack.sort(key=Item.compare_items)
+
         if item.equipable == Equipable.NO:
             await Messager.send_dm_error_message(player.discord_identity, "You can't equip this item")
             return
