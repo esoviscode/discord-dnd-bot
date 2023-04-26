@@ -149,8 +149,7 @@ class Creature(Entity):
             path.pop(0)
             action_points -= 1
 
-        if action_points >= 2:
-            move_queue.append(('A', foes[0]))
+        move_queue.append(('A', foes[0]) if action_points > 0 else None)
 
         return move_queue
 
