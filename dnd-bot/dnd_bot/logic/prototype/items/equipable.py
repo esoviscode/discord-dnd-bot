@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Equipable(Enum):
+    """ defines a type of an item - how it can be equipped"""
     NO = 0
     WEAPON = 1
     HELMET = 4
