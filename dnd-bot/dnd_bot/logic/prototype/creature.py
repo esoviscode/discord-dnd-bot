@@ -1,3 +1,5 @@
+import copy
+import dnd_bot.logic.prototype.player
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.equipment import Equipment
 
@@ -44,6 +46,7 @@ class Creature(Entity):
             self.move_queue = self.prepare_move_queue()
 
         while self.move_queue[0]:
+            # creature movement
             if self.move_queue[0][0] == 'M':
                 self.move_one_tile(self.move_queue[0][1], Multiverse.get_game(self.game_token))
                 self.action_points -= 1
@@ -67,9 +70,6 @@ class Creature(Entity):
         self.action_points = 0
         self.move_queue = []
         return "Idle"
-
-    def ai_simple_move(self):
-        return "Made simple move"
 
     def search_for_foes(self):
         from dnd_bot.logic.utils.utils import generate_circle_points
@@ -104,41 +104,51 @@ class Creature(Entity):
         if self.action_points == 0:
             return [None]
 
-        action_points = self.action_points
-
         from dnd_bot.logic.prototype.multiverse import Multiverse
-        from dnd_bot.logic.utils.utils import find_position_to_check
 
+        action_points = self.action_points
         foes = self.search_for_foes()
         if not foes:
             return [None]
+
+        # artificial intelligence
+        low_hp = 50
+        if self.hp <= low_hp and self.ai == 2:
+            actions = self.flee()
+            if actions == list():
+                return [None]
+            elif actions:
+                moves = []
+                for i, p in enumerate(actions[:-1]):
+                    if p[0] - actions[i + 1][0] != 0:
+                        direction = "right" if p[0] < actions[i + 1][0] else "left"
+                    else:
+                        direction = "down" if p[1] < actions[i + 1][1] else "up"
+                    moves.append(('M', direction))
+                return moves + [None]
 
         target, path = self.choose_aggro(foes)
         if not target:
             return [None]
 
         move_queue = []
+        if self.hp <= low_hp and self.ai == 1:
+            return self.kite()
 
         if self.equipment.right_hand:
             attack_range = min(self.perception, self.equipment.right_hand.use_range)
         else:
             attack_range = 1
 
-        mod = 1
+        bias = 1
         if 3 < attack_range < 6:
-            mod = 4
+            bias = 4
         elif attack_range >= 6:
-            mod = 5
+            bias = 5
 
-        def attackable(from_x, from_y, to_x, to_y):
-            positions = find_position_to_check(from_x, from_y, to_x, to_y)
-            for pos in positions:
-                if Multiverse.get_game(self.game_token).entities[pos[1]][pos[0]]:
-                    return False
-            return True
-
-        while (not (attackable(path[0][0], path[0][1], path[-1][0], path[-1][1])
-                    and ((path[0][0] - path[-1][0]) ** 2 + (path[0][1] - path[-1][1]) ** 2 <= attack_range ** 2 + mod))
+        while (not (Creature.attackable(path[0][0], path[0][1], path[-1][0], path[-1][1],
+                                        Multiverse.get_game(self.game_token).entities)
+                    and ((path[0][0] - path[-1][0]) ** 2 + (path[0][1] - path[-1][1]) ** 2 <= attack_range ** 2 + bias))
                ) and (action_points > 0):
             if path[0][0] - path[1][0] != 0:
                 direction = "right" if path[0][0] < path[1][0] else "left"
@@ -200,3 +210,63 @@ class Creature(Entity):
             return sorted_foes[0]
         else:
             return None, []
+
+    def flee(self):
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        from dnd_bot.logic.utils.utils import generate_circle_points
+
+        game = Multiverse.get_game(self.game_token)
+        entities = game.entities
+        initial = copy.deepcopy(entities)
+        initial[self.y][self.x] = None
+
+        safe_points = [[False if e else True for e in row] for row in initial]
+
+        for row in initial:
+            for e in row:
+                if e and isinstance(e, dnd_bot.logic.prototype.player.Player):
+                    # eliminate unsafe points
+                    if e.equipment.right_hand:
+                        attack_range = min(e.perception, e.equipment.right_hand.use_range)
+                    else:
+                        attack_range = 1
+                    points = generate_circle_points(attack_range, attack_range)
+
+                    for x, y in points:
+                        if not (0 <= e.x - x < game.world_width and 0 <= e.y - y < game.world_height):
+                            continue
+                        if (not initial[e.y - y][e.x - x]) and Creature.attackable(e.x, e.y, e.x - x, e.y - y, initial):
+                            safe_points[e.y - y][e.x - x] = False
+
+        if safe_points[self.y][self.x]:
+            return []
+
+        best_path = [None] * (game.world_width * game.world_height)
+        for y, row in enumerate(safe_points):
+            for x, p in enumerate(row):
+                if p:
+                    path = Creature.a_star_path(self.x, self.y, x, y, entities)
+                    if not path:
+                        continue
+                    if len(best_path) > len(path):
+                        if self.action_points >= len(path) - 1:
+                            print("prev", best_path, "curr", path)
+                            best_path = path
+
+        return best_path if len(best_path) < (game.world_width * game.world_height) else None
+
+    def kite(self):
+        from dnd_bot.logic.utils.utils import generate_circle_points
+        moves = [None]
+
+        return moves
+
+    @staticmethod
+    def attackable(from_x, from_y, to_x, to_y, board):
+        from dnd_bot.logic.utils.utils import find_position_to_check
+
+        positions = find_position_to_check(from_x, from_y, to_x, to_y)
+        for pos in positions:
+            if board[pos[1]][pos[0]]:
+                return False
+        return True

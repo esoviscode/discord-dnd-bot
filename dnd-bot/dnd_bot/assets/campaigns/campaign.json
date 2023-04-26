@@ -154,7 +154,7 @@
         "drops": {
           "Ring of vitality": 0.2
         },
-        "ai": 0
+        "ai": 2
       },
       "Half dragon assassin": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_assassin_sprite.png",

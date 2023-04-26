@@ -46,7 +46,7 @@ class HandlerGame:
         while game.active_creature.action_points > 0:
             recent_action_message = await active_creature.ai_action()
             await asyncio.sleep(1)
-            print(f"<{active_creature.id}>", recent_action_message)
+            print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
             await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token)
