@@ -63,9 +63,7 @@
   "items": {
     "armors": {
       "helmets": {
-        "Plate Helmet": {
-          "hp": 5
-        }
+        "Plate Helmet": {}
       },
       "chestplates": {},
       "leg armors": {},
@@ -125,7 +123,7 @@
       }
     },
     "accessories": {
-      "type1": {
+      "basic": {
         "Ring of vitality" :{
           "hp": 4,
           "charisma": 2,
