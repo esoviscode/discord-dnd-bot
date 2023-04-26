@@ -104,13 +104,15 @@
           "damage": [4, 7],
           "range": 4,
           "action-points": 4,
-          "base-price": 5
+          "base-price": 5,
+          "two-handed": true
         },
         "Light crossbow": {
           "damage": [12, 14],
           "range": 4,
           "action-points": 5,
-          "base-price": 6
+          "base-price": 6,
+          "two-handed": true
         }
       }
     },

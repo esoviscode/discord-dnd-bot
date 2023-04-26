@@ -28,6 +28,7 @@ class Item(DatabaseObject):
         self.perception = 0
         self.action_points = 0
         self.equipable: Equipable = Equipable.NO
+        self.two_handed = False
 
         self.load_attributes_from_json()
 
@@ -85,6 +86,9 @@ class Item(DatabaseObject):
                                 self.charisma = item['charisma']
                             if 'perception' in item:
                                 self.perception = item['perception']
+                            if 'two-handed' in item:
+                                self.two_handed = item['two-handed']
+
 
     @staticmethod
     def compare_items(item):
