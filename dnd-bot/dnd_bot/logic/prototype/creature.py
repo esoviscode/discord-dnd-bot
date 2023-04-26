@@ -112,7 +112,7 @@ class Creature(Entity):
             return [None]
 
         # artificial intelligence
-        low_hp = 50
+        low_hp = 5
         if self.hp <= low_hp and self.ai == 2:
             actions = self.flee()
             if actions == list():
@@ -133,7 +133,9 @@ class Creature(Entity):
 
         move_queue = []
         if self.hp <= low_hp and self.ai == 1:
-            return self.kite()
+            actions = self.kite(target)
+            if actions:
+                return actions
 
         if self.equipment.right_hand:
             attack_range = min(self.perception, self.equipment.right_hand.use_range)
@@ -255,9 +257,50 @@ class Creature(Entity):
 
         return best_path if len(best_path) < (game.world_width * game.world_height) else None
 
-    def kite(self):
+    def kite(self, target):
         from dnd_bot.logic.utils.utils import generate_circle_points
-        moves = [None]
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+
+        moves = []
+        if self.equipment.right_hand:
+            attack_range = max(self.equipment.right_hand.use_range, self.perception)
+        else:
+            attack_range = 1
+        points = generate_circle_points(attack_range, attack_range)
+        wages = [0 for _ in points]
+
+        game = Multiverse.get_game(self.game_token)
+        entities = game.entities
+        initial = copy.deepcopy(entities)
+        initial[self.y][self.x] = None
+
+        for i, (x, y) in enumerate(points):
+            if not initial[target.y - y][target.x - x] and \
+                    Creature.attackable(target.x - x, target.y - y, target.x, target.y, initial) and \
+                    (0 <= target.x - x < game.world_width and 0 <= target.y - y < game.world_height):
+                # heuristics
+                path_len = len(Creature.a_star_path(self.x, self.y, x, y, initial)) - 1
+                if path_len > self.action_points:
+                    continue
+                wages[i] += 25
+                wages[i] -= path_len if path_len >= 0 else game.world_width * game.world_height
+                wages[i] += (len(Creature.a_star_path(x, y, target.x, target.y, initial)) - 1) ** 2  # dist from target
+                if Creature.attackable(target.x, target.y, x, y, initial):  # in foe's range
+                    wages[i] -= 10
+
+        best_wage = max(wages)
+        if best_wage == 0:
+            return []
+        best_pos = points[wages.index(best_wage)]
+        path = Creature.a_star_path(self.x, self.y, target.x - best_pos[0], target.y - best_pos[1], entities)
+
+        for i, p in enumerate(path[:-1]):
+            if p[0] - path[i + 1][0] != 0:
+                direction = "right" if p[0] < path[i + 1][0] else "left"
+            else:
+                direction = "down" if p[1] < path[i + 1][1] else "up"
+            moves.append(('M', direction))
+        moves.append(('A', target))
 
         return moves
 
