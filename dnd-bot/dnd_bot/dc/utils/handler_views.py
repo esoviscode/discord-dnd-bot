@@ -18,6 +18,11 @@ class HandlerViews:
             view_to_show = player_current_view(game_token, user.discord_id)
 
             player = game.get_player_by_id_user(user.discord_id)
+            if not player:
+                # TODO player's death handling
+                await Messager.send_dm_message(user.discord_id, ":skull: You have been slain...")
+                game.user_list.remove(user)
+                return
             player_view = get_player_view(Multiverse.get_game(game_token), player, player.attack_mode)
             turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
                                                                          recent_action=recent_action_message)
