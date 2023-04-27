@@ -2,15 +2,9 @@ import copy
 import cv2 as cv
 import numpy as np
 
-from dnd_bot.logic.prototype.classes.mage import Mage
-from dnd_bot.logic.prototype.classes.ranger import Ranger
-from dnd_bot.logic.prototype.classes.warrior import Warrior
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.multiverse import Multiverse as Mv
-from dnd_bot.logic.prototype.races.dwarf import Dwarf
-from dnd_bot.logic.prototype.races.elf import Elf
-from dnd_bot.logic.prototype.races.human import Human
 
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
@@ -266,29 +260,25 @@ def rotate_image_to_direction(img, direction):
 
 def string_to_character_class(class_name: str):
     """
-    returns class (not object) defining particular character class given its name
+    returns object of python class defining particular character class given its name
     :param class_name: name of character class
-    :return class: class defining character class
+    :return class: object defining character class
     """
-    if str.lower(class_name) == "warrior":
-        return Warrior
-    if str.lower(class_name) == "ranger":
-        return Ranger
-    if str.lower(class_name) == "mage":
-        return Mage
+    from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+    for character_class in HandlerCharacterCreation.classes:
+        if character_class.name == class_name:
+            return character_class
     return None
 
 
 def string_to_character_race(race_name: str):
     """
-        returns class (not object) defining particular character race given its name
+        returns object of class defining particular character race given its name
         :param race_name: name of character class
-        :return class: class defining character race
+        :return class: object defining character race
     """
-    if str.lower(race_name) == "human":
-        return Human
-    if str.lower(race_name) == "elf":
-        return Elf
-    if str.lower(race_name) == "dwarf":
-        return Dwarf
+    from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+    for character_race in HandlerCharacterCreation.races:
+        if character_race.name == race_name:
+            return character_race
     return None
