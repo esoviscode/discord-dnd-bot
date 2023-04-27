@@ -176,7 +176,7 @@ class Creature(Entity):
             path.pop(0)
             action_points -= 1
         # can attack
-        move_queue.append(('A', foes[0]) if action_points > 0 else None)
+        move_queue.append(('A', target) if action_points > 0 else None)
 
         return move_queue
 
@@ -275,7 +275,6 @@ class Creature(Entity):
                         continue
                     if len(best_path) > len(path):
                         if self.action_points >= len(path) - 1:
-                            print("prev", best_path, "curr", path)
                             best_path = path
 
         return best_path if len(best_path) < (game.world_width * game.world_height) else None
