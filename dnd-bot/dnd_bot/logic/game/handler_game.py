@@ -1,8 +1,9 @@
 import asyncio
-from datetime import time
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
-from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame, ViewMain
+from dnd_bot.dc.ui.messager import Messager
+from dnd_bot.dc.utils.handler_views import HandlerViews
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewMain
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -24,6 +25,9 @@ class HandlerGame:
         if isinstance(game.active_creature, Player):
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
+            # delete any error messages that were left out
+            await Messager.delete_last_user_error_message(game.active_creature.discord_identity)
+
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
 
         # reset creature's action points to the initial value
@@ -31,7 +35,7 @@ class HandlerGame:
         game.active_creature = next_creature
 
         # send messages to users
-        await ViewGame.display_views_for_users(game_token, recent_action_message)
+        await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         if not isinstance(game.active_creature, Player):
             await HandlerGame.turn(game_token, game.active_creature)
@@ -43,6 +47,32 @@ class HandlerGame:
             recent_action_message = active_creature.ai_action()
             # TODO do testowania await asyncio.sleep(1)
             print(f"Turn executed in {active_creature.name}")
-            await ViewGame.display_views_for_users(game_token, recent_action_message)
+            await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token)
+
+    @staticmethod
+    async def pause_game(token: str = ''):
+        """pauses game based on the token.
+           Game is saved to db and state is set to INACTIVE"""
+        game = Multiverse.get_game(token)
+
+        if not game:
+            raise Exception('Game with provided token doesn\'t exist!')
+
+        game.status = 'INACTIVE'
+
+        # TODO save game state to database
+
+    @staticmethod
+    async def resume_game(token: str = ''):
+        """resumes game based on a token.
+           Game is loaded from db and state is set to ACTIVE"""
+        game = Multiverse.get_game(token)
+
+        if not game:
+            raise Exception('Game with provided token doesn\'t exist!')
+
+        # TODO load game state from database
+
+        game.status = 'ACTIVE'

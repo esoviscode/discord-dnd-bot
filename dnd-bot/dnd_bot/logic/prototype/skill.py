@@ -1,4 +1,3 @@
-from dnd_bot.database.database_skill import DatabaseSkill
 from dnd_bot.logic.prototype.database_object import DatabaseObject
 
 

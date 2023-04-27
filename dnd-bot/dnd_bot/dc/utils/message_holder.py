@@ -6,12 +6,12 @@ class MessageHolder:
     user_last_error_message_data = {}
 
     @staticmethod
-    def register_last_message_data(user_id, channel_id, message_id):
+    def register_last_message_data(user_id: int, channel_id: int, message_id: int):
         """saves last message data for given discord user id"""
         MessageHolder.user_last_message_data[str(user_id)] = (channel_id, message_id)
 
     @staticmethod
-    def read_last_message_data(user_id):
+    def read_last_message_data(user_id: int):
         """read last message data for given discord user id"""
         if not str(user_id) in MessageHolder.user_last_message_data:
             return None
@@ -19,12 +19,12 @@ class MessageHolder:
             return MessageHolder.user_last_message_data[str(user_id)]
 
     @staticmethod
-    def register_last_error_data(user_id, channel_id, message_id):
+    def register_last_error_data(user_id: int, channel_id: int, message_id: int):
         """saves last message data for given discord user id"""
         MessageHolder.user_last_error_message_data[str(user_id)] = (channel_id, message_id)
 
     @staticmethod
-    def read_last_error_data(user_id):
+    def read_last_error_data(user_id: int):
         """read last message data for given discord user id"""
         if not str(user_id) in MessageHolder.user_last_error_message_data:
             return None
@@ -32,6 +32,6 @@ class MessageHolder:
             return MessageHolder.user_last_error_message_data[str(user_id)]
 
     @staticmethod
-    def delete_last_error_data(user_id):
+    def delete_last_error_data(user_id: int):
         MessageHolder.user_last_error_message_data[str(user_id)] = None
 

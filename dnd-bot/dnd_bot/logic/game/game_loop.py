@@ -1,15 +1,13 @@
-from dnd_bot.database.database_creature import DatabaseCreature
-from dnd_bot.database.database_entity import DatabaseEntity
-from dnd_bot.database.database_player import DatabasePlayer
-from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
-import asyncio
-import copy
-
+from dnd_bot.dc.utils.handler_views import HandlerViews
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
 from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
 
 
 class GameLoop:
@@ -65,7 +63,7 @@ class GameLoop:
         if isinstance(first_creature, Player):
             game.players_views[first_creature.discord_identity] = (ViewMain, [])
 
-        await ViewGame.display_views_for_users(game_token, "Let the adventure begin!")
+        await HandlerViews.display_views_for_users(game_token, "Let the adventure begin!")
 
         # move of non player creature
         if not isinstance(first_creature, Player):
@@ -79,5 +77,7 @@ class GameLoop:
 
     @staticmethod
     def update_creature(c: Creature) -> None:
-        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
-                                         experience=c.experience, x=c.x, y=c.y)
+        # TODO creatures not added yet
+        # DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
+        #                                  experience=c.experience, x=c.x, y=c.y)
+        pass

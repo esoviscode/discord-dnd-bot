@@ -2,17 +2,9 @@ import copy
 import cv2 as cv
 import numpy as np
 
-
-from dnd_bot.logic.prototype.classes.mage import Mage
-from dnd_bot.logic.prototype.classes.ranger import Ranger
-from dnd_bot.logic.prototype.classes.warrior import Warrior
-from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.prototype.multiverse import Multiverse as Mv
-from dnd_bot.logic.prototype.races.dwarf import Dwarf
-from dnd_bot.logic.prototype.races.elf import Elf
-from dnd_bot.logic.prototype.races.human import Human
 
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
@@ -109,10 +101,6 @@ def paste_image(src: np.ndarray, dest: np.ndarray, x_offset: int, y_offset: int)
     alpha_dest = 1.0 - alpha_src
 
     for c in range(0, 3):
-        tmp1 = dest[y1:y2, x1:x2, c]
-        tmp2 = alpha_src * src[:, :, c]
-        tmp3 = alpha_dest * dest[y1:y2, x1:x2, c]
-
         dest[y1:y2, x1:x2, c] = (alpha_src * src[:, :, c] + alpha_dest * dest[y1:y2, x1:x2, c])
 
 
@@ -158,13 +146,6 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     #
     #     paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
 
-    # raytracing
-    mask_points, _ = get_non_visible_tiles_in_player_view(game, player)
-    for x, y in mask_points:
-        cv.rectangle(player_view, (x * Mv.square_size, y * Mv.square_size),
-                     ((x + 1) * Mv.square_size, (y + 1) * Mv.square_size),
-                     (0, 0, 0), -1)
-
     # cropping image
     from_y = max(0, player.y - Mv.view_range)
     to_y = min(game.world_height, player.y + Mv.view_range + 1)
@@ -184,7 +165,6 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     player_view = cv.bitwise_and(player_view, player_view, mask=mask)
 
     # pasting coordinates and grid
-
     if attack_mode:
         attackable = []
         attack_range = min(player.equipment.right_hand.use_range, player.perception)
@@ -278,112 +258,27 @@ def rotate_image_to_direction(img, direction):
     return image
 
 
-def get_non_visible_tiles_in_player_view(game: Game, player: Player):
-    result = []
-    obstacles = []
-    for ray_destination in generate_hollow_square_points(player.perception + 1):
-        ray_points = find_position_to_check(player.x, player.y,
-                                            player.x + ray_destination[0], player.y + ray_destination[1])
-
-        obstacle_index = 0
-        found_obstacle = False
-        for i, point in enumerate(ray_points):
-            checked_entity = game.get_entity_by_x_y(x=point[0], y=point[1])
-
-            if checked_entity and not isinstance(checked_entity, Creature):
-                found_obstacle = True
-                obstacle_index = i
-                obstacles.append(point)
-
-                break
-
-        if found_obstacle:
-            [result.append(point) for point in ray_points[obstacle_index + 1:] if point not in result and
-             point[0] in range(0, game.world_width) and point[1] in range(0, game.world_height)]
-
-    return result, obstacles
-
-
-def generate_hollow_square_points(radius):
-    """
-    returns a hollow square centered around 0,0
-    """
-    result = []
-    for i in range(-radius, radius + 1):
-        for j in range(-radius, radius + 1):
-            if i in [-radius, radius] or j in [-radius, radius]:
-                result.append((i, j))
-
-    return result
-
-
-def find_position_to_check(x_src=0, y_src=0, x_dest=1, y_dest=1):
-    result = []
-
-    def find_positions(x1, y1, x2, y2, dx, dy, decide):
-        pk = 2 * dy - dx
-        for i in range(0, dx + 1):
-            if decide == 0:
-                result.append((x1, y1))
-            else:
-                result.append((y1, x1))
-
-            if x1 < x2:
-                x1 = x1 + 1
-            else:
-                x1 = x1 - 1
-            if pk < 0:
-
-                if decide == 0:
-                    pk = pk + 2 * dy
-                else:
-                    pk = pk + 2 * dy
-            else:
-                if y1 < y2:
-                    y1 = y1 + 1
-                else:
-                    y1 = y1 - 1
-
-                pk = pk + 2 * dy - 2 * dx
-
-    dx = abs(x_dest - x_src)
-    dy = abs(y_dest - y_src)
-
-    # If slope is less than one
-    if dx > dy:
-        find_positions(x_src, y_src, x_dest, y_dest, dx, dy, 0)
-    # if slope is greater than or equal to 1
-    else:
-        find_positions(y_src, x_src, y_dest, x_dest, dy, dx, 1)
-
-    return result[1:-1]
-
 def string_to_character_class(class_name: str):
     """
-    returns class (not object) defining particular character class given its name
+    returns object of python class defining particular character class given its name
     :param class_name: name of character class
-    :return class: class defining character class
+    :return class: object defining character class
     """
-    if str.lower(class_name) == "warrior":
-        return Warrior
-    if str.lower(class_name) == "ranger":
-        return Ranger
-    if str.lower(class_name) == "mage":
-        return Mage
+    from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+    for character_class in HandlerCharacterCreation.classes:
+        if character_class.name == class_name:
+            return character_class
     return None
 
 
 def string_to_character_race(race_name: str):
     """
-        returns class (not object) defining particular character race given its name
+        returns object of class defining particular character race given its name
         :param race_name: name of character class
-        :return class: class defining character race
+        :return class: object defining character race
     """
-    if str.lower(race_name) == "human":
-        return Human
-    if str.lower(race_name) == "elf":
-        return Elf
-    if str.lower(race_name) == "dwarf":
-        return Dwarf
+    from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
+    for character_race in HandlerCharacterCreation.races:
+        if character_race.name == race_name:
+            return character_race
     return None
-

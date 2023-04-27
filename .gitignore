@@ -6,3 +6,4 @@ dnd-bot/devpass.cfg
 *__pycache__/
 dnd-bot/dnd_bot/assets/tmp/game_images/pov*
 dnd-bot/dnd_bot/assets/tmp/game_images/map*
+dnd-bot/discord-dnd-bot.log
