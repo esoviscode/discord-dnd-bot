@@ -2,7 +2,6 @@ import random
 
 from dnd_bot.logic.game.handler_kill_enemy import HandlerKillEnemy
 from dnd_bot.logic.prototype.creature import Creature
-from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -36,7 +35,7 @@ class HandlerAttack:
                 attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 
             source.action_points -= source.equipment.right_hand.action_points
-
+        # no weapon - fight with fists
         else:
             if source.action_points < 2:
                 raise AttackException("You have an insufficient number of action points!")

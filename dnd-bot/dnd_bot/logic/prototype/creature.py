@@ -39,20 +39,23 @@ class Creature(Entity):
         self.move_queue = []
 
     async def ai_action(self):
+        """perform certain ai action and returns its response
+        :return: string"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
         from dnd_bot.logic.game.handler_attack import HandlerAttack
 
+        # prepare chain of actions move_queue is empty
         if not self.move_queue:
             self.move_queue = self.prepare_move_queue()
 
-        while self.move_queue[0]:
+        while self.move_queue[0]:  # while action is not None - None goes for end turn
             # creature movement
             if self.move_queue[0][0] == 'M':
                 self.move_one_tile(self.move_queue[0][1], Multiverse.get_game(self.game_token))
                 self.action_points -= 1
                 self.move_queue.pop(0)
                 return f"{self.name} has moved to ({self.x},{self.y})"
-
+            # creature attack
             elif self.move_queue[0][0] == 'A':
                 if (self.equipment.right_hand and self.equipment.right_hand.action_points >= self.action_points) \
                         or self.action_points >= 2:
@@ -72,6 +75,8 @@ class Creature(Entity):
         return "Idle"
 
     def search_for_foes(self):
+        """returns list of Players in creature's view range
+        :return: list of Player objects"""
         from dnd_bot.logic.utils.utils import generate_circle_points
         from dnd_bot.logic.prototype.player import Player
         from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -88,6 +93,13 @@ class Creature(Entity):
 
     @staticmethod
     def a_star_path(from_x, from_y, to_x, to_y, board):
+        """returns list of points of an A* path
+        :param from_x: x of start point
+        :param from_y: y of start point
+        :param to_x: x of end point
+        :param to_y: y of end point
+        :param board: 2d matrix - True/object when tile is occupied, False/None when tile is empty
+        :return path: list of tuples (x, y)"""
         from pathfinding.core.grid import Grid
         from pathfinding.finder.a_star import AStarFinder
 
@@ -101,6 +113,7 @@ class Creature(Entity):
         return AStarFinder().find_path(start, end, grid)[0]
 
     def prepare_move_queue(self):
+        """prepare chain of creature's actions depending on current game state"""
         if self.action_points == 0:
             return [None]
 
@@ -111,13 +124,12 @@ class Creature(Entity):
         if not foes:
             return [None]
 
-        # artificial intelligence
         low_hp = 5
-        if self.hp <= low_hp and self.ai == 2:
+        if self.hp <= low_hp and self.ai == 2:  # low hp behaviour for Mages
             actions = self.flee()
-            if actions == list():
+            if actions == list():  # is safe
                 return [None]
-            elif actions:
+            elif actions:  # pathing to escape danger
                 moves = []
                 for i, p in enumerate(actions[:-1]):
                     if p[0] - actions[i + 1][0] != 0:
@@ -126,13 +138,15 @@ class Creature(Entity):
                         direction = "down" if p[1] < actions[i + 1][1] else "up"
                     moves.append(('M', direction))
                 return moves + [None]
+            # can't run away
 
+        # normal actions find target and path to it
         target, path = self.choose_aggro(foes)
         if not target:
             return [None]
 
         move_queue = []
-        if self.hp <= low_hp and self.ai == 1:
+        if self.hp <= low_hp and self.ai == 1:  # low hp behaviour for rangers
             actions = self.kite(target)
             if actions:
                 return actions
@@ -148,6 +162,7 @@ class Creature(Entity):
         elif attack_range >= 6:
             bias = 5
 
+        # while (not(target is attackable) and (target is attack range)) and enough actions points
         while (not (Creature.attackable(path[0][0], path[0][1], path[-1][0], path[-1][1],
                                         Multiverse.get_game(self.game_token).entities)
                     and ((path[0][0] - path[-1][0]) ** 2 + (path[0][1] - path[-1][1]) ** 2 <= attack_range ** 2 + bias))
@@ -160,12 +175,15 @@ class Creature(Entity):
             move_queue.append(('M', direction))
             path.pop(0)
             action_points -= 1
-
+        # can attack
         move_queue.append(('A', foes[0]) if action_points > 0 else None)
 
         return move_queue
 
     def choose_aggro(self, foes):
+        """choose which Player from foes to attack
+        :param foes: list of Player objects
+        :return target: tuple (Player object, path)"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
         intelligence = "high" if self.intelligence >= 10 else ("low" if self.intelligence <= 3 else "medium")
@@ -173,6 +191,7 @@ class Creature(Entity):
             class_priority = ["Mage", "Ranger", "Warrior"]
         sorted_foes = []
 
+        # add foes to list and order them by specific priority
         for f in foes:
             path = Creature.a_star_path(self.x, self.y, f.x, f.y, Multiverse.get_game(self.game_token).entities)
             path_len = len(path)
@@ -195,7 +214,7 @@ class Creature(Entity):
                         else:
                             break
                     sorted_foes.insert(i, (f, path))
-                else:
+                else:  # high
                     while i < len(sorted_foes):
                         if sorted_foes[i][0].hp < f.hp:
                             i += 1
@@ -208,26 +227,29 @@ class Creature(Entity):
                             break
                     sorted_foes.insert(i, (f, path))
 
-        if sorted_foes:
+        if sorted_foes:  # highest priority
             return sorted_foes[0]
-        else:
+        else:  # no pathing to any of foes
             return None, []
 
     def flee(self):
+        """run away from danger
+        :return: path or None"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
         from dnd_bot.logic.utils.utils import generate_circle_points
 
         game = Multiverse.get_game(self.game_token)
         entities = game.entities
-        initial = copy.deepcopy(entities)
-        initial[self.y][self.x] = None
+        simulation = copy.deepcopy(entities)
+        simulation[self.y][self.x] = None
 
-        safe_points = [[False if e else True for e in row] for row in initial]
+        # points safe from any player's attack range
+        safe_points = [[False if e else True for e in row] for row in simulation]
 
-        for row in initial:
+        # eliminate unsafe points
+        for row in simulation:
             for e in row:
                 if e and isinstance(e, dnd_bot.logic.prototype.player.Player):
-                    # eliminate unsafe points
                     if e.equipment.right_hand:
                         attack_range = min(e.perception, e.equipment.right_hand.use_range)
                     else:
@@ -237,12 +259,13 @@ class Creature(Entity):
                     for x, y in points:
                         if not (0 <= e.x - x < game.world_width and 0 <= e.y - y < game.world_height):
                             continue
-                        if (not initial[e.y - y][e.x - x]) and Creature.attackable(e.x, e.y, e.x - x, e.y - y, initial):
+                        if (not simulation[e.y - y][e.x - x]) and Creature.attackable(e.x, e.y, e.x - x, e.y - y, simulation):
                             safe_points[e.y - y][e.x - x] = False
 
-        if safe_points[self.y][self.x]:
+        if safe_points[self.y][self.x]:  # if current position is safe
             return []
 
+        # choose path to the nearest safe point
         best_path = [None] * (game.world_width * game.world_height)
         for y, row in enumerate(safe_points):
             for x, p in enumerate(row):
@@ -258,6 +281,9 @@ class Creature(Entity):
         return best_path if len(best_path) < (game.world_width * game.world_height) else None
 
     def kite(self, target):
+        """kite away the chosen target
+        :param target: Player object
+        :return moves: chain of actions"""
         from dnd_bot.logic.utils.utils import generate_circle_points
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
@@ -271,29 +297,33 @@ class Creature(Entity):
 
         game = Multiverse.get_game(self.game_token)
         entities = game.entities
-        initial = copy.deepcopy(entities)
-        initial[self.y][self.x] = None
+        simulation = copy.deepcopy(entities)
+        simulation[self.y][self.x] = None
 
+        # choose best position
         for i, (x, y) in enumerate(points):
-            if not initial[target.y - y][target.x - x] and \
-                    Creature.attackable(target.x - x, target.y - y, target.x, target.y, initial) and \
+            if not simulation[target.y - y][target.x - x] and \
+                    Creature.attackable(target.x - x, target.y - y, target.x, target.y, simulation) and \
                     (0 <= target.x - x < game.world_width and 0 <= target.y - y < game.world_height):
                 # heuristics
-                path_len = len(Creature.a_star_path(self.x, self.y, x, y, initial)) - 1
+                path_len = len(Creature.a_star_path(self.x, self.y, x, y, simulation)) - 1
                 if path_len > self.action_points:
                     continue
-                wages[i] += 25
+                wages[i] += 25  # point in my attack range
+                # path's length to that point
                 wages[i] -= path_len if path_len >= 0 else game.world_width * game.world_height
-                wages[i] += (len(Creature.a_star_path(x, y, target.x, target.y, initial)) - 1) ** 2  # dist from target
-                if Creature.attackable(target.x, target.y, x, y, initial):  # in foe's range
+                # dist from target
+                wages[i] += (len(Creature.a_star_path(x, y, target.x, target.y, simulation)) - 1) ** 2
+                if Creature.attackable(target.x, target.y, x, y, simulation):  # in target's attack range
                     wages[i] -= 10
 
         best_wage = max(wages)
-        if best_wage == 0:
+        if best_wage == 0:  # all are bad
             return []
         best_pos = points[wages.index(best_wage)]
         path = Creature.a_star_path(self.x, self.y, target.x - best_pos[0], target.y - best_pos[1], entities)
 
+        # prepare chain of actions
         for i, p in enumerate(path[:-1]):
             if p[0] - path[i + 1][0] != 0:
                 direction = "right" if p[0] < path[i + 1][0] else "left"
@@ -306,6 +336,13 @@ class Creature(Entity):
 
     @staticmethod
     def attackable(from_x, from_y, to_x, to_y, board):
+        """returns if position is attackable no matter what attack range is
+        :param from_x: my x
+        :param from_y: my y
+        :param to_x: target's x
+        :param to_y: target's y
+        :param board: 2d matrix - True/object when tile is occupied, False/None when tile is empty
+        :return: bool"""
         from dnd_bot.logic.utils.utils import find_position_to_check
 
         positions = find_position_to_check(from_x, from_y, to_x, to_y)
