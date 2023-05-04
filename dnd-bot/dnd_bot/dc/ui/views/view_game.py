@@ -10,6 +10,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_loot_corpse import HandlerLootCorpse
+from dnd_bot.logic.game.handler_manage_items import HandlerManageItems
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
 from dnd_bot.logic.prototype.game import Game
@@ -173,6 +174,7 @@ class ViewMovement(ViewGame):
     @nextcord.ui.button(label='▲', style=nextcord.ButtonStyle.blurple, row=0, custom_id='move-up')
     async def move_one_up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile up"""
+        Multiverse.get_game(self.token).find_user(interaction.user.id).attack_mode = False
         await ViewMovement.move_one_tile('up', interaction.user.id, self.token)
 
     @nextcord.ui.button(label='‎‎', style=nextcord.ButtonStyle.blurple, row=0, disabled=True,
@@ -184,16 +186,19 @@ class ViewMovement(ViewGame):
     @nextcord.ui.button(label='◄', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-left')
     async def move_one_left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile left"""
+        Multiverse.get_game(self.token).find_user(interaction.user.id).attack_mode = False
         await ViewMovement.move_one_tile('left', interaction.user.id, self.token)
 
     @nextcord.ui.button(label='▼', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-down')
     async def move_one_down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile down"""
+        Multiverse.get_game(self.token).find_user(interaction.user.id).attack_mode = False
         await ViewMovement.move_one_tile('down', interaction.user.id, self.token)
 
     @nextcord.ui.button(label='►', style=nextcord.ButtonStyle.blurple, row=1, custom_id='move-right')
     async def move_one_right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """button for moving one tile right"""
+        Multiverse.get_game(self.token).find_user(interaction.user.id).attack_mode = False
         await ViewMovement.move_one_tile('right', interaction.user.id, self.token)
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='move-cancel')
@@ -240,6 +245,7 @@ class ViewMoreActions(ViewGame):
 
     async def loot_corpse(self, interaction: nextcord.Interaction):
         """ button callback for looting the corpse"""
+        self.player.attack_mode = False
         try:
             await HandlerLootCorpse.handle_loot_corpse(self.player)
         except DiscordDndBotException as e:
@@ -291,7 +297,6 @@ class ViewAttack(ViewGame):
 
     async def cancel(self, interaction: nextcord.Interaction):
         player = self.game.get_player_by_id_user(interaction.user.id)
-        player.attack_mode = False
         await super().cancel(interaction, [get_player_view(self.game, player)])
 
     @staticmethod
@@ -350,7 +355,80 @@ class ViewCharacterNonActive(ViewGame):
         await super().character_view_skills(interaction)
 
 
+class ViewManageItems(ViewGame):
+    """ view for managing player's equipment"""
+    def __init__(self, token, user_discord_id):
+        super().__init__(token, user_discord_id)
+
+        self.player = Multiverse.get_game(token).get_player_by_id_user(user_discord_id)
+
+        if len(self.player.backpack) > 0:
+            item_select_options = []
+
+            for count, item in enumerate(self.player.backpack):
+                item_select_options.append(nextcord.SelectOption(
+                    label=f"{item.name}",
+                    value=str(count)  # TODO should be item.id, but for now database is not functioning properly
+                ))
+            self.select_list = nextcord.ui.Select(
+                placeholder="Choose an item to manage",
+                options=item_select_options,
+                row=0
+            )
+
+            self.add_item(self.select_list)
+
+            equip_button = Button(label='Equip item', style=nextcord.ButtonStyle.blurple, custom_id='manage-items-equip'
+                                                                                                    '-button')
+            equip_button.callback = self.equip
+            self.add_item(equip_button)
+
+            remove_button = Button(label='Remove item', style=nextcord.ButtonStyle.blurple,
+                                   custom_id='manage-items-remove-button')
+            remove_button.callback = self.remove
+            self.add_item(remove_button)
+
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1, custom_id='attack-cancel-button')
+        cancel_button.callback = self.cancel
+        self.add_item(cancel_button)
+
+    async def equip(self, interaction: nextcord.Interaction):
+        if len(self.select_list.values) == 0:
+            await Messager.send_dm_error_message(interaction.user.id, "You didn't select any option")
+            return
+        await HandlerManageItems.equip_item(self.player, int(self.select_list.values[0]))
+        embed = MessageTemplates.equipment_message_template(self.player)
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewManageItems(self.token, interaction.user.id))
+
+    async def remove(self, interaction: nextcord.Interaction):
+        if len(self.select_list.values) == 0:
+            await Messager.send_dm_error_message(interaction.user.id, "You didn't select any option")
+            return
+        await HandlerManageItems.remove_item(self.player, int(self.select_list.values[0]))
+        embed = MessageTemplates.equipment_message_template(self.player)
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewManageItems(self.token, interaction.user.id))
+
+    async def cancel(self, interaction: nextcord.Interaction):
+        turn_view_embed = MessageTemplates.equipment_message_template(self.player)
+
+        self.game.players_views[self.user_discord_id] = (ViewMain, [])
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[turn_view_embed],
+                                              view=ViewEquipment(self.token, interaction.user.id))
+
+
 class ViewEquipment(ViewGame):
+
+    @nextcord.ui.button(label='Manage items', style=nextcord.ButtonStyle.blurple, custom_id='equipment-manage-items')
+    async def manage_items(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """button for managing items"""
+        game = Multiverse.get_game(self.token)
+        player = game.get_player_by_id_user(interaction.user.id)
+        embed = MessageTemplates.equipment_message_template(player)
+        await Messager.edit_last_user_message(user_id=interaction.user.id, embeds=[embed],
+                                              view=ViewManageItems(self.token, interaction.user.id))
+        game.players_views[str(interaction.user.id)] = (ViewManageItems, [])
 
     @nextcord.ui.button(label='Cancel', style=nextcord.ButtonStyle.red, custom_id='equipment-cancel')
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):

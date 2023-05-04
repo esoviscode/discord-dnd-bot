@@ -82,6 +82,11 @@ class Game(DatabaseObject):
         self.entities[y].remove(entity)
         self.entities[y].insert(x, None)
 
+    def delete_entity_at(self, x, y):
+        entity = self.entities[y][x]
+        self.entities[y].remove(entity)
+        self.entities[y].insert(x, None)
+
     def add_entity(self, entity: Entity):
         """adds new entity to game array. WARNING! you probably want to only add entities that have fragile=True,
         if that is not the case, then you have to run logic/.../utils.py:get_game_view() to properly draw it on the map
