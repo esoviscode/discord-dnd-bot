@@ -19,8 +19,6 @@ class HandlerLootCorpse:
         if not corpse:
             raise Exception("Player tried to loot the corpse when there is not one nearby!")
 
-        print(corpse.id)
-
         money = corpse.dropped_money
         items = corpse.dropped_items
         corpse_name = corpse.creature_name
