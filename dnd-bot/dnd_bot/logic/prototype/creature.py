@@ -37,6 +37,18 @@ class Creature(Entity):
         self.ai = ai
         self.move_queue = []
 
+    # !!!important!!!
+    def get_actual(self, stat: str) -> int:
+        """returns the actual value of a statistic
+        :param stat: string of statistic (make sure param is exactly like object's property)
+        :return val: actual value"""
+        val = self.__getattribute__(stat)  # base stat
+        # stats from equipment
+        for i in self.equipment.__dict__.values():
+            if isinstance(i, dnd_bot.logic.prototype.items.item.Item):
+                val += i.__getattribute__(stat)
+        return val
+
     async def ai_action(self):
         """perform certain ai action and returns its response
         :return: string"""
@@ -81,7 +93,7 @@ class Creature(Entity):
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
         game = Multiverse.get_game(self.game_token)
-        points = generate_circle_points(self.perception, self.perception)
+        points = generate_circle_points(self.get_actual("perception"), self.get_actual("perception"))
         foes = []
 
         for p in points:
@@ -153,7 +165,7 @@ class Creature(Entity):
                 return actions
 
         if self.equipment.right_hand:
-            attack_range = min(self.perception, self.equipment.right_hand.use_range)
+            attack_range = min(self.get_actual("perception"), self.equipment.right_hand.use_range)
         else:
             attack_range = 1
 
@@ -183,7 +195,8 @@ class Creature(Entity):
         :return target: tuple (Player object, path)"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
-        intelligence = "high" if self.intelligence >= 10 else ("low" if self.intelligence <= 3 else "medium")
+        intelligence = "high" if self.get_actual("intelligence") >= 10 else \
+            ("low" if self.get_actual("intelligence") <= 3 else "medium")
         if intelligence != "low":
             class_priority = ["Mage", "Ranger", "Warrior"]
         sorted_foes = []
@@ -248,7 +261,7 @@ class Creature(Entity):
             for e in row:
                 if e and isinstance(e, dnd_bot.logic.prototype.player.Player):
                     if e.equipment.right_hand:
-                        attack_range = min(e.perception, e.equipment.right_hand.use_range)
+                        attack_range = min(e.get_actual("perception"), e.equipment.right_hand.use_range)
                     else:
                         attack_range = 1
                     points = generate_circle_points(attack_range, attack_range)
@@ -285,7 +298,8 @@ class Creature(Entity):
 
         moves = []
         if self.equipment.right_hand:
-            attack_range = max(self.equipment.right_hand.use_range, self.perception)
+            attack_range = max(self.equipment.right_hand.use_range,
+                               self.get_actual("perception"))
         else:
             attack_range = 1
         points = generate_circle_points(attack_range, attack_range)

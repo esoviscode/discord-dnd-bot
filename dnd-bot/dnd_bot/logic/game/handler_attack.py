@@ -50,17 +50,17 @@ class HandlerAttack:
 
         # dodging an attack
         # the chance is (source dexterity)%
-        if random.randint(0, 99) <= source.dexterity:  # evasion
+        if random.randint(0, 99) <= source.get_actual("dexterity"):  # evasion
             return attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
 
         # calculating damage
         # damage = main class attribute + damage from weapon
         if source.creature_class == 'Warrior':  # TODO this should be taken from an enum
-            base_damage = source.strength
+            base_damage = source.get_actual("strength")
         elif source.creature_class == 'Mage':
-            base_damage = source.intelligence
+            base_damage = source.get_actual("intelligence")
         elif source.creature_class == 'Ranger':
-            base_damage = source.dexterity
+            base_damage = source.get_actual("dexterity")
         else:
             base_damage = 1
 
