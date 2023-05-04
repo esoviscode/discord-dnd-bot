@@ -182,6 +182,7 @@ class InitializeWorld:
 
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
+        entity.equipment = Equipment()
         entity_row.append(entity)
         return entity_row
 
