@@ -34,7 +34,6 @@ class Creature(Entity):
         self.creature_class = creature_class
         self.drops = drops
 
-        # TODO set ai function depending on ai argument
         self.ai = ai
         self.move_queue = []
 
@@ -113,7 +112,9 @@ class Creature(Entity):
         return AStarFinder().find_path(start, end, grid)[0]
 
     def prepare_move_queue(self):
-        """prepare chain of creature's actions depending on current game state"""
+        """prepare chain of creature's actions depending on current game state
+        M dir - stands for move to direction dir
+        A target - stands for attack the target"""
         if self.action_points == 0:
             return [None]
 
