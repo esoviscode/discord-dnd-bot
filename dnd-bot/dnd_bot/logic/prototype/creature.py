@@ -157,16 +157,12 @@ class Creature(Entity):
         else:
             attack_range = 1
 
-        bias = 1
-        if 3 < attack_range < 6:
-            bias = 4
-        elif attack_range >= 6:
-            bias = 5
+        from dnd_bot.logic.utils.utils import in_range
 
-        # while (not(target is attackable) and (target is attack range)) and enough actions points
+        # while (not(target is attackable) and (target is in attack range)) and enough actions points
         while (not (Creature.attackable(path[0][0], path[0][1], path[-1][0], path[-1][1],
                                         Multiverse.get_game(self.game_token).entities)
-                    and ((path[0][0] - path[-1][0]) ** 2 + (path[0][1] - path[-1][1]) ** 2 <= attack_range ** 2 + bias))
+                    and in_range(path[0][0], path[0][1], path[-1][0], path[-1][1], attack_range))
                ) and (action_points > 0):
             if path[0][0] - path[1][0] != 0:
                 direction = "right" if path[0][0] < path[1][0] else "left"
@@ -346,7 +342,7 @@ class Creature(Entity):
         from dnd_bot.logic.utils.utils import find_position_to_check
 
         positions = find_position_to_check(from_x, from_y, to_x, to_y)
-        for pos in positions:
+        for pos in positions[1:-1]:
             if board[pos[1]][pos[0]]:
                 return False
         return True
