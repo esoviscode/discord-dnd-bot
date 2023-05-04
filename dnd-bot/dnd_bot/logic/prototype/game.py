@@ -117,12 +117,12 @@ class Game(DatabaseObject):
 
     def get_creatures(self):
         """returns all creatures"""
-        movable_entities = []
+        creatures = []
         for entity_row in self.entities:
             for entity in entity_row:
                 if isinstance(entity, Creature):
-                    movable_entities.append(entity)
-        return movable_entities
+                    creatures.append(entity)
+        return creatures
 
     def get_active_creature(self):
         """returns current active player"""
