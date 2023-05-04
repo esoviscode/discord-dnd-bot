@@ -23,7 +23,7 @@ class GameLoop:
                 return e.initiative
 
         # sort entities to put creatures into the queue in right order
-        entities = game.get_movable_entities()
+        entities = game.get_creatures()
         entities.sort(reverse=True, key=entity_sorting_value)
 
         # make sure that the queue is empty
