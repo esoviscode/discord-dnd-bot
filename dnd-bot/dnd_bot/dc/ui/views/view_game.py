@@ -245,7 +245,6 @@ class ViewMoreActions(ViewGame):
 
     async def loot_corpse(self, interaction: nextcord.Interaction):
         """ button callback for looting the corpse"""
-        self.player.attack_mode = False
         try:
             await HandlerLootCorpse.handle_loot_corpse(self.player)
         except DiscordDndBotException as e:
@@ -297,6 +296,7 @@ class ViewAttack(ViewGame):
 
     async def cancel(self, interaction: nextcord.Interaction):
         player = self.game.get_player_by_id_user(interaction.user.id)
+        player.attack_mode = False
         await super().cancel(interaction, [get_player_view(self.game, player)])
 
     @staticmethod
