@@ -15,7 +15,7 @@ class HandlerClass:
         if view.class_dropdown.values:
             ChosenAttributes.chosen_attributes[view.user_id]['class'] = view.class_dropdown.values[0]
 
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)
 
     @staticmethod
     async def handle_next(view):
@@ -30,4 +30,4 @@ class HandlerClass:
         if not view.class_dropdown.values and not ChosenAttributes.chosen_attributes[view.user_id]['class']:
             raise CharacterCreationInterfaceException("You must choose a class!")
 
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)

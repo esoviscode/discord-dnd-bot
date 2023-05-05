@@ -16,7 +16,7 @@ class HandlerRace:
         if view.race_dropdown.values:
             ChosenAttributes.chosen_attributes[view.user_id]['race'] = view.race_dropdown.values[0]
 
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)
 
     @staticmethod
     async def handle_confirm(view):
@@ -32,4 +32,4 @@ class HandlerRace:
             raise CharacterCreationInterfaceException("You must choose a race!")
 
         await HandlerCharacterCreation.assign_attribute_values(view.user_id)
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)

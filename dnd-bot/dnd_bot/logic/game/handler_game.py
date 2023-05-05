@@ -26,7 +26,7 @@ class HandlerGame:
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
             # delete any error messages that were left out
-            await Messager.delete_last_user_error_message(game.active_creature.discord_identity)
+            await Messager.delete_last_user_error_message(game.active_creature.discord_identity, game_token)
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
 

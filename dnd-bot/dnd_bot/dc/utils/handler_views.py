@@ -20,14 +20,19 @@ class HandlerViews:
             player = game.get_player_by_id_user(user.discord_id)
             if not player:
                 # TODO player's death handling
-                await Messager.send_dm_message(user.discord_id, ":skull: You have been slain...")
+                await Messager.send_dm_message(user_id=user.discord_id,
+                                               token=game_token,
+                                               content=":skull: You have been slain...")
                 game.user_list.remove(user)
                 return
             player_view = get_player_view(Multiverse.get_game(game_token), player, player.attack_mode)
             turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
                                                                          recent_action=recent_action_message)
-            await Messager.edit_last_user_message(user.discord_id, embeds=[turn_view_embed] + player_current_embeds,
-                                                  view=view_to_show, files=[player_view])
+            await Messager.edit_last_user_message(user_id=user.discord_id,
+                                                  token=game_token,
+                                                  embeds=[turn_view_embed] + player_current_embeds,
+                                                  view=view_to_show,
+                                                  files=[player_view])
 
         q = asyncio.Queue()
         tasks = []
