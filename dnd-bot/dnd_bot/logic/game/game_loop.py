@@ -1,7 +1,5 @@
-from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame
-import asyncio
-import copy
-
+from dnd_bot.dc.utils.handler_views import HandlerViews
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
 from dnd_bot.dc.ui.views.view_game import ViewMain
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
@@ -25,7 +23,7 @@ class GameLoop:
                 return e.initiative
 
         # sort entities to put creatures into the queue in right order
-        entities = game.get_movable_entities()
+        entities = game.get_creatures()
         entities.sort(reverse=True, key=entity_sorting_value)
 
         # make sure that the queue is empty
@@ -57,7 +55,7 @@ class GameLoop:
         if isinstance(first_creature, Player):
             game.players_views[first_creature.discord_identity] = (ViewMain, [])
 
-        await ViewGame.display_views_for_users(game_token, "Let the adventure begin!")
+        await HandlerViews.display_views_for_users(game_token, "Let the adventure begin!")
 
         # move of non player creature
         if not isinstance(first_creature, Player):

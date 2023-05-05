@@ -34,4 +34,3 @@ class MessageHolder:
     @staticmethod
     def delete_last_error_data(user_id: int, token: str):
         MessageHolder.user_last_error_message_data[(user_id, token)] = None
-

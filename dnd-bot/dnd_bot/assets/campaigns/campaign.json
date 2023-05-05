@@ -62,7 +62,9 @@
   },
   "items": {
     "armors": {
-      "helmets": {},
+      "helmets": {
+        "Plate Helmet": {}
+      },
       "chestplates": {},
       "leg armors": {},
       "boots: ": {}
@@ -79,7 +81,8 @@
           "damage": [10, 13],
           "range": 2,
           "action-points": 8,
-          "base-price": 3
+          "base-price": 3,
+          "two-handed": true
         }
       },
       "staffs": {
@@ -101,40 +104,51 @@
           "damage": [4, 7],
           "range": 4,
           "action-points": 4,
-          "base-price": 5
+          "base-price": 5,
+          "two-handed": true
         },
         "Light crossbow": {
           "damage": [12, 14],
           "range": 4,
           "action-points": 5,
-          "base-price": 6
+          "base-price": 6,
+          "two-handed": true
         }
       }
     },
     "off-hands": {
       "shields": {
+        "Wooden shield": {
+          "dexterity": -2,
+          "strength": 2
+        }
       }
     },
     "accessories": {
-      "Ring of vitality" :{
-        "hp": 4,
-        "charisma": 2,
-        "base-price": 9
-      },
-      "Necklace of prudence": {
-        "intelligence": 5,
-        "base-price": 10
-      },
-      "Holy Bible": {
-        "hp": 10,
-        "strength": 3,
-        "base-price": 35
-      },
-      "Hunting necklace": {
-        "dexterity": 6,
-        "perception": 1
+      "basic": {
+        "Ring of vitality" :{
+          "hp": 4,
+          "charisma": 2,
+          "base-price": 9
+        },
+        "Necklace of prudence": {
+          "intelligence": 5,
+          "base-price": 10
+        },
+        "Holy Bible": {
+          "hp": 10,
+          "strength": 3,
+          "base-price": 35
+        },
+        "Hunting necklace": {
+          "dexterity": 6,
+          "perception": 1
+        },
+        "Glasses": {
+          "perception": 1
+        }
       }
-    }
+      }
   },
   "entities": {
     "enemies": {
@@ -143,34 +157,36 @@
         "hp": 20,
         "strength": 10,
         "dexterity": 5,
-        "intelligence": 5,
+        "intelligence": 10,
         "charisma": 5,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 20,
         "level": 1,
         "equipment": {},
         "drop_money": [1, 3],
         "drops": {
-          "Ring of vitality": 0.2
+          "Plate Helmet": 0.95,
+          "Wooden shield": 0.9
         },
-        "ai": 0
+        "ai": 2
       },
       "Half dragon assassin": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_assassin_sprite.png",
         "hp": 20,
         "strength": 10,
         "dexterity": 5,
-        "intelligence": 5,
+        "intelligence": 8,
         "charisma": 5,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 20,
         "level": 1,
         "equipment": {},
         "drop_money": [1, 3],
         "drops": {
-          "Hunting necklace": 0.2
+          "Hunting necklace": 0.9,
+          "Necklace of prudence": 0.85
         },
         "ai": 0
       },
@@ -179,11 +195,11 @@
         "hp": 20,
         "strength": 10,
         "dexterity": 5,
-        "intelligence": 5,
+        "intelligence": 3,
         "charisma": 5,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 20,
         "level": 1,
         "equipment": {},
         "drop_money": [1, 3],
@@ -201,7 +217,7 @@
         "charisma": 5,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 20,
         "level": 1,
         "equipment": {},
         "drop_money": [1, 3],

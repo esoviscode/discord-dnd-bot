@@ -73,6 +73,11 @@ class SkillException(GameException):
     pass
 
 
+class LootCorpseException(GameException):
+    """ thrown when there is an error while looting the corpse"""
+    pass
+
+
 # messager exceptions
 
 class MessagerException(DiscordDndBotException):
@@ -83,3 +88,5 @@ class MessagerException(DiscordDndBotException):
 class DMCreationException(MessagerException):
     """thrown when the bot cant create a dm with a user"""
     pass
+
+

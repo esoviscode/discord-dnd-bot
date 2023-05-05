@@ -85,7 +85,7 @@ class Entity(DatabaseObject):
             self.look_direction = direction
             return
         elif direction == 'down':
-            if self.y + 1 >= game.world_width:
+            if self.y + 1 >= game.world_height:
                 raise MovementException("You cannot go beyond the world border!")
 
             if game.entities[self.y + 1][self.x] is not None:
