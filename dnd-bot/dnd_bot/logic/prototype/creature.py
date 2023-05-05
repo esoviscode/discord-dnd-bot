@@ -42,7 +42,8 @@ class Creature(Entity):
 
 # ----------------------------------------------------- properties -----------------------------------------------------
     def eq_stats(self, stat):
-        return sum([i.__getattribute__(stat) if i else 0 for i in self.equipment.__dict__.values()])
+        from dnd_bot.logic.prototype.items.item import Item
+        return sum([i.__getattribute__(stat) if isinstance(i, Item) else 0 for i in self.equipment.__dict__.values()])
 
     # future development
     # def effects_stats(self, stat):
