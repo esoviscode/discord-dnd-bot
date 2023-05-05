@@ -11,16 +11,19 @@ from dnd_bot.logic.prototype.player import Player
 
 class HandlerGame:
     @staticmethod
-    async def end_turn(game_token):
+    async def end_turn(game_token, visible: bool = True):
         game = Multiverse.get_game(game_token)
 
         if len(game.creatures_queue) == 0:
             GameLoop.prepare_queue(game)
 
         next_creature = game.creatures_queue.popleft()
+        if visible:
+            game.last_visible_creature = game.active_creature
 
         if isinstance(next_creature, Player):
             game.players_views[next_creature.discord_identity] = (ViewMain, [])
+            visible = True
 
         if isinstance(game.active_creature, Player):
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
@@ -28,14 +31,15 @@ class HandlerGame:
             # delete any error messages that were left out
             await Messager.delete_last_user_error_message(game.active_creature.discord_identity, game_token)
 
-        recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
+        recent_action_message = MessageTemplates.end_turn_recent_action_message(game.last_visible_creature)
 
         # reset creature's action points to the initial value
         game.active_creature.action_points = game.active_creature.initial_action_points
         game.active_creature = next_creature
 
         # send messages to users
-        await HandlerViews.display_views_for_users(game_token, recent_action_message)
+        if visible:
+            await HandlerViews.display_views_for_users(game_token, recent_action_message, False)
 
         if not isinstance(game.active_creature, Player):
             await HandlerGame.turn(game_token, game.active_creature)
@@ -47,9 +51,10 @@ class HandlerGame:
             recent_action_message = await active_creature.ai_action()
             await asyncio.sleep(1)
             print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
-            await HandlerViews.display_views_for_users(game_token, recent_action_message)
+            if active_creature.visible_for_players():
+                await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
-        await HandlerGame.end_turn(game_token)
+        await HandlerGame.end_turn(game_token, active_creature.visible_for_players())
 
     @staticmethod
     async def pause_game(token: str = ''):
