@@ -280,7 +280,7 @@ class Creature(Entity):
         """kite away the chosen target
         :param target: Player object
         :return moves: chain of actions"""
-        from dnd_bot.logic.utils.utils import generate_circle_points
+        from dnd_bot.logic.utils.utils import generate_circle_points, in_range
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
         moves = []
@@ -305,12 +305,19 @@ class Creature(Entity):
                 path_len = len(Creature.a_star_path(self.x, self.y, x, y, simulation)) - 1
                 if path_len > self.action_points:
                     continue
+
                 wages[i] += 25  # point in my attack range
+
                 # path's length to that point
                 wages[i] -= path_len if path_len >= 0 else game.world_width * game.world_height
+
                 # dist from target
                 wages[i] += (len(Creature.a_star_path(x, y, target.x, target.y, simulation)) - 1) ** 2
-                if Creature.attackable(target.x, target.y, x, y, simulation):  # in target's attack range
+
+                # in target's attack range
+                if Creature.attackable(target.x, target.y, x, y, simulation) \
+                        and in_range(target.x, target.y, x, y,
+                                     min(target.perception, target.equipment.right_hand.use_range)):
                     wages[i] -= 10
 
         best_wage = max(wages)
