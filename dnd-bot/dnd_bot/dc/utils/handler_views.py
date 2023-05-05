@@ -19,10 +19,6 @@ class HandlerViews:
 
             player = game.get_player_by_id_user(user.discord_id)
             if not player:
-                # TODO player's death handling
-                await Messager.send_dm_message(user_id=user.discord_id,
-                                               token=game_token,
-                                               content=":skull: You have been slain...")
                 game.user_list.remove(user)
                 del game.players_views[user.discord_id]
                 return

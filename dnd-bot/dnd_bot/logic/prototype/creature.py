@@ -346,3 +346,14 @@ class Creature(Entity):
             if board[pos[1]][pos[0]]:
                 return False
         return True
+
+    def visible_for_players(self):
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        from dnd_bot.logic.prototype.player import Player
+        from dnd_bot.logic.utils.utils import in_range
+
+        players = [p for p in sum(Multiverse.get_game(self.game_token).entities, []) if isinstance(p, Player)]
+        for p in players:
+            if in_range(self.x, self.y, p.x, p.y, min(p.perception, 4)):
+                return True
+        return False

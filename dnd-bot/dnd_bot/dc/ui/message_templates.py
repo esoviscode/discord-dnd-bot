@@ -137,9 +137,10 @@ class MessageTemplates:
     @staticmethod
     async def creature_turn_embed(token, user_id, recent_action=''):
         """message embed representing the active creature's actions and the player's stats"""
-        player = Multiverse.get_game(token).get_player_by_id_user(user_id)
+        game = Multiverse.get_game(token)
+        player = game.get_player_by_id_user(user_id)
 
-        active_creature = Multiverse.get_game(token).get_active_creature()
+        active_creature = game.get_active_creature()
 
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | '
@@ -149,7 +150,11 @@ class MessageTemplates:
             active_user_icon = active_user.display_avatar.url
             embed.set_footer(text=f'{active_creature.name}\'s turn', icon_url=active_user_icon)
         else:
-            embed.set_footer(text=f'{active_creature.name}\'s turn')
+            if active_creature.visible_for_players():
+                text = f'{active_creature.name}\'s turn'
+            else:
+                text = f'{game.last_visible_creature.name}\'s turn'
+            embed.set_footer(text=text)
 
         return embed
 
