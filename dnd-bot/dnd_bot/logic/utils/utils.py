@@ -167,7 +167,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     player_view = copy.deepcopy(game.sprite)
 
     # pasting entities in vision
-    points_in_range = generate_circle_points(min(player.get_actual("perception"), 4), Mv.view_range)
+    points_in_range = generate_circle_points(min(player.perception, 4), Mv.view_range)
     entities = [e for e in sum(game.entities, []) if e and e.fragile
                 and (e.x - player.x, e.y - player.y) in points_in_range]
 
@@ -180,7 +180,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
                               from_x * Mv.square_size:to_x * Mv.square_size]
 
     # cropping mask
-    mask = Mv.masks[min(player.get_actual("perception"), 4)][
+    mask = Mv.masks[min(player.perception, 4)][
            -min(0, player.y - Mv.view_range) * Mv.square_size:
            ((Mv.view_range * 2 + 1) + min(0, (game.world_height - 1 - player.y - Mv.view_range))) * Mv.square_size,
            -min(0, player.x - Mv.view_range) * Mv.square_size:
@@ -192,7 +192,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     # pasting coordinates and grid
     if attack_mode:
         attackable = []
-        attack_range = min(player.equipment.right_hand.use_range, player.get_actual("perception"))
+        attack_range = min(player.equipment.right_hand.use_range, player.perception)
         from dnd_bot.logic.prototype.creature import Creature
         for p in generate_circle_points(attack_range, attack_range):
             x = player.x + p[0]

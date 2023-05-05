@@ -111,12 +111,12 @@ class MessageTemplates:
     def stats_message_template(player):
         """message segment that shows the stats of the player"""
 
-        desc = f'Strength: {player.get_actual("strength")}\n'
-        desc += f'Dexterity: {player.get_actual("dexterity")}\n'
+        desc = f'Strength: {player.strength}\n'
+        desc += f'Dexterity: {player.dexterity}\n'
         desc += f'Max HP: {player.max_hp}\n'
-        desc += f'Intelligence: {player.get_actual("intelligence")}\n'
-        desc += f'Charisma: {player.get_actual("charisma")}\n'
-        desc += f'Perception: {player.get_actual("perception")}\n'
+        desc += f'Intelligence: {player.intelligence}\n'
+        desc += f'Charisma: {player.charisma}\n'
+        desc += f'Perception: {player.perception}\n'
         desc += f'Initiative: {player.initiative}\n'
         desc += f'Action Points: {player.initial_action_points}\n'
 

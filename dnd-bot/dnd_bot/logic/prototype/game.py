@@ -139,7 +139,7 @@ class Game(DatabaseObject):
             return result
 
         from dnd_bot.logic.utils.utils import find_position_to_check, in_range
-        attack_range = min(weapon.use_range, player.get_actual("perception"))
+        attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
             if not isinstance(creature, Player):
                 # check if creature is in player's range circle
