@@ -3,7 +3,7 @@
     "Warrior": {
       "emoji": "\u2694",
       "description": "You like close encounters with your enemies.",
-      "long-description": "Warriors share an unparalleled mastery with weapons and armor, and a thorough knowledge of the skills of combat. They are well acquainted with death, both meting it out and staring it defiantly in the face.",
+      "long-description": "Skilled fighter with high strength and endurance, excels in close-quarters combat and can withstand many heavy hits. \n\n ",
       "stats": {
         "initiative": 6
       }
@@ -11,7 +11,7 @@
     "Mage": {
       "emoji": "\uD83E\uDDD9",
       "description": "You're a magic freak.",
-      "long-description": "Mages are supreme magic-users, defined and united as a class by the spells they cast. Drawing on the subtle weave of magic that permeates the cosmos, mages cast spells of explosive fire, arcing lightning, subtle deception, brute-force mind control, and much more.\n\n\n ",
+      "long-description": "Master of arcane magic, wields powerful spells to manipulate elements, summon creatures or control minds. Their abilities make them formidable opponents in battle. \n\n ",
       "stats": {
         "initiative": 3
       }
@@ -19,7 +19,7 @@
     "Ranger": {
       "emoji": "\uD83C\uDFF9",
       "description": "A bow is your closest friend.",
-      "long-description": "Far from the bustle of cities and towns, past the hedges that shelter the most distant farms from the terrors of the wild, amid the dense-packed trees of trackless forests and across wide and empty plains, rangers keep their unending watch.\n\n\n ",
+      "long-description": "Skilled hunter, proficient in ranged combat, using bows and arrows to take down enemies from a distance. they are proficient in survival skills such as foraging or setting traps.\n\n ",
       "stats": {
         "initiative": 10
       }
@@ -29,7 +29,7 @@
     "Human": {
       "emoji": "\uD83D\uDC68",
       "description": "Just an ordinary offspring of Adam.",
-      "long-description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds.\n\n\n ",
+      "long-description": "A versatile and adaptable race, humans possess no innate magical abilities and no racial bonuses or penalties, allowing them to excel in any class or profession they choose. \n\n\n ",
       "stats": {
         "perception": 2,
         "charisma": 6,
@@ -40,7 +40,7 @@
     "Elf": {
       "emoji": "\uD83E\uDDDD",
       "description": "You have a lot of grace.",
-      "long-description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty, in the midst of ancient forests or in silvery spires glittering with faerie light, where soft music drifts through the air and gentle fragrances waft on the breeze. Elves love nature and magic, art and artistry, music and poetry.\n\n\n ",
+      "long-description": "An elegant and graceful race, elves are known for their keen senses and affinity for magic. They are long-lived and wise, with a natural proficiency for archery and stealth.\n\n\n ",
       "stats": {
         "perception": 3,
         "dexterity": 5,
@@ -51,7 +51,7 @@
     "Dwarf": {
       "emoji": "\uD83E\uDD0F",
       "description": "You're a hard, tough worker.",
-      "long-description": "Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, the echoing of picks and hammers in deep mines and blazing forges, a commitment to clan and tradition, and a burning hatred of goblins and orcs – these common threads unite all dwarves.\n\n\n",
+      "long-description": "A hardy and sturdy race, dwarves are known for their craftsmanship and mining skills. They are short but strong and resilient. They have the best ability to see in the dark. \n\n\n",
       "stats": {
         "perception": 3,
         "hp": 18,
@@ -62,7 +62,9 @@
   },
   "items": {
     "armors": {
-      "helmets": {},
+      "helmets": {
+        "Plate Helmet": {}
+      },
       "chestplates": {},
       "leg armors": {},
       "boots: ": {}
@@ -79,7 +81,8 @@
           "damage": [10, 13],
           "range": 2,
           "action-points": 8,
-          "base-price": 3
+          "base-price": 3,
+          "two-handed": true
         }
       },
       "staffs": {
@@ -101,39 +104,141 @@
           "damage": [4, 7],
           "range": 4,
           "action-points": 4,
-          "base-price": 5
+          "base-price": 5,
+          "two-handed": true
         },
         "Light crossbow": {
           "damage": [12, 14],
           "range": 4,
           "action-points": 5,
-          "base-price": 6
+          "base-price": 6,
+          "two-handed": true
         }
       }
     },
     "off-hands": {
       "shields": {
+        "Wooden shield": {
+          "dexterity": -2,
+          "strength": 2
+        }
       }
     },
     "accessories": {
-      "Ring of vitality" :{
-        "hp": 4,
-        "charisma": 2,
-        "base-price": 9
-      },
-      "Necklace of prudence": {
-        "intelligence": 5,
-        "base-price": 10
-      },
-      "Holy Bible": {
-        "hp": 10,
-        "strength": 3,
-        "base-price": 35
-      },
-      "Hunting necklace": {
-        "dexterity": 6,
-        "perception": 1
+      "basic": {
+        "Ring of vitality" :{
+          "hp": 4,
+          "charisma": 2,
+          "base-price": 9
+        },
+        "Necklace of prudence": {
+          "intelligence": 5,
+          "base-price": 10
+        },
+        "Holy Bible": {
+          "hp": 10,
+          "strength": 3,
+          "base-price": 35
+        },
+        "Hunting necklace": {
+          "dexterity": 6,
+          "perception": 1
+        },
+        "Glasses": {
+          "perception": 1
+        }
       }
+      }
+  },
+  "entities": {
+    "enemies": {
+      "Frost mage": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/frost_mage_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 10,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 20,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Plate Helmet": 0.95,
+          "Wooden shield": 0.9
+        },
+        "ai": 2
+      },
+      "Half dragon assassin": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_assassin_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 8,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 20,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Hunting necklace": 0.9,
+          "Necklace of prudence": 0.85
+        },
+        "ai": 0
+      },
+      "Nothic": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/nothic_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 3,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 20,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Holy Bible": 0.2
+        },
+        "ai": 0
+      },
+      "Skeleton warrior": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/skeleton_warrior_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 5,
+        "intelligence": 5,
+        "charisma": 5,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 20,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [1, 3],
+        "drops": {
+          "Light crossbow": 0.2
+        },
+        "ai": 0
+      }
+    },
+    "map_elements": {
+      "Rock": "dnd_bot/assets/gfx/entities/mushrooms.png",
+      "Mushrooms": "dnd_bot/assets/gfx/entities/rock.png",
+      "Dungeon connector": "dnd_bot/assets/gfx/walls/dungeon_connector.png",
+      "Dungeon corner in": "dnd_bot/assets/gfx/walls/dungeon_corner_in_black.png",
+      "Dungeon corner out": "dnd_bot/assets/gfx/walls/dungeon_corner_out_black.png",
+      "Dungeon crossroads": "dnd_bot/assets/gfx/walls/dungeon_crossroads.png",
+      "Dungeon pillar A": "dnd_bot/assets/gfx/walls/dungeon_pillar.png",
+      "Dungeon pillar B": "dnd_bot/assets/gfx/walls/dungeon_pillar_2.png",
+      "Dungeon pillar C": "dnd_bot/assets/gfx/walls/dungeon_pillar_3.png",
+      "Dungeon straight A": "dnd_bot/assets/gfx/walls/dungeon_straight_1_black.png",
+      "Dungeon straight B": "dnd_bot/assets/gfx/walls/dungeon_straight_2_black.png"
     }
   }
 }

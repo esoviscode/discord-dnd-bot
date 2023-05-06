@@ -2,6 +2,7 @@ import asyncio
 
 import nextcord
 
+from dnd_bot.dc.init import on_error
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.ui.views.view_character_creation import ViewCharacterCreationStart
@@ -17,6 +18,7 @@ class ViewLobby(nextcord.ui.View):
 
     def __init__(self, user_id, token):
         super().__init__(timeout=None)
+        self.on_error = on_error
         self.user_id = user_id
         self.token = token
 
@@ -24,16 +26,20 @@ class ViewLobby(nextcord.ui.View):
     async def resend_lobby_message(token, user, lobby_view_embed):
         """method used to send refreshed message to user (e.g. after clicking ready)"""
         if user.is_host:
-            await Messager.edit_last_user_message(user_id=user.discord_id, embed=lobby_view_embed,
+            await Messager.edit_last_user_message(user_id=user.discord_id,
+                                                  token=token,
+                                                  embeds=[lobby_view_embed],
                                                   view=ViewHost(user.discord_id, token,
                                                                 host_ready=user.is_ready,
                                                                 ready_to_start=Multiverse.get_game(token).
                                                                 all_users_ready()))
         else:
             if user.is_ready:
-                await Messager.edit_last_user_message(user_id=user.discord_id, embed=lobby_view_embed)
+                await Messager.edit_last_user_message(user_id=user.discord_id, token=token, embeds=[lobby_view_embed])
             else:
-                await Messager.edit_last_user_message(user_id=user.discord_id, embed=lobby_view_embed,
+                await Messager.edit_last_user_message(user_id=user.discord_id,
+                                                      token=token,
+                                                      embeds=[lobby_view_embed],
                                                       view=ViewPlayer(user.discord_id, token))
 
     async def ready(self, interaction: nextcord.Interaction):
@@ -47,8 +53,7 @@ class ViewLobby(nextcord.ui.View):
             await asyncio.gather(*tasks)
             await q.join()
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
-            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewJoin(ViewLobby):
@@ -65,10 +70,10 @@ class ViewJoin(ViewLobby):
 
             # send messages about successful join operation
             lobby_view_embed = MessageTemplates.lobby_view_message_template(self.token, lobby_players)
-            await Messager.send_dm_message(interaction.user.id,
+            await Messager.send_dm_message(interaction.user.id, self.token,
                                            f"Welcome to lobby of game {self.token}.\n"
                                            f"Number of players in lobby: **{len(lobby_players)}**",
-                                           embed=lobby_view_embed,
+                                           embeds=[lobby_view_embed],
                                            view=ViewPlayer(self.user_id, self.token))
 
             q = asyncio.Queue()
@@ -78,8 +83,8 @@ class ViewJoin(ViewLobby):
             await q.join()
 
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
-            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.delete_last_user_error_message(self.user_id, self.token)
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewHost(ViewLobby):
@@ -106,12 +111,13 @@ class ViewHost(ViewLobby):
             lobby_players = await HandlerCharacterCreation.start_character_creation(self.token, interaction.user.id)
             for user in lobby_players:
                 await Messager.send_dm_message(user_id=user.discord_id,
+                                               token=self.token,
                                                content=None,
-                                               embed=MessageTemplates.character_creation_start_message_template(),
+                                               embeds=[MessageTemplates.character_creation_start_message_template()],
                                                view=ViewCharacterCreationStart(self.token))
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
-            await Messager.send_dm_message(user_id=self.user_id, content=str(e), error=True)
+            await Messager.delete_last_user_error_message(self.user_id, self.token)
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewPlayer(ViewLobby):
@@ -119,4 +125,4 @@ class ViewPlayer(ViewLobby):
 
     @nextcord.ui.button(label="Ready", style=nextcord.ButtonStyle.green, custom_id='ready-button')
     async def ready(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await self.ready(interaction)
+        await super().ready(interaction)

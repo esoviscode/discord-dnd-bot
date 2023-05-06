@@ -56,3 +56,37 @@ class GameException(DiscordDndBotException):
 class InitializeWorldException(GameException):
     """thrown when there is an issue or error during world initialization"""
     pass
+
+
+class MovementException(GameException):
+    """thrown where there is an issue or error during movement process during game"""
+    pass
+
+
+class AttackException(GameException):
+    """thrown where there is an issue or error during attack process during game"""
+    pass
+
+
+class SkillException(GameException):
+    """thrown where there is an issue or error during skill using process during game"""
+    pass
+
+
+class LootCorpseException(GameException):
+    """ thrown when there is an error while looting the corpse"""
+    pass
+
+
+# messager exceptions
+
+class MessagerException(DiscordDndBotException):
+    """thrown when the discord communication module (messager) encounters an issue"""
+    pass
+
+
+class DMCreationException(MessagerException):
+    """thrown when the bot cant create a dm with a user"""
+    pass
+
+

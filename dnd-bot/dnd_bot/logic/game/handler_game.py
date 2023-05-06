@@ -1,9 +1,9 @@
 import asyncio
-from datetime import time
 
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewGame, ViewMain
+from dnd_bot.dc.utils.handler_views import HandlerViews
+from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewMain
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -26,7 +26,7 @@ class HandlerGame:
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
             # delete any error messages that were left out
-            await Messager.delete_last_user_error_message(game.active_creature.discord_identity)
+            await Messager.delete_last_user_error_message(game.active_creature.discord_identity, game_token)
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
 
@@ -35,7 +35,7 @@ class HandlerGame:
         game.active_creature = next_creature
 
         # send messages to users
-        await ViewGame.display_views_for_users(game_token, recent_action_message)
+        await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         if not isinstance(game.active_creature, Player):
             await HandlerGame.turn(game_token, game.active_creature)
@@ -44,10 +44,10 @@ class HandlerGame:
     async def turn(game_token, active_creature):
         game = Multiverse.get_game(game_token)
         while game.active_creature.action_points > 0:
-            recent_action_message = active_creature.ai_action()
+            recent_action_message = await active_creature.ai_action()
             await asyncio.sleep(1)
-            print(f"Turn executed in {active_creature.name}")
-            await ViewGame.display_views_for_users(game_token, recent_action_message)
+            print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
+            await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token)
 

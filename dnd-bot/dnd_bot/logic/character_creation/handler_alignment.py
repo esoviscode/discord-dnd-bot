@@ -18,7 +18,7 @@ class HandlerAlignment:
         if view.goodness_axis_dropdown.values:
             ChosenAttributes.chosen_attributes[(view.user_id, view.token)]['alignment'][1] = view.goodness_axis_dropdown.values[0]
 
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)
 
     @staticmethod
     async def handle_next(view):
@@ -38,4 +38,4 @@ class HandlerAlignment:
                  not ChosenAttributes.chosen_attributes[(view.user_id, view.token)]['alignment'][1]):
             raise CharacterCreationInterfaceException("You must choose an alignment!")
 
-        await Messager.delete_last_user_error_message(view.user_id)
+        await Messager.delete_last_user_error_message(view.user_id, view.token)

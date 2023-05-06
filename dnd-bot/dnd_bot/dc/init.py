@@ -1,4 +1,7 @@
+import logging
 import os
+import sys
+import traceback
 
 import nextcord
 from nextcord import Intents
@@ -36,6 +39,13 @@ def bot_run():
     env_token = "BOT_TOKEN"
     token = os.getenv(env_token)
 
+    # set up logging
+    logger = logging.getLogger('nextcord')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename='discord-dnd-bot.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
+
     if token is None:
         raise KeyError(f'Failed to get configuration key. Env name: {env_token}')
 
@@ -55,22 +65,48 @@ def bot_run():
 @bot.event
 async def on_command_error(interaction, error):
     """handles errors"""
+    await on_application_command_error(interaction, error)
+
+
+@bot.event
+async def on_application_command_error(interaction, error):
+    """handles errors"""
+
+    print(f'ERROR: {error}', file=sys.stderr)
+
     error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
-                                 description="😞 We are sorry for any inconveniences",
                                  color=0xFF5733)
 
-    error_embed.set_author(name=interaction.bot.user.display_name, icon_url=interaction.bot.user.display_avatar)
-
-    if isinstance(error, commands.errors.MissingRequiredArgument):
-        error_embed.add_field(name="Error is described below.",
-                              value=f"**Type:** {type(error)}\n\n```You're missing a required argument.```")
-    else:
-        error_embed.add_field(name="Error is described below.", value=f"**Type:** {type(error)}\n\n```py\n{error}\n```")
-
-    error_embed.add_field(name="__**What To do?**__",
-                          value="Don't worry we will forward this message to the devs.",
+    error_embed.set_author(name=bot.user.display_name, icon_url=bot.user.display_avatar)
+    error_embed.add_field(name="__What To do?__",
+                          value="Check if you use the correct command arguments",
                           inline=False)
     error_embed.set_footer(
         text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
 
     await interaction.response.send_message(embed=error_embed)
+
+
+@bot.event
+async def on_error(event_name, *args, **kwargs):
+    print(f"Exception in {event_name}", file=sys.stderr)
+    traceback.print_exc()
+
+    interaction = args[1]
+
+    error_embed = nextcord.Embed(title="❌ The client has encountered an unexpected error!",
+                                 color=0xFF5733)
+
+    error_embed.set_author(name=bot.user.display_name, icon_url=bot.user.display_avatar)
+    error_embed.add_field(name="__What To do?__",
+                          value="Try repeating the interaction in case error was caused by Discord\n\n"
+                                "Otherwise, wait for a patch that fixes this bug.\n"
+                                "We are sorry for any inconveniences 😓\n\n"
+                                "You can report the issue here:\n https://github.com/esoviscode/discord-dnd-bot/issues",
+                          inline=False)
+    error_embed.set_footer(
+        text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
+
+    await interaction.response.defer()
+
+    await interaction.user.send(content='', embeds=[error_embed])
