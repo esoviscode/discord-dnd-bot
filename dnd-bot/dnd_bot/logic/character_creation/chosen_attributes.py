@@ -3,7 +3,8 @@ class ChosenAttributes:
     user is switching between forms. Information about particular user should be deleted after finishing creation
     process """
 
-    # dict with user's choices, keys are discord_ids and values are another dicts with attributes names as keys
+    # dict with user's choices, keys are tuples (discord_id, game token) 
+    # and values are another dicts with attributes names as keys
     chosen_attributes = {}
 
     @staticmethod
