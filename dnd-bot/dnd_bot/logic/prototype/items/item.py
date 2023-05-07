@@ -1,6 +1,7 @@
 import json
 
 from dnd_bot.logic.prototype.database_object import DatabaseObject
+from dnd_bot.logic.prototype.items.equipable import Equipable
 
 
 class Item(DatabaseObject):
@@ -25,6 +26,8 @@ class Item(DatabaseObject):
         self.charisma = 0
         self.perception = 0
         self.action_points = 0
+        self.equipable: Equipable = Equipable.NO
+        self.two_handed = False
 
         self.load_attributes_from_json()
 
@@ -37,10 +40,25 @@ class Item(DatabaseObject):
 
             for item_type in items.keys():
                 if self.name in items[item_type]:  # items without a subtype
-                    pass
+                    print(f"{self.name} is without a subtype")
                 item_subtype_dict = items[item_type]
                 for item_subtype in item_subtype_dict:
                     if self.name in item_subtype_dict[item_subtype]:  # items with a subtype
+                        if item_type == "weapons":
+                            self.equipable = Equipable.WEAPON
+                        elif item_type == "armors":
+                            if item_subtype == "helmets":
+                                self.equipable = Equipable.HELMET
+                            elif item_subtype == "chestplates":
+                                self.equipable = Equipable.CHEST
+                            elif item_subtype == "leg armors":
+                                self.equipable = Equipable.LEG_ARMOR
+                            elif item_subtype == "boots":
+                                self.equipable = Equipable.BOOTS
+                        elif item_type == "off-hands":
+                            self.equipable = Equipable.OFF_HAND
+                        elif item_type == "accessories":
+                            self.equipable = Equipable.ACCESSORY
 
                         item = item_subtype_dict[item_subtype][self.name]
                         if item:
@@ -67,3 +85,11 @@ class Item(DatabaseObject):
                                 self.charisma = item['charisma']
                             if 'perception' in item:
                                 self.perception = item['perception']
+                            if 'two-handed' in item:
+                                self.two_handed = item['two-handed']
+
+
+    @staticmethod
+    def compare_items(item):
+        """ this method is to return compare value fe for sorting items in backpack"""
+        return item.name

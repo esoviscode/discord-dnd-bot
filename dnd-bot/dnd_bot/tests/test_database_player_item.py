@@ -19,8 +19,8 @@ def test_add_player_item(postgresql):
     p = Player(x=0, y=0, name='Creature', hp=0, strength=0, dexterity=0, intelligence=0, charisma=0,
                perception=0, initiative=0, action_points=0, level=0, equipment=None, money=0, game_token='',
                experience=0)
-    p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.strength, dexterity=p.dexterity,
-                                     intelligence=p.intelligence, charisma=p.charisma, perception=p.perception,
+    p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.base_strength, dexterity=p.base_dexterity,
+                                     intelligence=p.base_intelligence, charisma=p.base_charisma, perception=p.base_perception,
                                      initiative=p.initiative, action_points=p.action_points, level=p.level,
                                      experience=p.experience)
 
@@ -42,8 +42,8 @@ def test_get_player_items(postgresql):
     p = Player(x=0, y=0, name='Creature', hp=0, strength=0, dexterity=0, intelligence=0, charisma=0,
                perception=0, initiative=0, action_points=0, level=0, equipment=None, money=0, game_token='',
                experience=0)
-    p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.strength, dexterity=p.dexterity,
-                                     intelligence=p.intelligence, charisma=p.charisma, perception=p.perception,
+    p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.base_strength, dexterity=p.base_dexterity,
+                                     intelligence=p.base_intelligence, charisma=p.base_charisma, perception=p.base_perception,
                                      initiative=p.initiative, action_points=p.action_points, level=p.level,
                                      experience=p.experience)
 

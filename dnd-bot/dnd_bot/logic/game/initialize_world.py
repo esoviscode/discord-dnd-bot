@@ -217,8 +217,8 @@ class InitializeWorld:
             p.equipment = InitializeWorld.add_equipment(right_hand=Bow(name='Novice bow'),
                                                         accessory=Item(name='Hunting necklace'))
 
-        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
-                                              p.intelligence, p.charisma, p.perception, p.initiative,
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.base_strength, p.base_dexterity,
+                                              p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
                                               character_class=p.creature_class, id_equipment=p.equipment.id)

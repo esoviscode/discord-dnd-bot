@@ -109,4 +109,4 @@ async def on_error(event_name, *args, **kwargs):
 
     await interaction.response.defer()
 
-    await Messager.send_dm_error_message(user_id=interaction.user.id, content='', embeds=[error_embed])
+    await interaction.user.send(content='', embeds=[error_embed])

@@ -9,6 +9,17 @@ from dnd_bot.logic.prototype.multiverse import Multiverse as Mv
 TMP_IMAGES_PATH = 'dnd_bot/assets/tmp'
 
 
+def in_range(from_x: int, from_y: int, to_x: int, to_y: int, radius_range: int) -> bool:
+    # mod is conditional variable which depends on radius_range
+    mod = 1
+    if 3 < radius_range < 6:
+        mod = 4
+    elif radius_range >= 6:
+        mod = 5
+
+    return (from_x - to_x) ** 2 + (from_y - to_y) ** 2 <= radius_range ** 2 + mod
+
+
 def generate_circle_points(radius: int, range_length: int, outer=False) -> list:
     """
     returns list of points of filled circle (centered at 0,0) for given radius
@@ -17,73 +28,93 @@ def generate_circle_points(radius: int, range_length: int, outer=False) -> list:
     :param outer: if to generate the outer points or inner
     :return points: list of tuples (x, y)
     """
-
-    # mod is conditional variable which defines proper circles
-    mod = 1
-    if 3 < radius < 6:
-        mod = 4
-    elif radius >= 6:
-        mod = 5
-
-    def belongs_to_circle(x, y):
-        return x ** 2 + y ** 2 <= radius ** 2 + mod
-
     points = []
 
     if outer:
         for y in range(-range_length, range_length + 1):
             for x in range(-range_length, range_length + 1):
-                if not belongs_to_circle(x, y):
+                if not in_range(0, 0, x, y, radius):
                     points.append((x, y))
     else:
         for y in range(-range_length, range_length + 1):
             for x in range(-range_length, range_length + 1):
-                if belongs_to_circle(x, y):
+                if in_range(0, 0, x, y, radius):
                     points.append((x, y))
 
     return points
 
 
-def find_position_to_check(x_src=0, y_src=0, x_dest=1, y_dest=1):
-    result = []
+def find_position_to_check(from_x: int, from_y: int, to_x: int, to_y: int) -> list:
+    """returns discrete segment from point to point
+    algorithm on the basis of midpoint alg extended with symmetrical smoothing
+    :param from_x: start x coordinate
+    :param from_y: start y coordinate
+    :param to_x: end x coordinate
+    :param to_y: end y coordinate
+    :return path: list of points (x, y)"""
 
-    def find_positions(x1, y1, x2, y2, dx, dy, decide):
-        pk = 2 * dy - dx
-        for i in range(0, dx + 1):
-            if decide == 0:
-                result.append((x1, y1))
-            else:
-                result.append((y1, x1))
+    if from_x == to_x:  # vertical line
+        bias = 1 if to_y >= from_y else -1
+        return [(from_x, y) for y in range(from_y, to_y + bias, bias)]
 
-            if x1 < x2:
-                x1 = x1 + 1
-            else:
-                x1 = x1 - 1
-            if pk < 0:
+    import math
+    return_x = False
+    return_y = False
+    mirror = False
 
-                if decide == 0:
-                    pk = pk + 2 * dy
-                else:
-                    pk = pk + 2 * dy
-            else:
-                if y1 < y2:
-                    y1 = y1 + 1
-                else:
-                    y1 = y1 - 1
+    # transformations
+    # all to trivialize the slope to be in 1st quarter and <= 45°
+    if to_x < from_x:  # angle quarter 3,4
+        to_x = 2 * from_x - to_x
+        return_x = True
+    if to_y < from_y:  # angle quarter 2,3
+        to_y = 2 * from_y - to_y
+        return_y = True
+    if to_y - from_y > to_x - from_x:  # > 45°
+        to_x, to_y = from_x + (to_y - from_y), from_y + (to_x - from_x)
+        mirror = True
 
-                pk = pk + 2 * dy - 2 * dx
+    # linear function parameters
+    a = (to_y - from_y) / (to_x - from_x)
+    b = from_y - .5 - (from_x - .5) * a
 
-    dx = abs(x_dest - x_src)
-    dy = abs(y_dest - y_src)
+    # segment's dimensions
+    length = to_x - from_x + 1
+    width = to_y - from_y + 1
+    mid = math.ceil((to_x + from_x) / 2)
+    center = (to_y + from_y) // 2
 
-    # If slope is less than one
-    if dx > dy:
-        find_positions(x_src, y_src, x_dest, y_dest, dx, dy, 0)
-    # if slope is greater than or equal to 1
+    left = []
+    right = []
+
+    # predict points
+    for x in range(from_x, mid):
+        x_cen = x - .5
+        y_cen = x_cen * a + b
+        y = math.ceil(y_cen)
+        left.append((x, y))
+        right.insert(0, (to_x - x + from_x, to_y - y + from_y))
+
+    # handle center point/points
+    if length % 2 == 1:
+        if width % 2 == 0:
+            path = left + [(mid, center), (mid, center + 1)] + right
+        else:
+            path = left + [(mid, center)] + right
     else:
-        find_positions(y_src, x_src, y_dest, x_dest, dy, dx, 1)
+        path = left + right
 
-    return result[1:-1]
+    # reverse transformations
+    if mirror:
+        path = [(from_x + (p[1] - from_y), from_y + (p[0] - from_x)) for p in path]
+
+    if return_y:
+        path = [(p[0], 2 * from_y - p[1]) for p in path]
+
+    if return_x:
+        path = [(2 * from_x - p[0], p[1]) for p in path]
+
+    return path
 
 
 def paste_image(src: np.ndarray, dest: np.ndarray, x_offset: int, y_offset: int):
@@ -136,15 +167,9 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     player_view = copy.deepcopy(game.sprite)
 
     # pasting entities in vision
-    points_in_range = generate_circle_points(player.perception, Mv.view_range)
+    points_in_range = generate_circle_points(min(player.perception, 4), Mv.view_range)
     entities = [e for e in sum(game.entities, []) if e and e.fragile
                 and (e.x - player.x, e.y - player.y) in points_in_range]
-
-    # for entity in entities:
-    #     sprite = copy.deepcopy(entity.sprite)
-    #     sprite = rotate_image_to_direction(sprite, entity.look_direction)
-    #
-    #     paste_image(sprite, player_view, entity.x * Mv.square_size, entity.y * Mv.square_size)
 
     # cropping image
     from_y = max(0, player.y - Mv.view_range)
@@ -155,7 +180,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
                               from_x * Mv.square_size:to_x * Mv.square_size]
 
     # cropping mask
-    mask = Mv.masks[player.perception][
+    mask = Mv.masks[min(player.perception, 4)][
            -min(0, player.y - Mv.view_range) * Mv.square_size:
            ((Mv.view_range * 2 + 1) + min(0, (game.world_height - 1 - player.y - Mv.view_range))) * Mv.square_size,
            -min(0, player.x - Mv.view_range) * Mv.square_size:
@@ -178,7 +203,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
                     (isinstance(game.entities[y][x], Creature) and not isinstance(game.entities[y][x], Player)):
                 path = find_position_to_check(player.x, player.y, player.x + p[0], player.y + p[1])
                 add = True
-                for pos in path:
+                for pos in path[1:-1]:
                     if game.entities[pos[1]][pos[0]]:
                         add = False
                         break

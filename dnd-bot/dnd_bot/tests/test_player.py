@@ -16,14 +16,14 @@ def test_add_player(postgresql):
     DatabaseConnection.cursor = cur
 
     p = Player(x=1, y=2, name='silentsky', hp=3, strength=4, dexterity=5, intelligence=6, charisma=7, perception=8,
-               initiative=9, action_points=10, level=11, discord_identity=12, alignment='align', backstory='back',
-               game_token='12345', character_class='MAGE', character_race='HUMAN')
+               initiative=9, action_points=10, level=11, alignment='align', backstory='back',
+               character_class='MAGE', character_race='HUMAN')
 
     game_id = DatabaseGame.get_id_game_from_game_token('12345')
-    id_player = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.strength,
-                                          dexterity=p.dexterity, intelligence=p.intelligence, charisma=p.charisma,
-                                          perception=p.perception, initiative=p.initiative,
-                                          action_points=p.action_points,
+    id_player = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.base_strength,
+                                          dexterity=p.base_dexterity, intelligence=p.base_intelligence,
+                                          charisma=p.base_charisma, perception=p.base_perception,
+                                          initiative=p.initiative, action_points=p.action_points,
                                           level=p.level, discord_identity=p.discord_identity, alignment=p.alignment,
                                           backstory=p.backstory, id_game=game_id,
                                           character_race=p.character_race, character_class=p.creature_class)

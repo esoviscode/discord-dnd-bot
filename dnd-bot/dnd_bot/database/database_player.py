@@ -19,7 +19,9 @@ class DatabasePlayer:
                                                     action_points=action_points, level=level, id_game=id_game,
                                                     experience=experience, id_equipment=id_equipment,
                                                     creature_class=character_class, money=money, description=description)
-        id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
+        id_user = None
+        if discord_identity:
+            id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
         if character_race:
             character_race = character_race.upper()
         id_player = DatabaseConnection.add_to_db('INSERT INTO public."Player" (id_user, alignment, backstory, '

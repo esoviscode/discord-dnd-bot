@@ -3,7 +3,6 @@ from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.logic.utils.exceptions import LootCorpseException
 
 
 class HandlerLootCorpse:
@@ -24,10 +23,10 @@ class HandlerLootCorpse:
         corpse_name = corpse.creature_name
 
         game: Game = Multiverse.get_game(player.game_token)
-        game.delete_entity(corpse.id)
+        game.delete_entity_at(corpse.x, corpse.y)
 
-        player.money += money
-        player.backpack += items
+        player.add_money(money)
+        player.add_items(items)
 
         await HandlerViews.display_views_for_users(player.game_token,
                                                    MessageTemplates.loot_corpse_action(

@@ -26,7 +26,7 @@ class HandlerGame:
             game.players_views[game.active_creature.discord_identity] = (ViewCharacterNonActive, [])
 
             # delete any error messages that were left out
-            await Messager.delete_last_user_error_message(game.active_creature.discord_identity)
+            await Messager.delete_last_user_error_message(game.active_creature.discord_identity, game_token)
 
         recent_action_message = MessageTemplates.end_turn_recent_action_message(game.active_creature)
 
@@ -44,9 +44,9 @@ class HandlerGame:
     async def turn(game_token, active_creature):
         game = Multiverse.get_game(game_token)
         while game.active_creature.action_points > 0:
-            recent_action_message = active_creature.ai_action()
-            # TODO do testowania await asyncio.sleep(1)
-            print(f"Turn executed in {active_creature.name}")
+            recent_action_message = await active_creature.ai_action()
+            await asyncio.sleep(1)
+            print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
             await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token)

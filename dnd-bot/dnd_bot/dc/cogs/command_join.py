@@ -1,5 +1,6 @@
 import asyncio
 
+import nextcord
 from nextcord.ext.commands import Cog, Bot
 from nextcord import slash_command
 
@@ -16,7 +17,7 @@ class CommandJoin(Cog):
         self.bot = bot
 
     @slash_command(name="join", description="Joins to the lobby by its id")
-    async def join(self, interaction, token: str):
+    async def join(self, interaction: nextcord.Interaction, token: str):
         try:
             if interaction.user.dm_channel is None:
                 await interaction.user.create_dm()
@@ -27,7 +28,7 @@ class CommandJoin(Cog):
 
             # send messages about successful join operation
             lobby_view_embed = MessageTemplates.lobby_view_message_template(token, lobby_players)
-            await Messager.send_dm_message(interaction.user.id,
+            await Messager.send_dm_message(interaction.user.id, token,
                                            f"Welcome to lobby of game {token}.\n"
                                            f"Number of players in lobby: **{len(lobby_players)}**",
                                            embeds=[lobby_view_embed],
@@ -40,7 +41,7 @@ class CommandJoin(Cog):
             await q.join()
 
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(user_id=interaction.user.discord_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=interaction.user.discord_id, token=token, content=str(e))
 
 
 def setup(bot):
