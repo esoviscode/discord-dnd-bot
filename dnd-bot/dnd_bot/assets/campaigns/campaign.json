@@ -83,6 +83,25 @@
           "action-points": 8,
           "base-price": 3,
           "two-handed": true
+        },
+        "Swords of Slaughter" : {
+          "damage": [5, 7],
+          "range": 1,
+          "action-points": 5,
+          "base-price": 6,
+          "two-handed": true
+        },
+        "Iron sword" : {
+          "damage": [7, 8],
+          "range": 1,
+          "action-points": 3,
+          "base-price": 3
+        },
+        "Rusty blade": {
+          "damage": [3, 5],
+          "range": 1,
+          "action-points": 3,
+          "base-price": 2
         }
       },
       "staffs": {
@@ -111,6 +130,13 @@
           "damage": [12, 14],
           "range": 4,
           "action-points": 5,
+          "base-price": 7,
+          "two-handed": true
+        },
+        "Longbow" : {
+          "damage": [7, 11],
+          "range": 4,
+          "action-points": 8,
           "base-price": 6,
           "two-handed": true
         }
@@ -121,7 +147,8 @@
         "Wooden shield": {
           "dexterity": -2,
           "strength": 2
-        }
+        },
+        "Tarnished shield" : {}
       }
     },
     "accessories": {
