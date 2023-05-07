@@ -17,25 +17,60 @@ class Creature(Entity):
             drop_money = []
         if drops is None:
             drops = []
+
         self.hp = hp
         self.max_hp = hp
-        self.strength = strength
-        self.dexterity = dexterity
-        self.intelligence = intelligence
-        self.charisma = charisma
-        self.perception = perception
+        self.base_strength = strength
+        self.base_dexterity = dexterity
+        self.base_intelligence = intelligence
+        self.base_charisma = charisma
+        self.base_perception = perception
+
         self.initiative = initiative
         self.action_points = action_points
-        self.level = level
-        self.equipment = equipment
-        self.drop_money = drop_money
         self.initial_action_points = action_points
+        self.equipment = equipment
+        self.level = level
         self.experience = experience
         self.creature_class = creature_class
+
+        self.drop_money = drop_money
         self.drops = drops
 
         self.ai = ai
         self.move_queue = []
+
+# ----------------------------------------------------- properties -----------------------------------------------------
+    def eq_stats(self, stat):
+        """returns additional "stat" value that comes from items in equipment"""
+        from dnd_bot.logic.prototype.items.item import Item
+        return sum([i.__getattribute__(stat) if isinstance(i, Item) else 0 for i in self.equipment.__dict__.values()])
+
+    # future development
+    # def effects_stats(self, stat):
+    #     return sum([e.__getattribute__(stat) for e in self.effects])
+
+    @property
+    def strength(self):
+        return self.base_strength + self.eq_stats("strength")
+
+    @property
+    def dexterity(self):
+        return self.base_dexterity + self.eq_stats("dexterity")
+
+    @property
+    def intelligence(self):
+        return self.base_intelligence + self.eq_stats("intelligence")
+
+    @property
+    def charisma(self):
+        return self.base_charisma + self.eq_stats("charisma")
+
+    @property
+    def perception(self):
+        return self.base_perception + self.eq_stats("perception")
+
+# ----------------------------------------------------- properties -----------------------------------------------------
 
     async def ai_action(self):
         """perform certain ai action and returns its response
@@ -216,7 +251,8 @@ class Creature(Entity):
         :return target: tuple (Player object, path)"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
-        intelligence = "high" if self.intelligence >= 10 else ("low" if self.intelligence <= 3 else "medium")
+        intelligence = "high" if self.intelligence >= 10 else \
+            ("low" if self.intelligence <= 3 else "medium")
         if intelligence != "low":
             class_priority = ["Mage", "Ranger", "Warrior"]
         sorted_foes = []

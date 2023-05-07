@@ -118,7 +118,7 @@ class MessageTemplates:
         desc += f'Charisma: {player.charisma}\n'
         desc += f'Perception: {player.perception}\n'
         desc += f'Initiative: {player.initiative}\n'
-        desc += f'Action Points: {player.action_points}\n'
+        desc += f'Action Points: {player.initial_action_points}\n'
 
         embed = nextcord.Embed(title="Your Stats:", description=desc)
         return embed
@@ -143,8 +143,8 @@ class MessageTemplates:
         active_creature = game.get_active_creature()
 
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
-                                     f'{player.initial_action_points} | '
-                                     f'HP: {player.hp}/{player.max_hp}', description=recent_action)
+                                     f'{player.initial_action_points} | HP: {player.hp}/{player.max_hp}',
+                               description=recent_action)
         if isinstance(active_creature, Player):
             active_user = await get_user_by_id(active_creature.discord_identity)
             active_user_icon = active_user.display_avatar.url
