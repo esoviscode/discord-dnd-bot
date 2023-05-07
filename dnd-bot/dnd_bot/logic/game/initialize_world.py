@@ -197,11 +197,11 @@ class InitializeWorld:
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
                    charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
                    character_race=character_race, character_class=character_class)
-        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
-                                              p.intelligence, p.charisma, p.perception, p.initiative,
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.base_strength, p.base_dexterity,
+                                              p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class)  # TODO add race and class
+                                              character_class=p.creature_class)
         p.id = id_player
 
         # TODO change location of adding equipment/items

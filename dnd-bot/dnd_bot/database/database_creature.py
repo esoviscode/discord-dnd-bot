@@ -18,7 +18,7 @@ class DatabaseCreature:
                                                        level, hp, strength, dexterity, intelligence,
                                                        charisma, perception, initiative, action_points,
                                                        drop_money, id_entity, experience),
-                                                   "creature")
+                                                   "creature")  # TODO add max_hp
         return id_creature
 
     @staticmethod
