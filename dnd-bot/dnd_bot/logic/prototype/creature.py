@@ -59,8 +59,8 @@ class Creature(Entity):
                 return f"{self.name} has moved to ({self.x},{self.y})"
             # creature attack
             elif self.move_queue[0][0] == 'A':
-                if (self.equipment.right_hand and self.equipment.right_hand.action_points >= self.action_points) \
-                        or self.action_points >= 2:
+                req_action_points = self.equipment.right_hand.action_points if self.equipment.right_hand else 2
+                if self.action_points >= req_action_points:
                     # attack foe
                     if Multiverse.get_game(self.game_token).entities[self.move_queue[0][1].y][self.move_queue[0][1].x]:
                         resp = await HandlerAttack.handle_attack(self, self.move_queue[0][1], self.game_token)
@@ -186,8 +186,10 @@ class Creature(Entity):
             move_queue.append(('M', direction))
             path.pop(0)
             action_points -= 1
+
         # can attack
-        move_queue.append(('A', target) if action_points > 0 else None)
+        req_action_points = self.equipment.right_hand.action_points if self.equipment.right_hand else 2
+        move_queue.append(('A', target) if action_points >= req_action_points else None)
 
         return move_queue
 

@@ -5,11 +5,8 @@ from dnd_bot.logic.prototype.items.item import Item
 class Equipment(DatabaseObject):
     """represents the player's equipped items"""
     def __init__(self, id_equipment: int = 1, helmet: Item = None, chest: Item = None, leg_armor: Item = None,
-                 boots: Item = None, left_hand: Item = None, right_hand: Item = None, item_list=None,
-                 accessory: Item = None):
+                 boots: Item = None, left_hand: Item = None, right_hand: Item = None, accessory: Item = None):
         ## TODO super().__init__()
-        if item_list is None:
-            item_list = []
         self.id = id_equipment
         self.helmet = helmet
         self.chest = chest

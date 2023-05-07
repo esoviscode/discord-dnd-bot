@@ -30,7 +30,7 @@ class HandlerAttack:
 
             if isinstance(source, Player):
                 attack_status_message = f'**{source.name}** has attacked **{target.name}** at ({target.x},{target.y})' \
-                                        f'\n using a *{source.equipment.right_hand.name}*!\n\n'
+                                        f'\n using *{source.equipment.right_hand.name}*!\n\n'
             else:
                 attack_status_message = f'**{source.name}** has attacked **{target.name}**!\n\n'
 

@@ -196,6 +196,7 @@
           "Plate Helmet": 0.95,
           "Wooden shield": 0.9
         },
+        "creature_class": "Mage",
         "ai": 2
       },
       "Half dragon assassin": {
@@ -209,12 +210,15 @@
         "initiative": 0,
         "action_points": 15,
         "level": 1,
-        "equipment": {},
+        "equipment": {
+          "right_hand": "Swords of Slaughter"
+        },
         "drop_money": [1, 3],
         "drops": {
           "Hunting necklace": 0.9,
           "Necklace of prudence": 0.85
         },
+        "creature_class": "Warrior",
         "ai": 0
       },
       "Nothic": {
@@ -233,6 +237,7 @@
         "drops": {
           "Holy Bible": 0.2
         },
+        "creature_class": "Warrior",
         "ai": 0
       },
       "Skeleton warrior": {
@@ -251,6 +256,7 @@
         "drops": {
           "Light crossbow": 0.2
         },
+        "creature_class": "Warrior",
         "ai": 0
       },
       "Lizardfolk archer": {
@@ -264,11 +270,14 @@
         "initiative": 0,
         "action_points": 20,
         "level": 1,
-        "equipment": {},
+        "equipment": {
+          "right_hand": "Longbow"
+        },
         "drop_money": [1, 3],
         "drops": {
           "Glasses": 0.2
         },
+        "creature_class": "Ranger",
         "ai": 1
       }
     },

@@ -177,12 +177,14 @@ class InitializeWorld:
                           charisma=entity_data['charisma'], perception=entity_data['perception'],
                           initiative=entity_data['initiative'],
                           action_points=entity_data['action_points'], level=entity_data['level'],
-                          equipment=entity_data['equipment'],
-                          drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
+                          drop_money=entity_data['drop_money'], drops=entity_data['drops'],
+                          creature_class=entity_data['creature_class'], ai=entity_data['ai'])
 
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity.equipment = Equipment()
+        for eq_part in entity_data['equipment']:
+            entity.equipment.__setattr__(eq_part, Item(name=entity_data['equipment'][eq_part]))
         entity_row.append(entity)
         return entity_row
 
