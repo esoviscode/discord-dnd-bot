@@ -201,7 +201,7 @@ class InitializeWorld:
                                               p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class)  # TODO add race and class
+                                              character_class=p.creature_class)
         p.id = id_player
 
         # TODO change location of adding equipment/items

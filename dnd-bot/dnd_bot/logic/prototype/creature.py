@@ -42,6 +42,7 @@ class Creature(Entity):
 
 # ----------------------------------------------------- properties -----------------------------------------------------
     def eq_stats(self, stat):
+        """returns additional "stat" value that comes from items in equipment"""
         from dnd_bot.logic.prototype.items.item import Item
         return sum([i.__getattribute__(stat) if isinstance(i, Item) else 0 for i in self.equipment.__dict__.values()])
 
