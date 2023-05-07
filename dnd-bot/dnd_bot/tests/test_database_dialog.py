@@ -6,7 +6,7 @@ from dnd_bot.database.database_entity import DatabaseEntity
 
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('dialog')
+postgresql, postgresql_in_docker = database_fixture('db_dialog')
 
 
 def test_add_dialog(postgresql):

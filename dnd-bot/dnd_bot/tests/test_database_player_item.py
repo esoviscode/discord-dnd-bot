@@ -9,7 +9,7 @@ from dnd_bot.logic.prototype.player import Player
 
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('player_item')
+postgresql, postgresql_in_docker = database_fixture('db_player_item')
 
 
 def test_add_player_item(postgresql):

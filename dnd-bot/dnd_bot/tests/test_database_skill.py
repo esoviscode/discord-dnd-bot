@@ -1,12 +1,10 @@
 import pytest
 
 from dnd_bot.database.database_connection import DatabaseConnection
-from dnd_bot.database.database_entity import DatabaseEntity
-from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.database.database_skill import DatabaseSkill
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('skill')
+postgresql, postgresql_in_docker = database_fixture('db_skill')
 
 
 def test_add_skill(postgresql):

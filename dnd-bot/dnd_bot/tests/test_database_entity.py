@@ -3,7 +3,7 @@ from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('entity')
+postgresql, postgresql_in_docker = database_fixture('db_entity')
 
 
 def test_get_entity(postgresql):

@@ -6,7 +6,7 @@ from dnd_bot.logic.prototype.event import Event
 
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('event')
+postgresql, postgresql_in_docker = database_fixture('db_event')
 
 
 def test_add_event(postgresql):

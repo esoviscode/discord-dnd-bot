@@ -5,7 +5,7 @@ from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('user')
+postgresql, postgresql_in_docker = database_fixture('db_user')
 
 
 def test_get_user_id_from_discord_id(postgresql):

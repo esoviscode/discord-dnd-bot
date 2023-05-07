@@ -4,7 +4,7 @@ from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.tests.autoconf import database_fixture
 
-postgresql, postgresql_in_docker = database_fixture('creature')
+postgresql, postgresql_in_docker = database_fixture('db_creature')
 
 
 def test_get_creature(postgresql):
