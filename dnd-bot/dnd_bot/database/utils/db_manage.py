@@ -19,7 +19,7 @@ cursor = connection.cursor()
 
 print('DB: successfully connected')
 
-choice = input("Do you want to CREATE, CLEAR, or DROP the tables?")
+choice = input("Do you want to CREATE, CLEAR, or DROP the tables? ")
 
 if choice == "CREATE":
     queries = requests.get("https://raw.githubusercontent.com/esoviscode/database/main/scripts/create_tables.sql")\
