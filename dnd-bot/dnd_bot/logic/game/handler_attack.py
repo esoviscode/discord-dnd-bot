@@ -50,7 +50,7 @@ class HandlerAttack:
 
         # dodging an attack
         # the chance is (source dexterity)%
-        if random.randint(0, 99) <= source.dexterity:  # evasion
+        if random.randint(1, 100) <= source.dexterity:  # evasion
             return attack_status_message + f'💨 **{target.name}** successfully dodged the attack!'
 
         # calculating damage
@@ -68,7 +68,8 @@ class HandlerAttack:
         if source.equipment.right_hand:
             weapon_damage += random.randint(*source.equipment.right_hand.damage)
 
-        target.hp -= (base_damage + weapon_damage)
+        damage = max((base_damage + weapon_damage) - target.defence, 0)
+        target.hp -= damage
 
         # death of the creature
         if target.hp <= 0:
@@ -77,9 +78,8 @@ class HandlerAttack:
 
             HandlerKillEnemy.handle_kill_enemy(game, target)
 
-            return attack_status_message[:-3] + f' for ' \
-                                                f'**`{base_damage + weapon_damage}`**  damage!\n\n' + \
+            return attack_status_message[:-3] + f' for **`{damage}`**  damage!\n\n' + \
                                                 f'> 💀 **{target_name}** has been defeated!'
 
-        return attack_status_message[:-3] + f' for **`{base_damage + weapon_damage}`** damage!\n\n' + \
+        return attack_status_message[:-3] + f' for **`{damage}`** damage!\n\n' + \
                                             f'> **{target.name}** has `{target.hp}` HP left!'

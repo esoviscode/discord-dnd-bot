@@ -26,8 +26,9 @@ class Item(DatabaseObject):
         self.charisma = 0
         self.perception = 0
         self.action_points = 0
-        self.equipable: Equipable = Equipable.NO
+        self.defence = 0
         self.two_handed = False
+        self.equipable: Equipable = Equipable.NO
 
         self.load_attributes_from_json()
 
@@ -85,11 +86,12 @@ class Item(DatabaseObject):
                                 self.charisma = item['charisma']
                             if 'perception' in item:
                                 self.perception = item['perception']
+                            if 'defence' in item:
+                                self.defence = item['defence']
                             if 'two-handed' in item:
                                 self.two_handed = item['two-handed']
 
-
     @staticmethod
     def compare_items(item):
-        """ this method is to return compare value fe for sorting items in backpack"""
+        """ this method is to return compare value for sorting items in backpack"""
         return item.name

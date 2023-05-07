@@ -70,6 +70,9 @@ class Creature(Entity):
     def perception(self):
         return self.base_perception + self.eq_stats("perception")
 
+    @property
+    def defence(self):
+        return self.eq_stats("defence")
 # ----------------------------------------------------- properties -----------------------------------------------------
 
     async def ai_action(self):

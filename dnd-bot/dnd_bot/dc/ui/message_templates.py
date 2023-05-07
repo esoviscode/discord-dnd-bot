@@ -119,6 +119,7 @@ class MessageTemplates:
         desc += f'Perception: **{player.perception}** ({player.base_perception})\n'
         desc += f'Initiative: **{player.initiative}**\n'
         desc += f'Action Points: **{player.initial_action_points}**\n'
+        desc += f'Defence: **{player.defence}**\n'
 
         embed = nextcord.Embed(title="Your Stats:", description=desc)
         return embed
