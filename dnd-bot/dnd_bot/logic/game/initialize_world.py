@@ -182,8 +182,9 @@ class InitializeWorld:
                           charisma=entity_data['charisma'], perception=entity_data['perception'],
                           initiative=entity_data['initiative'],
                           action_points=entity_data['action_points'], level=entity_data['level'],
-                          equipment=entity_data['equipment'],
                           drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
+        # TODO adding equipment from entity data
+        creature.equipment = InitializeWorld.add_equipment()
 
         # TODO should be changed to more efficient method
         # id_creature = DatabaseCreature.add_creature(name=name, x=x, y=y,hp=creature.hp,strength=creature.strength,
