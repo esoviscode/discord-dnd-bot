@@ -97,14 +97,24 @@ class MessageTemplates:
         if item is None:
             return ''
 
-        ret = f'{item.name} '
+        ret = f'{item.name}'
 
         if item.strength > 0:
-            ret += f' - str 💪: {item.strength}'
+            ret += f' | str 💪: {item.strength}'
         if item.intelligence > 0:
-            ret += f' - int 🎓: {item.intelligence}'
+            ret += f' | int 🎓: {item.intelligence}'
         if item.dexterity > 0:
-            ret += f' - dex 💨: {item.dexterity}'
+            ret += f' | dex 💨: {item.dexterity}'
+
+        # for weapons
+        if item.damage > (0, 0):
+            ret += f' | dmg ⚔️: {item.damage[0]}'
+            if item.damage[1] != item.damage[0]:
+                ret += f'-{item.damage[1]}'
+        if item.use_range > 0:
+            ret += f' | r 🎯: {item.use_range}'
+        if item.action_points > 0:
+            ret += f' | ap ✨: {item.action_points}'
         return ret
 
     @staticmethod
