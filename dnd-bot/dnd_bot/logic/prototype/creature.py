@@ -11,7 +11,7 @@ class Creature(Entity):
                  dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
                  action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money=None,
                  game_token: str = '', look_direction: str = 'down', experience: int = 0,
-                 creature_class: str = '', drops=None, ai=0):
+                 creature_class: str = '', drops=None, ai=-1):
         super().__init__(x=x, y=y, sprite=sprite, name=name, fragile=True, game_token=game_token, look_direction=look_direction)
         if drop_money is None:
             drop_money = []
@@ -46,6 +46,9 @@ class Creature(Entity):
         # prepare chain of actions move_queue is empty
         if not self.move_queue:
             self.move_queue = self.prepare_move_queue()
+
+        if self.ai == -1:
+            self.move_queue = [None]
 
         while self.move_queue[0]:  # while action is not None - None goes for end turn
             # creature movement
