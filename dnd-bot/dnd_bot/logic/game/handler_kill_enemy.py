@@ -24,7 +24,7 @@ class HandlerKillEnemy:
         if enemy.drops:
             for item_name in enemy.drops:
                 chance = enemy.drops[item_name]
-                if random.randint(0, 1000) <= chance * 1000:
+                if random.random() < chance:
                     dropped_items.append(Item(name=item_name))
 
         # creating corpse entity

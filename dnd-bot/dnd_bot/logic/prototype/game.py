@@ -29,6 +29,7 @@ class Game(DatabaseObject):
         self.world_width = world_width
         self.world_height = world_height
         self.active_creature = None
+        self.last_visible_creature = None
         self.players_views = dict()  # this dict is to save the view non-active player is looking at;
         # key values are stringified discord ids and values are particular views
 

@@ -9,10 +9,7 @@ from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.equipment import Equipment
-from dnd_bot.logic.prototype.items.bow import Bow
 from dnd_bot.logic.prototype.items.item import Item
-from dnd_bot.logic.prototype.items.staff import Staff
-from dnd_bot.logic.prototype.items.sword import Sword
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_game_view
 
@@ -177,12 +174,14 @@ class InitializeWorld:
                           charisma=entity_data['charisma'], perception=entity_data['perception'],
                           initiative=entity_data['initiative'],
                           action_points=entity_data['action_points'], level=entity_data['level'],
-                          equipment=entity_data['equipment'],
-                          drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
+                          drop_money=entity_data['drop_money'], drops=entity_data['drops'],
+                          creature_class=entity_data['creature_class'], ai=entity_data['ai'])
 
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
         entity.id = id_entity
         entity.equipment = Equipment()
+        for eq_part in entity_data['equipment']:
+            entity.equipment.__setattr__(eq_part, Item(name=entity_data['equipment'][eq_part]))
         entity_row.append(entity)
         return entity_row
 
@@ -206,11 +205,11 @@ class InitializeWorld:
 
         # TODO change location of adding equipment/items
         if p.creature_class == 'Warrior':
-            p.equipment = Equipment(right_hand=Sword(name='Novice sword'), accessory=Item(name='Holy Bible'))
+            p.equipment = Equipment(right_hand=Item(name='Novice sword'), accessory=Item(name='Holy Bible'))
         elif p.creature_class == 'Mage':
-            p.equipment = Equipment(right_hand=Staff(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
+            p.equipment = Equipment(right_hand=Item(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
         elif p.creature_class == 'Ranger':
-            p.equipment = Equipment(right_hand=Bow(name='Novice bow'), accessory=Item(name='Hunting necklace'))
+            p.equipment = Equipment(right_hand=Item(name='Novice bow'), accessory=Item(name='Hunting necklace'))
 
         entities[y].insert(x, p)
         return entities

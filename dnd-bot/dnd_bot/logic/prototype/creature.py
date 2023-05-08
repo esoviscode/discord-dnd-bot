@@ -11,7 +11,7 @@ class Creature(Entity):
                  dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
                  action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money=None,
                  game_token: str = '', look_direction: str = 'down', experience: int = 0,
-                 creature_class: str = '', drops=None, ai=0):
+                 creature_class: str = '', drops=None, ai=-1):
         super().__init__(x=x, y=y, sprite=sprite, name=name, fragile=True, game_token=game_token, look_direction=look_direction)
         if drop_money is None:
             drop_money = []
@@ -44,7 +44,7 @@ class Creature(Entity):
     def eq_stats(self, stat):
         """returns additional "stat" value that comes from items in equipment"""
         from dnd_bot.logic.prototype.items.item import Item
-        return sum([i.__getattribute__(stat) if isinstance(i, Item) else 0 for i in self.equipment.__dict__.values()])
+        return sum([i.__getattribute__(stat) for i in self.equipment.__dict__.values() if isinstance(i, Item)])
 
     # future development
     # def effects_stats(self, stat):
@@ -70,6 +70,9 @@ class Creature(Entity):
     def perception(self):
         return self.base_perception + self.eq_stats("perception")
 
+    @property
+    def defence(self):
+        return self.eq_stats("defence")
 # ----------------------------------------------------- properties -----------------------------------------------------
 
     async def ai_action(self):
@@ -82,6 +85,9 @@ class Creature(Entity):
         if not self.move_queue:
             self.move_queue = self.prepare_move_queue()
 
+        if self.ai == -1:
+            self.move_queue = [None]
+
         while self.move_queue[0]:  # while action is not None - None goes for end turn
             # creature movement
             if self.move_queue[0][0] == 'M':
@@ -91,8 +97,8 @@ class Creature(Entity):
                 return f"{self.name} has moved to ({self.x},{self.y})"
             # creature attack
             elif self.move_queue[0][0] == 'A':
-                if (self.equipment.right_hand and self.equipment.right_hand.action_points >= self.action_points) \
-                        or self.action_points >= 2:
+                req_action_points = self.equipment.right_hand.action_points if self.equipment.right_hand else 2
+                if self.action_points >= req_action_points:
                     # attack foe
                     if Multiverse.get_game(self.game_token).entities[self.move_queue[0][1].y][self.move_queue[0][1].x]:
                         resp = await HandlerAttack.handle_attack(self, self.move_queue[0][1], self.game_token)
@@ -108,22 +114,33 @@ class Creature(Entity):
         self.move_queue = []
         return "Idle"
 
-    def search_for_foes(self):
-        """returns list of Players in creature's view range
-        :return: list of Player objects"""
-        from dnd_bot.logic.utils.utils import generate_circle_points
-        from dnd_bot.logic.prototype.player import Player
+    @staticmethod
+    def attackable(from_x, from_y, to_x, to_y, board):
+        """returns if position is attackable no matter what attack range is
+        :param from_x: my x
+        :param from_y: my y
+        :param to_x: target's x
+        :param to_y: target's y
+        :param board: 2d matrix - True/object when tile is occupied, False/None when tile is empty
+        :return: bool"""
+        from dnd_bot.logic.utils.utils import find_position_to_check
+
+        positions = find_position_to_check(from_x, from_y, to_x, to_y)
+        for pos in positions[1:-1]:
+            if board[pos[1]][pos[0]]:
+                return False
+        return True
+
+    def visible_for_players(self):
         from dnd_bot.logic.prototype.multiverse import Multiverse
+        from dnd_bot.logic.prototype.player import Player
+        from dnd_bot.logic.utils.utils import in_range
 
-        game = Multiverse.get_game(self.game_token)
-        points = generate_circle_points(self.perception, self.perception)
-        foes = []
-
-        for p in points:
-            x, y = self.x - p[0], self.y - p[1]
-            if 0 <= x < game.world_width and 0 <= y < game.world_height and isinstance(game.entities[y][x], Player):
-                foes.append(game.entities[y][x])
-        return foes
+        players = [p for p in sum(Multiverse.get_game(self.game_token).entities, []) if isinstance(p, Player)]
+        for p in players:
+            if in_range(self.x, self.y, p.x, p.y, min(p.perception, 4)):
+                return True
+        return False
 
     @staticmethod
     def a_star_path(from_x, from_y, to_x, to_y, board):
@@ -207,10 +224,29 @@ class Creature(Entity):
             move_queue.append(('M', direction))
             path.pop(0)
             action_points -= 1
+
         # can attack
-        move_queue.append(('A', target) if action_points > 0 else None)
+        req_action_points = self.equipment.right_hand.action_points if self.equipment.right_hand else 2
+        move_queue.append(('A', target) if action_points >= req_action_points else None)
 
         return move_queue
+
+    def search_for_foes(self):
+        """returns list of Players in creature's view range
+        :return: list of Player objects"""
+        from dnd_bot.logic.utils.utils import generate_circle_points
+        from dnd_bot.logic.prototype.player import Player
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+
+        game = Multiverse.get_game(self.game_token)
+        points = generate_circle_points(self.perception, self.perception)
+        foes = []
+
+        for p in points:
+            x, y = self.x - p[0], self.y - p[1]
+            if 0 <= x < game.world_width and 0 <= y < game.world_height and isinstance(game.entities[y][x], Player):
+                foes.append(game.entities[y][x])
+        return foes
 
     def choose_aggro(self, foes):
         """choose which Player from foes to attack
@@ -316,7 +352,7 @@ class Creature(Entity):
         """kite away the chosen target
         :param target: Player object
         :return moves: chain of actions"""
-        from dnd_bot.logic.utils.utils import generate_circle_points
+        from dnd_bot.logic.utils.utils import generate_circle_points, in_range
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
         moves = []
@@ -341,12 +377,19 @@ class Creature(Entity):
                 path_len = len(Creature.a_star_path(self.x, self.y, x, y, simulation)) - 1
                 if path_len > self.action_points:
                     continue
+
                 wages[i] += 25  # point in my attack range
+
                 # path's length to that point
                 wages[i] -= path_len if path_len >= 0 else game.world_width * game.world_height
+
                 # dist from target
                 wages[i] += (len(Creature.a_star_path(x, y, target.x, target.y, simulation)) - 1) ** 2
-                if Creature.attackable(target.x, target.y, x, y, simulation):  # in target's attack range
+
+                # in target's attack range
+                if Creature.attackable(target.x, target.y, x, y, simulation) \
+                        and in_range(target.x, target.y, x, y,
+                                     min(target.perception, target.equipment.right_hand.use_range)):
                     wages[i] -= 10
 
         best_wage = max(wages)
@@ -365,20 +408,3 @@ class Creature(Entity):
         moves.append(('A', target))
 
         return moves
-
-    @staticmethod
-    def attackable(from_x, from_y, to_x, to_y, board):
-        """returns if position is attackable no matter what attack range is
-        :param from_x: my x
-        :param from_y: my y
-        :param to_x: target's x
-        :param to_y: target's y
-        :param board: 2d matrix - True/object when tile is occupied, False/None when tile is empty
-        :return: bool"""
-        from dnd_bot.logic.utils.utils import find_position_to_check
-
-        positions = find_position_to_check(from_x, from_y, to_x, to_y)
-        for pos in positions[1:-1]:
-            if board[pos[1]][pos[0]]:
-                return False
-        return True
