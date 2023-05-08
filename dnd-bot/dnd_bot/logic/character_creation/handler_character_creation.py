@@ -7,16 +7,13 @@ from dnd_bot.logic.prototype.character_class import CharacterClass
 from dnd_bot.logic.prototype.character_race import CharacterRace
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.exceptions import StartCharacterCreationException
-from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
+from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race, campaign_name_to_path
 
 
 class HandlerCharacterCreation:
     """Handles character creation process"""
 
-    CAMPAIGN_JSON_PATH = 'dnd_bot/assets/campaigns/campaign.json'
-
-    classes: list[CharacterClass] = []
-    races: list[CharacterRace] = []
+    campaigns: dict[str, dict[str, list[CharacterClass] | list[CharacterRace]]] = {}
 
     @staticmethod
     async def start_character_creation(token, user_id):
@@ -25,10 +22,11 @@ class HandlerCharacterCreation:
             :param user_id: id of the user who ran the command or the host that pressed the start button
             :return: user list
             """
-        HandlerCharacterCreation.load_character_creation_json_data()
-
         game = Multiverse.get_game(token)
         game_id = DatabaseGame.get_id_game_from_game_token(token)
+
+        if game.campaign_name not in HandlerCharacterCreation.campaigns:
+            HandlerCharacterCreation.load_character_creation_json_data(game.campaign_name)
 
         if game_id is None:
             raise StartCharacterCreationException(":no_entry: Error creating game!")
@@ -58,8 +56,8 @@ class HandlerCharacterCreation:
             :param user_id: id of the user who finished character creation"""
 
         character = ChosenAttributes.chosen_attributes[(user_id, token)]
-        character_class = string_to_character_class(character['class'])
-        character_race = string_to_character_race(character['race'])
+        character_class = string_to_character_class(character['class'], token)
+        character_race = string_to_character_race(character['race'], token)
 
         points_to_distribute_randomly = 15
 
@@ -101,11 +99,14 @@ class HandlerCharacterCreation:
         ChosenAttributes.chosen_attributes[(user_id, token)]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
 
     @staticmethod
-    def load_character_creation_json_data():
+    def load_character_creation_json_data(campaign_name: str = ""):
         """
         function loads information about classes and races in a campaign from a json
         """
-        with open(HandlerCharacterCreation.CAMPAIGN_JSON_PATH) as file:
+
+        HandlerCharacterCreation.campaigns[campaign_name] = {"classes": [], "races": []}
+
+        with open(campaign_name_to_path(campaign_name)) as file:
             json_dict = json.load(file)
             for character_race_or_class in [(CharacterClass, 'classes'), (CharacterRace, 'races')]:
                 json_races_or_classes = json_dict[character_race_or_class[1]]
@@ -134,6 +135,6 @@ class HandlerCharacterCreation:
                         character_class.base_perception = stats['perception']
 
                     if character_race_or_class[1] == 'classes':
-                        HandlerCharacterCreation.classes.append(character_class)
+                        HandlerCharacterCreation.campaigns[campaign_name]["classes"].append(character_class)
                     if character_race_or_class[1] == 'races':
-                        HandlerCharacterCreation.races.append(character_class)
+                        HandlerCharacterCreation.campaigns[campaign_name]["races"].append(character_class)
