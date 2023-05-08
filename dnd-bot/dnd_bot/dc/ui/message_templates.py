@@ -165,6 +165,7 @@ class MessageTemplates:
                 text = f'{active_creature.name}\'s turn'
             else:
                 text = f'{game.last_visible_creature.name}\'s turn'
+
             embed.set_footer(text=text)
 
         return embed
