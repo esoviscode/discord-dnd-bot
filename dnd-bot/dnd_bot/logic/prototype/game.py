@@ -133,6 +133,7 @@ class Game(DatabaseObject):
         return self.active_creature
 
     def get_attackable_enemies_for_player(self, player):
+        from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
         creatures = self.get_creatures()
         result = []
         weapon = player.equipment.right_hand
@@ -142,7 +143,7 @@ class Game(DatabaseObject):
         from dnd_bot.logic.utils.utils import find_position_to_check, in_range
         attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
-            if not isinstance(creature, Player):
+            if isinstance(creature, Enemy):
                 # check if creature is in player's range circle
                 if in_range(player.x, player.y, creature.x, creature.y, attack_range):
                     add = True

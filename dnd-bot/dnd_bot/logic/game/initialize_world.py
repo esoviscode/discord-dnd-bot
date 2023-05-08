@@ -7,6 +7,8 @@ from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
+from dnd_bot.logic.prototype.entities.creatures.npc import NPC
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.equipment import Equipment
 from dnd_bot.logic.prototype.items.item import Item
@@ -30,6 +32,7 @@ class InitializeWorld:
             with open(campaign_path) as file:
                 campaign_json = json.load(file)
                 enemies_json = campaign_json['entities']['enemies']
+                npc_json = campaign_json['entities']['npc']
                 map_elements_json = campaign_json['entities']['map_elements']
 
                 entities = []
@@ -45,7 +48,7 @@ class InitializeWorld:
                             entities_row.append(None)
                         else:
                             entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y,
-                                                                      game.token, game.id, enemies_json,
+                                                                      game.token, game.id, enemies_json, npc_json,
                                                                       map_elements_json)
 
                     entities.append(entities_row)
@@ -142,7 +145,7 @@ class InitializeWorld:
         return players_positions
 
     @staticmethod
-    def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, map_elements_json):
+    def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, npc_json, map_elements_json):
         """adds entity of class to entity matrix in game
         :param entity_row: representing row of entity matrix
         :param entity_name: name of entity to be added
@@ -150,13 +153,18 @@ class InitializeWorld:
         :param y: entity y position
         :param map_elements_json: data of map elements
         :param enemies_json: data of enemies
+        :param npc_json: data of npc
         :param game_id: id from database
         :param game_token: game token
         """
 
         if entity_name in enemies_json:
             entity_row = InitializeWorld.add_creature(entity_row, x, y, entity_name, game_token, game_id,
-                                                      enemies_json[entity_name])
+                                                      enemies_json[entity_name], "Enemy")
+            return entity_row
+        if entity_name in npc_json:
+            entity_row = InitializeWorld.add_creature(entity_row, x, y, entity_name, game_token, game_id,
+                                                      npc_json[entity_name], "NPC")
             return entity_row
 
         entity = Entity(x=x, y=y, sprite=map_elements_json[entity_name], name=entity_name, game_token=game_token)
@@ -166,16 +174,16 @@ class InitializeWorld:
         return entity_row
 
     @staticmethod
-    def add_creature(entity_row, x, y, name, game_token, game_id, entity_data):
-        entity = Creature(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name,
-                          hp=entity_data['hp'],
-                          strength=entity_data['strength'], dexterity=entity_data['dexterity'],
-                          intelligence=entity_data['intelligence'],
-                          charisma=entity_data['charisma'], perception=entity_data['perception'],
-                          initiative=entity_data['initiative'],
-                          action_points=entity_data['action_points'], level=entity_data['level'],
-                          drop_money=entity_data['drop_money'], drops=entity_data['drops'],
-                          creature_class=entity_data['creature_class'], ai=entity_data['ai'])
+    def add_creature(entity_row, x, y, name, game_token, game_id, entity_data, creature_type="Creature"):
+        entity = eval(creature_type)(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name,
+                                     hp=entity_data['hp'],
+                                     strength=entity_data['strength'], dexterity=entity_data['dexterity'],
+                                     intelligence=entity_data['intelligence'],
+                                     charisma=entity_data['charisma'], perception=entity_data['perception'],
+                                     initiative=entity_data['initiative'],
+                                     action_points=entity_data['action_points'], level=entity_data['level'],
+                                     drop_money=entity_data['drop_money'], drops=entity_data['drops'],
+                                     creature_class=entity_data['creature_class'], ai=entity_data['ai'])
 
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
         entity.id = id_entity

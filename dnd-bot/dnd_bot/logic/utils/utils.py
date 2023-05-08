@@ -193,14 +193,13 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     if attack_mode:
         attackable = []
         attack_range = min(player.equipment.right_hand.use_range, player.perception)
-        from dnd_bot.logic.prototype.creature import Creature
+        from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
         for p in generate_circle_points(attack_range, attack_range):
             x = player.x + p[0]
             y = player.y + p[1]
             if x < 0 or x >= game.world_width or y < 0 or y >= game.world_height:
                 continue
-            if (not game.entities[y][x]) or \
-                    (isinstance(game.entities[y][x], Creature) and not isinstance(game.entities[y][x], Player)):
+            if (not game.entities[y][x]) or isinstance(game.entities[y][x], Enemy):
                 path = find_position_to_check(player.x, player.y, player.x + p[0], player.y + p[1])
                 add = True
                 for pos in path[1:-1]:
