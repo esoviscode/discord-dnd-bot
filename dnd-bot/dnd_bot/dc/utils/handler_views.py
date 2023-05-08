@@ -23,7 +23,7 @@ class HandlerViews:
                 del game.players_views[user.discord_id]
                 return
 
-            if update_pov:
+            if update_pov:  # if to generate new player's pov
                 player_view = get_player_view(Multiverse.get_game(game_token), player, player.attack_mode)
             turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
                                                                          recent_action=recent_action_message)
