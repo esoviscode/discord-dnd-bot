@@ -9,7 +9,7 @@ class Creature(Entity):
 
     def __init__(self, x=0, y=0, sprite: str = '', name: str = 'Creature', hp: int = 0, strength: int = 0,
                  dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0, initiative: int = 0,
-                 action_points: int = 0, level: int = 0, equipment: Equipment = None, drop_money=None,
+                 action_points: int = 0, level: int = 0, equipment: Equipment = Equipment(), drop_money=None,
                  game_token: str = '', look_direction: str = 'down', experience: int = 0,
                  creature_class: str = '', drops=None, ai=-1):
         super().__init__(x=x, y=y, sprite=sprite, name=name, fragile=True, game_token=game_token, look_direction=look_direction)
@@ -37,7 +37,7 @@ class Creature(Entity):
         self.drop_money = drop_money
         self.drops = drops
 
-        self.ai = ai
+        self.ai = ai  # -1: passive, 0: Warrior, 1: Ranger, 2: Mage
         self.move_queue = []
 
 # ----------------------------------------------------- properties -----------------------------------------------------
@@ -254,47 +254,73 @@ class Creature(Entity):
         :return target: tuple (Player object, path)"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
 
-        intelligence = "high" if self.intelligence >= 10 else \
-            ("low" if self.intelligence <= 3 else "medium")
+        intelligence = "high" if self.intelligence >= 10 else ("low" if self.intelligence <= 3 else "medium")
         if intelligence != "low":
             class_priority = ["Mage", "Ranger", "Warrior"]
         sorted_foes = []
+
+        def sort_foes():
+            i = 0
+            if intelligence == "low":
+                while i < len(sorted_foes):
+                    if len(sorted_foes[i][1]) < path_len:
+                        i += 1
+                    else:
+                        break
+                sorted_foes.insert(i, (f, path))
+            elif intelligence == "medium":
+                while i < len(sorted_foes):
+                    if class_priority.index(sorted_foes[i][0].creature_class) < \
+                            class_priority.index(f.creature_class):
+                        i += 1
+                    elif len(sorted_foes[i][1]) < path_len:
+                        i += 1
+                    else:
+                        break
+                sorted_foes.insert(i, (f, path))
+            else:  # high
+                while i < len(sorted_foes):
+                    if sorted_foes[i][0].hp < f.hp:
+                        i += 1
+                    elif class_priority.index(sorted_foes[i][0].creature_class) < \
+                            class_priority.index(f.creature_class):
+                        i += 1
+                    elif len(sorted_foes[i][1]) < path_len:
+                        i += 1
+                    else:
+                        break
+                sorted_foes.insert(i, (f, path))
 
         # add foes to list and order them by specific priority
         for f in foes:
             path = Creature.a_star_path(self.x, self.y, f.x, f.y, Multiverse.get_game(self.game_token).entities)
             path_len = len(path)
-            if path:
-                i = 0
-                if intelligence == "low":
-                    while i < len(sorted_foes):
-                        if len(sorted_foes[i][1]) < path_len:
-                            i += 1
-                        else:
-                            break
-                    sorted_foes.insert(i, (f, path))
-                elif intelligence == "medium":
-                    while i < len(sorted_foes):
-                        if class_priority.index(sorted_foes[i][0].creature_class) < \
-                                class_priority.index(f.creature_class):
-                            i += 1
-                        elif len(sorted_foes[i][1]) < path_len:
-                            i += 1
-                        else:
-                            break
-                    sorted_foes.insert(i, (f, path))
-                else:  # high
-                    while i < len(sorted_foes):
-                        if sorted_foes[i][0].hp < f.hp:
-                            i += 1
-                        elif class_priority.index(sorted_foes[i][0].creature_class) < \
-                                class_priority.index(f.creature_class):
-                            i += 1
-                        elif len(sorted_foes[i][1]) < path_len:
-                            i += 1
-                        else:
-                            break
-                    sorted_foes.insert(i, (f, path))
+            if path:  # if there is a path to the foe
+                sort_foes()
+            else:
+                from dnd_bot.logic.prototype.multiverse import Multiverse
+                from dnd_bot.logic.utils.utils import generate_circle_points
+                game = Multiverse.get_game(f.game_token)
+                best_path = [None] * (game.world_width * game.world_height)
+                attack_range = min(self.perception, self.equipment.right_hand.use_range
+                                   if self.equipment.right_hand else 1)
+                points = generate_circle_points(attack_range, attack_range)
+
+                entities = copy.deepcopy(game.entities)
+                entities[self.y][self.x] = None
+                for x, y in points:
+                    if not (0 <= f.x - x < game.world_width and 0 <= f.y - y < game.world_height):
+                        continue
+                    if not entities[f.y - y][f.x - x]:
+                        path = Creature.a_star_path(self.x, self.y, f.x - x, f.y - y, entities)
+                        if (not path) or (not Creature.attackable(f.x - x, f.y - y, f.x, f.y, entities)):
+                            continue
+                        if len(best_path) > len(path):
+                            if self.action_points >= len(path) - 1:
+                                best_path = path
+                # if there is a pos where you can't path to the foe, but can attack him
+                if len(best_path) < game.world_width * game.world_height:
+                    sort_foes()
 
         if sorted_foes:  # highest priority
             return sorted_foes[0]
