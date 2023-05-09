@@ -10,6 +10,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_loot_corpse import HandlerLootCorpse
+from dnd_bot.logic.game.handler_dialogue import HandlerDialogue
 from dnd_bot.logic.game.handler_manage_items import HandlerManageItems
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
@@ -246,6 +247,10 @@ class ViewMoreActions(ViewGame):
                                     custom_id='more-actions-loot')
         loot_corpse_button.callback = self.loot_corpse
 
+        dialogue_button = Button(label='Talk to...', style=nextcord.ButtonStyle.blurple, row=0,
+                                 custom_id='more-actions-dialogue')
+        dialogue_button.callback = self.talk
+
         cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1,
                                custom_id='more-actions-cancel')
         cancel_button.callback = self.cancel
@@ -256,12 +261,24 @@ class ViewMoreActions(ViewGame):
         if self.player.can_loot_corpse:
             self.add_item(loot_corpse_button)
 
+        if self.player.can_talk:
+            self.add_item(dialogue_button)
+
         self.add_item(cancel_button)
 
     async def loot_corpse(self, interaction: nextcord.Interaction):
         """ button callback for looting the corpse"""
         try:
-            await HandlerLootCorpse.handle_loot_corpse(self.player)
+            await HandlerDialogue.handle_talk(self.player)
+        except DiscordDndBotException as e:
+            await Messager.send_dm_error_message(user_id=interaction.user.id,
+                                                 token=self.token,
+                                                 content=f"**{e}**")
+
+    async def talk(self, interaction: nextcord.Interaction):
+        """ button callback for looting the corpse"""
+        try:
+            await HandlerDialogue.handle_talk(self.player)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id,
                                                  token=self.token,
