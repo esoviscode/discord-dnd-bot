@@ -349,6 +349,25 @@
         "ai": 0
       }
     },
+    "npc" : {
+      "Traveller" : {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/traveller.png",
+        "hp": 20,
+        "strength": 3,
+        "dexterity": 2,
+        "intelligence": 4,
+        "charisma": 6,
+        "perception": 3,
+        "initiative": 5,
+        "action_points": 1,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [0, 0],
+        "drops": {},
+        "creature_class": "",
+        "ai": -1
+      }
+    },
     "map_elements": {
       "Rock": "dnd_bot/assets/gfx/entities/mushrooms.png",
       "Mushrooms": "dnd_bot/assets/gfx/entities/rock.png",

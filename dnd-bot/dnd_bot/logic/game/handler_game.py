@@ -31,7 +31,8 @@ class HandlerGame:
             # delete any error messages that were left out
             await Messager.delete_last_user_error_message(game.active_creature.discord_identity, game_token)
 
-        recent_action_message = MessageTemplates.end_turn_recent_action_message(game.last_visible_creature)
+        recent_action_message = MessageTemplates.end_turn_recent_action_message(game.last_visible_creature) \
+            if game.last_visible_creature else ""
 
         # reset creature's action points to the initial value
         game.active_creature.action_points = game.active_creature.initial_action_points
@@ -52,6 +53,7 @@ class HandlerGame:
             await asyncio.sleep(1)
             print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
             if active_creature.visible_for_players():
+                game.last_visible_creature = active_creature
                 await HandlerViews.display_views_for_users(game_token, recent_action_message)
 
         await HandlerGame.end_turn(game_token, active_creature.visible_for_players())
