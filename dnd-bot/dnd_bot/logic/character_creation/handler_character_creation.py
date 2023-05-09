@@ -7,16 +7,13 @@ from dnd_bot.logic.prototype.character_class import CharacterClass
 from dnd_bot.logic.prototype.character_race import CharacterRace
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.exceptions import StartCharacterCreationException
-from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race
+from dnd_bot.logic.utils.utils import string_to_character_class, string_to_character_race, campaign_name_to_path
 
 
 class HandlerCharacterCreation:
     """Handles character creation process"""
 
-    CAMPAIGN_JSON_PATH = 'dnd_bot/assets/campaigns/campaign.json'
-
-    classes: list[CharacterClass] = []
-    races: list[CharacterRace] = []
+    campaigns: dict[str, dict[str, list[CharacterClass] | list[CharacterRace]]] = {}
 
     @staticmethod
     async def start_character_creation(token, user_id):
@@ -25,10 +22,11 @@ class HandlerCharacterCreation:
             :param user_id: id of the user who ran the command or the host that pressed the start button
             :return: user list
             """
-        HandlerCharacterCreation.load_character_creation_json_data()
-
         game = Multiverse.get_game(token)
         game_id = DatabaseGame.get_id_game_from_game_token(token)
+
+        if game.campaign_name not in HandlerCharacterCreation.campaigns:
+            HandlerCharacterCreation.load_character_creation_json_data(game.campaign_name)
 
         if game_id is None:
             raise StartCharacterCreationException(":no_entry: Error creating game!")
@@ -46,65 +44,69 @@ class HandlerCharacterCreation:
         DatabaseGame.update_game_state(game_id, 'STARTING')
 
         for user in game.user_list:
-            ChosenAttributes.add_empty_user(user.discord_id)
+            ChosenAttributes.add_empty_user(user.discord_id, token)
             game.find_user(user.discord_id).is_ready = False
 
         return game.user_list
 
     @staticmethod
-    async def assign_attribute_values(user_id):
+    async def assign_attribute_values(token, user_id):
         """Called to choose attribute values based on the user's choices in character creation process
+            :param token: game token
             :param user_id: id of the user who finished character creation"""
 
-        character = ChosenAttributes.chosen_attributes[user_id]
-        character_class = string_to_character_class(character['class'])
-        character_race = string_to_character_race(character['race'])
+        character = ChosenAttributes.chosen_attributes[(user_id, token)]
+        character_class = string_to_character_class(character['class'], token)
+        character_race = string_to_character_race(character['race'], token)
 
         points_to_distribute_randomly = 15
 
         additional_strength = random.randint(0, 2)
         strength = character_class.base_strength + character_race.base_strength + additional_strength
         points_to_distribute_randomly -= additional_strength
-        ChosenAttributes.chosen_attributes[user_id]['strength'] = strength
+        ChosenAttributes.chosen_attributes[(user_id, token)]['strength'] = strength
 
         additional_dexterity = random.randint(0, 2)
         dexterity = character_class.base_dexterity + character_race.base_dexterity + additional_dexterity
         points_to_distribute_randomly -= additional_dexterity
-        ChosenAttributes.chosen_attributes[user_id]['dexterity'] = dexterity
+        ChosenAttributes.chosen_attributes[(user_id, token)]['dexterity'] = dexterity
 
         additional_intelligence = random.randint(0, 2)
         intelligence = character_class.base_intelligence + character_race.base_intelligence + additional_intelligence
         points_to_distribute_randomly -= additional_intelligence
-        ChosenAttributes.chosen_attributes[user_id]['intelligence'] = intelligence
+        ChosenAttributes.chosen_attributes[(user_id, token)]['intelligence'] = intelligence
 
         additional_charisma = random.randint(0, 2)
         charisma = character_class.base_charisma + character_race.base_charisma + additional_charisma
         points_to_distribute_randomly -= additional_charisma
-        ChosenAttributes.chosen_attributes[user_id]['charisma'] = charisma
+        ChosenAttributes.chosen_attributes[(user_id, token)]['charisma'] = charisma
 
         additional_perception = random.randint(0, 1)
         perception = character_class.base_perception + character_race.base_perception + additional_perception
         points_to_distribute_randomly -= additional_perception
-        ChosenAttributes.chosen_attributes[user_id]['perception'] = perception
+        ChosenAttributes.chosen_attributes[(user_id, token)]['perception'] = perception
 
         additional_action_points = random.randint(0, 2)
         action_points = character_class.base_action_points + character_race.base_action_points + additional_action_points
         points_to_distribute_randomly -= additional_action_points
-        ChosenAttributes.chosen_attributes[user_id]['action points'] = action_points
+        ChosenAttributes.chosen_attributes[(user_id, token)]['action points'] = action_points
 
         additional_initiative = random.randint(0, 2)
         initiative = character_class.base_initiative + character_race.base_initiative + additional_initiative
         points_to_distribute_randomly -= additional_initiative
-        ChosenAttributes.chosen_attributes[user_id]['initiative'] = initiative
+        ChosenAttributes.chosen_attributes[(user_id, token)]['initiative'] = initiative
 
-        ChosenAttributes.chosen_attributes[user_id]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
+        ChosenAttributes.chosen_attributes[(user_id, token)]['hp'] = character_class.base_hp + character_race.base_hp + points_to_distribute_randomly
 
     @staticmethod
-    def load_character_creation_json_data():
+    def load_character_creation_json_data(campaign_name: str = ""):
         """
         function loads information about classes and races in a campaign from a json
         """
-        with open(HandlerCharacterCreation.CAMPAIGN_JSON_PATH) as file:
+
+        HandlerCharacterCreation.campaigns[campaign_name] = {"classes": [], "races": []}
+
+        with open(campaign_name_to_path(campaign_name)) as file:
             json_dict = json.load(file)
             for character_race_or_class in [(CharacterClass, 'classes'), (CharacterRace, 'races')]:
                 json_races_or_classes = json_dict[character_race_or_class[1]]
@@ -133,6 +135,6 @@ class HandlerCharacterCreation:
                         character_class.base_perception = stats['perception']
 
                     if character_race_or_class[1] == 'classes':
-                        HandlerCharacterCreation.classes.append(character_class)
+                        HandlerCharacterCreation.campaigns[campaign_name]["classes"].append(character_class)
                     if character_race_or_class[1] == 'races':
-                        HandlerCharacterCreation.races.append(character_class)
+                        HandlerCharacterCreation.campaigns[campaign_name]["races"].append(character_class)
