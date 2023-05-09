@@ -282,27 +282,41 @@ def rotate_image_to_direction(img, direction):
     return image
 
 
-def string_to_character_class(class_name: str):
+def string_to_character_class(class_name: str, token: str):
     """
-    returns object of python class defining particular character class given its name
+    returns object of python class defining particular character class in particular game given its name
     :param class_name: name of character class
+    :param token: game token
     :return class: object defining character class
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-    for character_class in HandlerCharacterCreation.classes:
+    game = Mv.get_game(token)
+
+    for character_class in HandlerCharacterCreation.campaigns[game.campaign_name]["classes"]:
         if character_class.name == class_name:
             return character_class
     return None
 
 
-def string_to_character_race(race_name: str):
+def string_to_character_race(race_name: str, token: str):
     """
         returns object of class defining particular character race given its name
         :param race_name: name of character class
+        :param token: game token
         :return class: object defining character race
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-    for character_race in HandlerCharacterCreation.races:
+    game = Mv.get_game(token)
+
+    for character_race in HandlerCharacterCreation.campaigns[game.campaign_name]["races"]:
         if character_race.name == race_name:
             return character_race
     return None
+
+
+def campaign_name_to_path(campaign_name: str = "") -> str:
+    """return path to json containing campaign given campaign name"""
+    path = "dnd_bot/assets/campaigns/"
+    if campaign_name == "Storm King's Thunder":
+        path += "campaign.json"
+    return path

@@ -246,7 +246,7 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def class_form_view_message_template():
+    def class_form_view_message_template(campaign_name: str):
         """embed in character creation explaining classes"""
 
         desc = "A character class is a fundamental part of the identity and nature of characters.\n" \
@@ -257,13 +257,13 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Class Form', description=desc)
 
         from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-        for character_class in HandlerCharacterCreation.classes:
+        for character_class in HandlerCharacterCreation.campaigns[campaign_name]["classes"]:
             MessageTemplates.add_class_or_race_field(character_class, embed)
 
         return embed
 
     @staticmethod
-    def race_form_view_message_template():
+    def race_form_view_message_template(campaign_name: str):
         """embed in character creation explaining races"""
 
         desc = "Each race has a distinct appearance, behavior and often range of statistics associated with it.\n\n "
@@ -273,7 +273,7 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Race Form', description=desc)
 
         from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-        for character_race in HandlerCharacterCreation.races:
+        for character_race in HandlerCharacterCreation.campaigns[campaign_name]["races"]:
             MessageTemplates.add_class_or_race_field(character_race, embed)
 
         return embed
@@ -315,12 +315,12 @@ class MessageTemplates:
                         inline=False)
 
     @staticmethod
-    def stats_retrospective_form_view_message_template(user_id):
+    def stats_retrospective_form_view_message_template(user_id, token):
         """embed showing created character and his stats"""
 
-        character = ChosenAttributes.chosen_attributes[user_id]
-        character_class = string_to_character_class(character['class'])
-        character_race = string_to_character_race(character['race'])
+        character = ChosenAttributes.chosen_attributes[(user_id, token)]
+        character_class = string_to_character_class(character['class'], token)
+        character_race = string_to_character_race(character['race'], token)
 
         embed = nextcord.Embed(title=f'Your Character')
 

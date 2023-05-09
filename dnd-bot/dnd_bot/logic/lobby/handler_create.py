@@ -55,6 +55,7 @@ class HandlerCreate:
         while token in tokens:
             token = await HandlerCreate.generate_token()
 
+        #TODO add ability to choose another campaign
         DatabaseGame.add_game(token, host_id, "LOBBY", "Storm King's Thunder")
         game = Game(token, host_id, "Storm King's Thunder", "LOBBY")
 
