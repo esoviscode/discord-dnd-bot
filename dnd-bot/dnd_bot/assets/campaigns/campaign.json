@@ -56,7 +56,7 @@
       "description": "You're a hard, tough worker.",
       "long-description": "A hardy and sturdy race, dwarves are known for their craftsmanship and mining skills. They are short but strong and resilient. They have the best ability to see in the dark. \n\n\n",
       "stats": {
-        "perception": 3,
+        "perception": 2,
         "hp": 18,
         "strength": 7,
         "action-points": 9
