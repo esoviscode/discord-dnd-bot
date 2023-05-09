@@ -113,7 +113,7 @@ class Creature(Entity):
         return "Idle"
 
     def visible_for_players(self):
-        """returns if creature is visible for players"""
+        """return if creature is visible for players"""
         from dnd_bot.logic.prototype.multiverse import Multiverse
         from dnd_bot.logic.prototype.player import Player
         from dnd_bot.logic.utils.utils import in_range
