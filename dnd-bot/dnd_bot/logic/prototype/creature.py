@@ -260,6 +260,7 @@ class Creature(Entity):
         sorted_foes = []
 
         def sort_foes():
+            """adds foe to the list with specific priority"""
             i = 0
             if intelligence == "low":
                 while i < len(sorted_foes):
