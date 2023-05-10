@@ -269,7 +269,7 @@ class ViewMoreActions(ViewGame):
     async def loot_corpse(self, interaction: nextcord.Interaction):
         """ button callback for looting the corpse"""
         try:
-            await HandlerDialogue.handle_talk(self.player)
+            await HandlerLootCorpse.handle_loot_corpse(self.player)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id,
                                                  token=self.token,
