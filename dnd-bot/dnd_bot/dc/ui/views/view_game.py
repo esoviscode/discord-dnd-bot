@@ -276,7 +276,7 @@ class ViewMoreActions(ViewGame):
                                                  content=f"**{e}**")
 
     async def talk(self, interaction: nextcord.Interaction):
-        """ button callback for looting the corpse"""
+        """ button callback for talking to NPC"""
         try:
             turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
             self.game.players_views[self.user_discord_id] = (ViewDialog, [])
