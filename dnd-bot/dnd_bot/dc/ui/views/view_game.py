@@ -162,6 +162,7 @@ class ViewMain(ViewGame):
         game = Multiverse.get_game(self.token)
 
         embed = MessageTemplates.more_actions_template()
+        self.game.players_views[self.user_discord_id] = (ViewMoreActions, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               token=self.token,
                                               embeds=[embed],
@@ -612,8 +613,9 @@ class ViewDialog(ViewGame):
         self.add_item(cancel_button)
 
     async def dialogue_button(self, interaction: nextcord.Interaction):
-        await ViewDialog.talk(self.select_interlocutor_list.values[0],
-                              interaction.user.id, self.token, interaction)
+        if self.select_interlocutor_list.values:
+            await ViewDialog.talk(self.select_interlocutor_list.values[0],
+                                  interaction.user.id, self.token, interaction)
 
     async def cancel(self, interaction: nextcord.Interaction):
         player = self.game.get_player_by_id_user(interaction.user.id)
