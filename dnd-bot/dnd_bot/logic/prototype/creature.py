@@ -118,6 +118,7 @@ class Creature(Entity):
         from dnd_bot.logic.prototype.player import Player
         from dnd_bot.logic.utils.utils import in_range
 
+        # converts 2d array of entities to a list, and adds only players
         players = [p for p in sum(Multiverse.get_game(self.game_token).entities, []) if isinstance(p, Player)]
         for p in players:
             if in_range(self.x, self.y, p.x, p.y, min(p.perception, 4)):

@@ -10,6 +10,7 @@ from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.handler_attack import HandlerAttack
 from dnd_bot.logic.game.handler_loot_corpse import HandlerLootCorpse
+from dnd_bot.logic.game.handler_dialogue import HandlerDialogue
 from dnd_bot.logic.game.handler_manage_items import HandlerManageItems
 from dnd_bot.logic.game.handler_movement import HandlerMovement
 from dnd_bot.logic.game.handler_skills import HandlerSkills
@@ -161,6 +162,7 @@ class ViewMain(ViewGame):
         game = Multiverse.get_game(self.token)
 
         embed = MessageTemplates.more_actions_template()
+        self.game.players_views[self.user_discord_id] = (ViewMoreActions, [])
         await Messager.edit_last_user_message(user_id=interaction.user.id,
                                               token=self.token,
                                               embeds=[embed],
@@ -246,6 +248,10 @@ class ViewMoreActions(ViewGame):
                                     custom_id='more-actions-loot')
         loot_corpse_button.callback = self.loot_corpse
 
+        dialogue_button = Button(label='Talk to...', style=nextcord.ButtonStyle.blurple, row=0,
+                                 custom_id='more-actions-dialogue')
+        dialogue_button.callback = self.talk
+
         cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1,
                                custom_id='more-actions-cancel')
         cancel_button.callback = self.cancel
@@ -256,12 +262,29 @@ class ViewMoreActions(ViewGame):
         if self.player.can_loot_corpse:
             self.add_item(loot_corpse_button)
 
+        if self.player.can_talk:
+            self.add_item(dialogue_button)
+
         self.add_item(cancel_button)
 
     async def loot_corpse(self, interaction: nextcord.Interaction):
         """ button callback for looting the corpse"""
         try:
             await HandlerLootCorpse.handle_loot_corpse(self.player)
+        except DiscordDndBotException as e:
+            await Messager.send_dm_error_message(user_id=interaction.user.id,
+                                                 token=self.token,
+                                                 content=f"**{e}**")
+
+    async def talk(self, interaction: nextcord.Interaction):
+        """ button callback for talking to NPC"""
+        try:
+            turn_view_embed = await MessageTemplates.creature_turn_embed(self.token, interaction.user.id)
+            self.game.players_views[self.user_discord_id] = (ViewDialog, [])
+            await Messager.edit_last_user_message(user_id=interaction.user.id,
+                                                  token=self.token,
+                                                  embeds=[turn_view_embed],
+                                                  view=ViewDialog(self.token, self.user_discord_id))
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id,
                                                  token=self.token,
@@ -554,5 +577,60 @@ class ViewSkills(ViewGame):
         try:
             message = await HandlerSkills.handle_use_skill(skill, id_user, token)
             await HandlerViews.display_views_for_users(token, message)
+        except DiscordDndBotException as e:
+            await Messager.send_dm_error_message(id_user, token, f"**{e}**")
+
+
+class ViewDialog(ViewGame):
+    def __init__(self, token, user_discord_id):
+        super().__init__(token, user_discord_id)
+        from dnd_bot.logic.prototype.entities.creatures.npc import NPC
+        game = Multiverse.get_game(token)
+        self.interlocutors = [e for e in game.get_player_by_id_user(user_discord_id).get_entities_around()
+                              if isinstance(e, NPC)]
+        interlocutors_select_options = []
+
+        for s in self.interlocutors:
+            interlocutors_select_options.append(nextcord.SelectOption(
+                label=f"{s.name} at ({s.x}, {s.y})", value=s.id
+            ))
+        self.select_interlocutor_list = nextcord.ui.Select(
+            placeholder="Choose the interlocutor",
+            options=interlocutors_select_options,
+            row=0
+        )
+
+        self.add_item(self.select_interlocutor_list)
+
+        dialogue_button = Button(label='Talk', style=nextcord.ButtonStyle.blurple, row=1,
+                                 custom_id='dialogue-action-button')
+        dialogue_button.callback = self.dialogue_button
+        self.add_item(dialogue_button)
+
+        cancel_button = Button(label='Cancel', style=nextcord.ButtonStyle.red, row=1,
+                               custom_id='dialogue-cancel-button')
+        cancel_button.callback = self.cancel
+        self.add_item(cancel_button)
+
+    async def dialogue_button(self, interaction: nextcord.Interaction):
+        if self.select_interlocutor_list.values:
+            await ViewDialog.talk(self.select_interlocutor_list.values[0],
+                                  interaction.user.id, self.token, interaction)
+
+    async def cancel(self, interaction: nextcord.Interaction):
+        player = self.game.get_player_by_id_user(interaction.user.id)
+        await super().cancel(interaction, [get_player_view(self.game, player)])
+
+    @staticmethod
+    async def talk(target_id, id_user, token, interaction: nextcord.Interaction):
+        """talk to the target from the available interlocutors list"""
+        try:
+            game = Multiverse.get_game(token)
+            player = game.get_player_by_id_user(id_user)
+            target = game.get_entity_by_id(target_id)
+
+            message = await HandlerDialogue.handle_talk(player, target)
+
+            await HandlerViews.display_views_for_users(token, message, False)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(id_user, token, f"**{e}**")

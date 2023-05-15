@@ -58,7 +58,7 @@ class Enemy(Creature):
         while (not (Creature.attackable(path[0][0], path[0][1], path[-1][0], path[-1][1],
                                         Multiverse.get_game(self.game_token).entities)
                     and in_range(path[0][0], path[0][1], path[-1][0], path[-1][1], attack_range))
-        ) and (action_points > 0):
+               ) and (action_points > 0):
             if path[0][0] - path[1][0] != 0:
                 direction = "right" if path[0][0] < path[1][0] else "left"
             else:
@@ -103,6 +103,7 @@ class Enemy(Creature):
         sorted_foes = []
 
         def sort_foes():
+            """adds foe to the list with specific priority"""
             i = 0
             if intelligence == "low":
                 while i < len(sorted_foes):
