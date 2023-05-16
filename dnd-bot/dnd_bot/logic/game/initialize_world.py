@@ -28,7 +28,7 @@ from dnd_bot.logic.utils.utils import get_game_view
 class InitializeWorld:
 
     @staticmethod
-    def load_entities(game, map_path, campaign_path):
+    async def load_entities(game, map_path, campaign_path):
         """loads entities from json, players will be placed in random available spawning spots"""
 
         print("\n-- Initializing world --")
@@ -76,8 +76,7 @@ class InitializeWorld:
         print(f'   - spawning players - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
         time_snapshot = time.time()
-        loop = asyncio.get_event_loop()
-        loop.create_task(InitializeWorld.add_entities_to_database(entities, game))
+        await InitializeWorld.add_entities_to_database(game)
         print(f'   - adding entities to database - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
         game.sprite = str(map_json['map']['img_file'])  # path to raw map image
@@ -298,13 +297,13 @@ class InitializeWorld:
         return DatabaseItem.add_item(name=i.name)
 
     @staticmethod
-    async def add_entities_to_database(entities, game):
+    async def add_entities_to_database(game):
         async def add_row_entities_to_database(row):
             queries = []
             parameters_list = []
 
             # add entities
-            entities_in_row = [e for e in row if isinstance(e, Entity)]
+            entities_in_row = [e for e in row if isinstance(e, Entity) and not isinstance(e, Player)]
             for entity in entities_in_row:
                 query, parameters = DatabaseEntity.add_entity_query(name=entity.name, x=entity.x, y=entity.y,
                                                                     id_game=game.id)
@@ -319,7 +318,7 @@ class InitializeWorld:
             queries.clear()
             parameters_list.clear()
             # add creatures
-            creatures_in_row = [c for c in entities_in_row if isinstance(c, Creature)]
+            creatures_in_row = [c for c in entities_in_row if isinstance(c, Creature) and not isinstance(c, Player)]
             for creature in creatures_in_row:
                 query, parameters = DatabaseCreature.add_creature_query(name=creature.name, x=creature.x, y=creature.y,
                                                                         hp=creature.hp, strength=creature.strength,
@@ -342,7 +341,7 @@ class InitializeWorld:
 
         # add rows in parallel
         q = asyncio.Queue()
-        tasks = [asyncio.create_task(add_row_entities_to_database(row)) for row in entities]
+        tasks = [asyncio.create_task(add_row_entities_to_database(row)) for row in game.entities]
         await asyncio.gather(*tasks)
         await q.join()
 

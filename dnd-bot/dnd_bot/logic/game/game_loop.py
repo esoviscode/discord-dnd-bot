@@ -18,6 +18,7 @@ class GameLoop:
     @staticmethod
     def prepare_queue(game: Game):
         """puts all the creatures to the queue with order by initiative"""
+        print(f'\n-- Preparing creatures queue --')
 
         def entity_sorting_value(e):
             if not isinstance(e, Creature):
@@ -77,7 +78,6 @@ class GameLoop:
 
     @staticmethod
     def update_creature(c: Creature) -> None:
-        # TODO creatures not added yet
         DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
                                          experience=c.experience, x=c.x, y=c.y)
 
