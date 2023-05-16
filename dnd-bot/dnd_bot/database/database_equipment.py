@@ -4,8 +4,8 @@ from dnd_bot.database.database_connection import DatabaseConnection
 class DatabaseEquipment:
 
     @staticmethod
-    def add_equipment(helmet: int = None, chest: int = None, leg_armor: int = None, boots: int = None, left_hand=None,
-                      right_hand: int = None, accessory: int = None) -> int | None:
+    def add_equipment(helmet: int = None, chest: int = None, leg_armor: int = None, boots: int = None,
+                      left_hand: int = None, right_hand: int = None, accessory: int = None) -> int | None:
         return DatabaseConnection.add_to_db(f'INSERT INTO public."Equipment" (helmet, chest, leg_armor, boots, '
                                             f'left_hand, right_hand, accessory) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                                             (helmet, chest, leg_armor, boots, left_hand, right_hand, accessory),

@@ -37,7 +37,7 @@ class HandlerStatsRetrospective:
             await Messager.edit_last_user_message(user_id=view.user_id,
                                                   token=view.token,
                                                   embeds=[MessageTemplates.stats_retrospective_form_view_message_template(
-                                                      view.user_id)],
+                                                      view.user_id, view.token)],
                                                   view=view)
             raise CharacterCreationInterfaceException("You created your character! Now wait for other players to "
                                                       "finish!")

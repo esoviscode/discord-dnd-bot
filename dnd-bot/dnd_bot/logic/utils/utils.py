@@ -193,14 +193,13 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
     if attack_mode:
         attackable = []
         attack_range = min(player.equipment.right_hand.use_range, player.perception)
-        from dnd_bot.logic.prototype.creature import Creature
+        from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
         for p in generate_circle_points(attack_range, attack_range):
             x = player.x + p[0]
             y = player.y + p[1]
             if x < 0 or x >= game.world_width or y < 0 or y >= game.world_height:
                 continue
-            if (not game.entities[y][x]) or \
-                    (isinstance(game.entities[y][x], Creature) and not isinstance(game.entities[y][x], Player)):
+            if (not game.entities[y][x]) or isinstance(game.entities[y][x], Enemy):
                 path = find_position_to_check(player.x, player.y, player.x + p[0], player.y + p[1])
                 add = True
                 for pos in path[1:-1]:
@@ -283,27 +282,41 @@ def rotate_image_to_direction(img, direction):
     return image
 
 
-def string_to_character_class(class_name: str):
+def string_to_character_class(class_name: str, token: str):
     """
-    returns object of python class defining particular character class given its name
+    returns object of python class defining particular character class in particular game given its name
     :param class_name: name of character class
+    :param token: game token
     :return class: object defining character class
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-    for character_class in HandlerCharacterCreation.classes:
+    game = Mv.get_game(token)
+
+    for character_class in HandlerCharacterCreation.campaigns[game.campaign_name]["classes"]:
         if character_class.name == class_name:
             return character_class
     return None
 
 
-def string_to_character_race(race_name: str):
+def string_to_character_race(race_name: str, token: str):
     """
         returns object of class defining particular character race given its name
         :param race_name: name of character class
+        :param token: game token
         :return class: object defining character race
     """
     from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-    for character_race in HandlerCharacterCreation.races:
+    game = Mv.get_game(token)
+
+    for character_race in HandlerCharacterCreation.campaigns[game.campaign_name]["races"]:
         if character_race.name == race_name:
             return character_race
     return None
+
+
+def campaign_name_to_path(campaign_name: str = "") -> str:
+    """return path to json containing campaign given campaign name"""
+    path = "dnd_bot/assets/campaigns/"
+    if campaign_name == "Storm King's Thunder":
+        path += "campaign.json"
+    return path

@@ -57,6 +57,10 @@ class GameLoop:
 
         first_creature = game.creatures_queue.popleft()
         game.active_creature = first_creature
+        for c in game.creatures_queue:
+            if c.visible_for_players() or isinstance(c, Player):
+                game.last_visible_creature = c
+                break
 
         for user in game.user_list:
             game.players_views[user.discord_id] = (ViewCharacterNonActive, [])

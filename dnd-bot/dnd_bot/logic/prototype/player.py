@@ -73,6 +73,14 @@ class Player(Creature):
                 return True
         return False
 
+    @property
+    def can_talk(self):
+        from dnd_bot.logic.prototype.entities.creatures.npc import NPC
+        for entity in self.get_entities_around():
+            if isinstance(entity, NPC):
+                return True
+        return False
+
     def add_items(self, dropped_items):
         """ universal system for adding items
         :param dropped_items - LIST of items to add

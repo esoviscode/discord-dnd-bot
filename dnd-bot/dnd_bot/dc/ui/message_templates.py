@@ -97,28 +97,39 @@ class MessageTemplates:
         if item is None:
             return ''
 
-        ret = f'{item.name} '
+        ret = f'{item.name}'
 
         if item.strength > 0:
-            ret += f' - str 💪: {item.strength}'
+            ret += f' | str 💪: {item.strength}'
         if item.intelligence > 0:
-            ret += f' - int 🎓: {item.intelligence}'
+            ret += f' | int 🎓: {item.intelligence}'
         if item.dexterity > 0:
-            ret += f' - dex 💨: {item.dexterity}'
+            ret += f' | dex 💨: {item.dexterity}'
+
+        # for weapons
+        if item.damage > (0, 0):
+            ret += f' | dmg ⚔️: {item.damage[0]}'
+            if item.damage[1] != item.damage[0]:
+                ret += f'-{item.damage[1]}'
+        if item.use_range > 0:
+            ret += f' | r 🎯: {item.use_range}'
+        if item.action_points > 0:
+            ret += f' | ap ✨: {item.action_points}'
         return ret
 
     @staticmethod
     def stats_message_template(player):
         """message segment that shows the stats of the player"""
 
-        desc = f'Strength: {player.strength}\n'
-        desc += f'Dexterity: {player.dexterity}\n'
-        desc += f'Max HP: {player.max_hp}\n'
-        desc += f'Intelligence: {player.intelligence}\n'
-        desc += f'Charisma: {player.charisma}\n'
-        desc += f'Perception: {player.perception}\n'
-        desc += f'Initiative: {player.initiative}\n'
-        desc += f'Action Points: {player.initial_action_points}\n'
+        desc = f'Strength: **{player.strength}** ({player.base_strength})\n'
+        desc += f'Dexterity: **{player.dexterity}** ({player.base_dexterity})\n'
+        desc += f'Max HP: **{player.max_hp}**\n'
+        desc += f'Intelligence: **{player.intelligence}** ({player.base_intelligence})\n'
+        desc += f'Charisma: **{player.charisma}** ({player.base_charisma})\n'
+        desc += f'Perception: **{player.perception}** ({player.base_perception})\n'
+        desc += f'Initiative: **{player.initiative}**\n'
+        desc += f'Action Points: **{player.initial_action_points}**\n'
+        desc += f'Defence: **{player.defence}**\n'
 
         embed = nextcord.Embed(title="Your Stats:", description=desc)
         return embed
@@ -137,9 +148,10 @@ class MessageTemplates:
     @staticmethod
     async def creature_turn_embed(token, user_id, recent_action=''):
         """message embed representing the active creature's actions and the player's stats"""
-        player = Multiverse.get_game(token).get_player_by_id_user(user_id)
+        game = Multiverse.get_game(token)
+        player = game.get_player_by_id_user(user_id)
 
-        active_creature = Multiverse.get_game(token).get_active_creature()
+        active_creature = game.get_active_creature()
 
         embed = nextcord.Embed(title=f'Position: ({player.x}, {player.y}) | Action points: {player.action_points}/'
                                      f'{player.initial_action_points} | HP: {player.hp}/{player.max_hp}',
@@ -149,7 +161,12 @@ class MessageTemplates:
             active_user_icon = active_user.display_avatar.url
             embed.set_footer(text=f'{active_creature.name}\'s turn', icon_url=active_user_icon)
         else:
-            embed.set_footer(text=f'{active_creature.name}\'s turn')
+            if active_creature.visible_for_players():
+                text = f'{active_creature.name}\'s turn'
+            else:
+                text = f'{game.last_visible_creature.name}\'s turn'
+
+            embed.set_footer(text=text)
 
         return embed
 
@@ -229,7 +246,7 @@ class MessageTemplates:
         return embed
 
     @staticmethod
-    def class_form_view_message_template():
+    def class_form_view_message_template(campaign_name: str):
         """embed in character creation explaining classes"""
 
         desc = "A character class is a fundamental part of the identity and nature of characters.\n" \
@@ -240,13 +257,13 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Class Form', description=desc)
 
         from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-        for character_class in HandlerCharacterCreation.classes:
+        for character_class in HandlerCharacterCreation.campaigns[campaign_name]["classes"]:
             MessageTemplates.add_class_or_race_field(character_class, embed)
 
         return embed
 
     @staticmethod
-    def race_form_view_message_template():
+    def race_form_view_message_template(campaign_name: str):
         """embed in character creation explaining races"""
 
         desc = "Each race has a distinct appearance, behavior and often range of statistics associated with it.\n\n "
@@ -256,7 +273,7 @@ class MessageTemplates:
         embed = nextcord.Embed(title=f'Race Form', description=desc)
 
         from dnd_bot.logic.character_creation.handler_character_creation import HandlerCharacterCreation
-        for character_race in HandlerCharacterCreation.races:
+        for character_race in HandlerCharacterCreation.campaigns[campaign_name]["races"]:
             MessageTemplates.add_class_or_race_field(character_race, embed)
 
         return embed
@@ -298,12 +315,12 @@ class MessageTemplates:
                         inline=False)
 
     @staticmethod
-    def stats_retrospective_form_view_message_template(user_id):
+    def stats_retrospective_form_view_message_template(user_id, token):
         """embed showing created character and his stats"""
 
-        character = ChosenAttributes.chosen_attributes[user_id]
-        character_class = string_to_character_class(character['class'])
-        character_race = string_to_character_race(character['race'])
+        character = ChosenAttributes.chosen_attributes[(user_id, token)]
+        character_class = string_to_character_class(character['class'], token)
+        character_race = string_to_character_race(character['race'], token)
 
         embed = nextcord.Embed(title=f'Your Character')
 
