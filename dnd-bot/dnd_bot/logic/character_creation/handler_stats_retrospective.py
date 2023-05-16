@@ -28,7 +28,7 @@ class HandlerStatsRetrospective:
             for user in game.user_list:
                 await Messager.delete_last_user_error_message(user.discord_id, view.token)
 
-            GameStart.start(view.token)
+            await GameStart.start(view.token)
             await GameLoop.start_loop(view.token)
         else:
             for component in view.children:

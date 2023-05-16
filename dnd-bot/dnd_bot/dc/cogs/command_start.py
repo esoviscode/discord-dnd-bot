@@ -24,7 +24,7 @@ class CommandStart(Cog):
             for user in lobby_players_identities:
                 await Messager.send_dm_message(user, token, "Game has started successfully!\n")
 
-            GameStart.start(token)
+            await GameStart.start(token)
             await GameLoop.start_loop(token)
         except DiscordDndBotException as e:
             await interaction.response.send_message(f'{e}', ephemeral=True)

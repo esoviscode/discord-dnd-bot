@@ -9,6 +9,10 @@ class DatabaseEntity:
                                             '(%s, %s, %s, %s, %s)', (name, x, y, id_game, description), "entity")
 
     @staticmethod
+    def add_entity_query(name: str = "", x: int = 0, y: int = 0, id_game: int = None, description: str = "") -> tuple[str, tuple]:
+        return 'INSERT INTO public."Entity" (name, x, y, id_game, description) VALUES (%s, %s, %s, %s, %s)', (name, x, y, id_game, description)
+
+    @staticmethod
     def update_entity(id_entity: int = 0, x: int = 0, y: int = 0) -> None:
         DatabaseConnection.update_object_in_db('UPDATE public."Entity" SET x = (%s), y = (%s) WHERE id_entity = (%s)',
                                                (x, y, id_entity), "Entity")

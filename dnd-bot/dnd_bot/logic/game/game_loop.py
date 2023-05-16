@@ -77,7 +77,6 @@ class GameLoop:
 
     @staticmethod
     def update_creature(c: Creature) -> None:
-        # TODO creatures not added yet
-        # DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
-        #                                  experience=c.experience, x=c.x, y=c.y)
-        pass
+        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
+                                         experience=c.experience, x=c.x, y=c.y)
+
