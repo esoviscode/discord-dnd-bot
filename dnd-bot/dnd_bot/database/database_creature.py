@@ -26,7 +26,22 @@ class DatabaseCreature:
         return id_creature
 
     @staticmethod
-    def update_creature(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
+    def add_creature_query(x: int = 0, y: int = 0, name: str = 'Creature', hp: int = 0, strength: int = 0,
+                           dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
+                           initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
+                           id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None,
+                           description: str = '', id_entity: int = 0) -> tuple[str, tuple]:
+        return 'INSERT INTO public."Creature" (level, "HP", strength, dexterity, ' \
+               'intelligence, charisma, perception, initiative, action_points, ' \
+               'money, id_entity, experience, id_equipment, class) ' \
+               'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', \
+            (level, hp, strength, dexterity, intelligence,
+             charisma, perception, initiative, action_points,
+             money, id_entity, experience, id_equipment, creature_class)
+
+    @staticmethod
+    def update_creature(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0,
+                        x: int = 0,
                         y: int = 0) -> None:
         DatabaseConnection.update_object_in_db('UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), '
                                                'experience = (%s) WHERE id_creature = (%s)',

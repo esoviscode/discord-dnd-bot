@@ -1,5 +1,6 @@
 import os
 from sqlite3 import ProgrammingError
+from typing import List
 
 from psycopg2 import connect
 
@@ -72,6 +73,23 @@ class DatabaseConnection:
 
         DatabaseConnection.connection.commit()
         return id
+
+    @staticmethod
+    def add_multiple_to_db(queries: List[str], parameters_list: List[tuple]) -> List[int]:
+        ids = []
+
+        for query, parameters in list(zip(queries, parameters_list)):
+            DatabaseConnection.cursor.execute(query, parameters)
+            DatabaseConnection.cursor.execute('SELECT LASTVAL()')
+
+            try:
+                id = DatabaseConnection.cursor.fetchone()[0]
+                ids.append(id)
+            except ProgrammingError as err:
+                print(f"db: error adding element {err}")
+
+        DatabaseConnection.connection.commit()
+        return ids
 
     @staticmethod
     def get_object_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> tuple | None:
