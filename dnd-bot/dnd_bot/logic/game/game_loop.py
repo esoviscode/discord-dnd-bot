@@ -5,6 +5,9 @@ from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_player import DatabasePlayer
 
 
 class GameLoop:
@@ -32,8 +35,13 @@ class GameLoop:
 
         # add creatures to the queue
         for c in entities:
-            if isinstance(c, Creature) or isinstance(c, Player):
-                game.creatures_queue.append(c)
+            if isinstance(c, Player):
+                GameLoop.update_player(c)
+            elif isinstance(c, Creature):
+                GameLoop.update_creature(c)
+            else:
+                continue
+            game.creatures_queue.append(c)
 
     @staticmethod
     def get_game_object(game_token):
@@ -65,3 +73,14 @@ class GameLoop:
         if not isinstance(first_creature, Player):
             from dnd_bot.logic.game.handler_game import HandlerGame
             await HandlerGame.turn(game_token, first_creature)
+
+    @staticmethod
+    def update_player(p: Player) -> None:
+        DatabasePlayer.update_player(id_player=p.id, level=p.level, hp=p.hp, money=p.money, experience=p.experience,
+                                     x=p.x, y=p.y)
+
+    @staticmethod
+    def update_creature(c: Creature) -> None:
+        DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
+                                         experience=c.experience, x=c.x, y=c.y)
+

@@ -73,6 +73,11 @@ class Game(DatabaseObject):
                     return entity
         return None
 
+    def get_entity_by_x_y(self, x=0, y=0) -> Entity | None:
+        if x >= self.world_width or y >= self.world_height:
+            return None
+        return self.entities[y][x]
+
     def delete_entity(self, entity_id):
         entity = self.get_entity_by_id(entity_id)
         if entity in self.creatures_queue:
