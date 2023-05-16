@@ -84,7 +84,7 @@ class DatabaseConnection:
     @staticmethod
     def add_multiple_to_db(queries: List[str], parameters_list: List[tuple]) -> List[int]:
         """
-        add multiple elements to the database in bulk and return a list of their ids (in the order that the element
+        add multiple elements to the database in bulk and return a list of their ids (in the order that the elements
         were provided). This method is faster than adding elements individually
         :param queries: list of queries to be executed
         :param parameters_list: list of parameter tuples, where each corresponds to a query in 'queries'
