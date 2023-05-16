@@ -66,4 +66,4 @@ class DatabaseCreature:
     def get_creature_id_entity(id_creature: int = 0) -> int | None:
         return DatabaseConnection.get_object_from_db(
             f'SELECT id_entity FROM public."Creature" WHERE id_creature = (%s)',
-            (id_creature,), "Creature")
+            (id_creature,), "Creature")[0]
