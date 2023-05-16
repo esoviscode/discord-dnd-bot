@@ -1,7 +1,6 @@
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_user import DatabaseUser
-from dnd_bot.logic.prototype.player import Player
 
 
 class DatabasePlayer:

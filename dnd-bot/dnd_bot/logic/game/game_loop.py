@@ -18,7 +18,6 @@ class GameLoop:
     @staticmethod
     def prepare_queue(game: Game):
         """puts all the creatures to the queue with order by initiative"""
-        print(f'\n-- Preparing creatures queue --')
 
         def entity_sorting_value(e):
             if not isinstance(e, Creature):
