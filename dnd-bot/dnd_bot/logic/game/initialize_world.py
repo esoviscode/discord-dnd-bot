@@ -1,18 +1,24 @@
+import asyncio
 import copy
 import json
 import random
+import time
+
 import cv2 as cv
 
+from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.database.database_equipment import DatabaseEquipment
+from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
+from dnd_bot.logic.prototype.entities.creatures.npc import NPC
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.equipment import Equipment
-from dnd_bot.logic.prototype.items.bow import Bow
 from dnd_bot.logic.prototype.items.item import Item
-from dnd_bot.logic.prototype.items.staff import Staff
-from dnd_bot.logic.prototype.items.sword import Sword
 from dnd_bot.logic.prototype.player import Player
 from dnd_bot.logic.utils.utils import get_game_view
 
@@ -20,8 +26,11 @@ from dnd_bot.logic.utils.utils import get_game_view
 class InitializeWorld:
 
     @staticmethod
-    def load_entities(game, map_path, campaign_path):
+    async def load_entities(game, map_path, campaign_path):
         """loads entities from json, players will be placed in random available spawning spots"""
+
+        print("\n-- Initializing world --")
+        time_snapshot = time.time()
         with open(map_path) as file:
             map_json = json.load(file)
             entities_json = map_json['map']['entities']
@@ -33,6 +42,7 @@ class InitializeWorld:
             with open(campaign_path) as file:
                 campaign_json = json.load(file)
                 enemies_json = campaign_json['entities']['enemies']
+                npc_json = campaign_json['entities']['npc']
                 map_elements_json = campaign_json['entities']['map_elements']
 
                 entities = []
@@ -48,14 +58,25 @@ class InitializeWorld:
                             entities_row.append(None)
                         else:
                             entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y,
-                                                                      game.token, game.id, enemies_json,
+                                                                      game.token, game.id, enemies_json, npc_json,
                                                                       map_elements_json)
 
                     entities.append(entities_row)
 
         game.entities = copy.deepcopy(entities)
+        print(f'   - loading entities from json - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
+        time_snapshot = time.time()
         InitializeWorld.load_entity_rotations(game, map_path)
+        print(f'   - loading entity rotations - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
+        time_snapshot = time.time()
         InitializeWorld.spawn_players(game, player_spawning_points)
+        print(f'   - spawning players - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
+        time_snapshot = time.time()
+        await InitializeWorld.add_entities_to_database(game)
+        print(f'   - adding entities to database - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
         game.sprite = str(map_json['map']['img_file'])  # path to raw map image
         # generated image of map without fragile entities
@@ -93,8 +114,8 @@ class InitializeWorld:
         players_positions = InitializeWorld.spawn_players_positions(player_spawning_spots, len(game.user_list))
         for i, player_pos in enumerate(players_positions):
             game.entities[player_pos[1]].pop(player_pos[0])
-            if game.user_list[i].discord_id in ChosenAttributes.chosen_attributes:
-                character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id]
+            if (game.user_list[i].discord_id, game.token) in ChosenAttributes.chosen_attributes:
+                character = ChosenAttributes.chosen_attributes[game.user_list[i].discord_id, game.token]
                 entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
                                                       name=character['name'],
                                                       discord_identity=game.user_list[i].discord_id,
@@ -113,7 +134,7 @@ class InitializeWorld:
                                                       action_points=character['action points'],
                                                       character_race=character['race'],
                                                       character_class=character['class'])
-                ChosenAttributes.delete_user(game.user_list[i].discord_id)
+                ChosenAttributes.delete_user(game.user_list[i].discord_id, game.token)
             else:
                 entities = InitializeWorld.add_player(x=player_pos[0], y=player_pos[1],
                                                       name=game.user_list[i].username,
@@ -145,7 +166,7 @@ class InitializeWorld:
         return players_positions
 
     @staticmethod
-    def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, map_elements_json):
+    def add_entity(entity_row, entity_name, x, y, game_token, game_id, enemies_json, npc_json, map_elements_json):
         """adds entity of class to entity matrix in game
         :param entity_row: representing row of entity matrix
         :param entity_name: name of entity to be added
@@ -153,36 +174,42 @@ class InitializeWorld:
         :param y: entity y position
         :param map_elements_json: data of map elements
         :param enemies_json: data of enemies
+        :param npc_json: data of npc
         :param game_id: id from database
         :param game_token: game token
         """
 
         if entity_name in enemies_json:
             entity_row = InitializeWorld.add_creature(entity_row, x, y, entity_name, game_token, game_id,
-                                                      enemies_json[entity_name])
+                                                      enemies_json[entity_name], "Enemy")
+            return entity_row
+        if entity_name in npc_json:
+            entity_row = InitializeWorld.add_creature(entity_row, x, y, entity_name, game_token, game_id,
+                                                      npc_json[entity_name], "NPC")
             return entity_row
 
         entity = Entity(x=x, y=y, sprite=map_elements_json[entity_name], name=entity_name, game_token=game_token)
-        id_entity = DatabaseEntity.add_entity(name=entity_name, x=x, y=y, id_game=game_id)
-        entity.id = id_entity
+
         entity_row.append(entity)
         return entity_row
 
     @staticmethod
-    def add_creature(entity_row, x, y, name, game_token, game_id, entity_data):
-        entity = Creature(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name,
-                          hp=entity_data['hp'],
-                          strength=entity_data['strength'], dexterity=entity_data['dexterity'],
-                          intelligence=entity_data['intelligence'],
-                          charisma=entity_data['charisma'], perception=entity_data['perception'],
-                          initiative=entity_data['initiative'],
-                          action_points=entity_data['action_points'], level=entity_data['level'],
-                          equipment=entity_data['equipment'],
-                          drop_money=entity_data['drop_money'], drops=entity_data['drops'], ai=entity_data['ai'])
+    def add_creature(entity_row, x, y, name, game_token, game_id, entity_data, creature_type="Creature"):
+        creature = eval(creature_type)(game_token=game_token, x=x, y=y, sprite=entity_data['sprite_path'], name=name,
+                                       hp=entity_data['hp'],
+                                       strength=entity_data['strength'], dexterity=entity_data['dexterity'],
+                                       intelligence=entity_data['intelligence'],
+                                       charisma=entity_data['charisma'], perception=entity_data['perception'],
+                                       initiative=entity_data['initiative'],
+                                       action_points=entity_data['action_points'], level=entity_data['level'],
+                                       drop_money=entity_data['drop_money'], drops=entity_data['drops'],
+                                       creature_class=entity_data['creature_class'], ai=entity_data['ai'])
 
-        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=game_id)
-        entity.id = id_entity
-        entity_row.append(entity)
+        creature.equipment = Equipment()
+        for eq_part in entity_data['equipment']:
+            creature.equipment.__setattr__(eq_part, Item(name=entity_data['equipment'][eq_part]))
+        entity_row.append(creature)
+
         return entity_row
 
     @staticmethod
@@ -196,20 +223,120 @@ class InitializeWorld:
                    alignment=alignment, hp=hp, strength=strength, dexterity=dexterity, intelligence=intelligence,
                    charisma=charisma, perception=perception, initiative=initiative, action_points=action_points,
                    character_race=character_race, character_class=character_class)
-        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.strength, p.dexterity,
-                                              p.intelligence, p.charisma, p.perception, p.initiative,
-                                              p.action_points, p.level, p.discord_identity, p.alignment,
-                                              p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class)  # TODO add race and class
-        p.id = id_player
 
         # TODO change location of adding equipment/items
         if p.creature_class == 'Warrior':
-            p.equipment = Equipment(right_hand=Sword(name='Novice sword'), accessory=Item(name='Holy Bible'))
+            p.equipment = Equipment(right_hand=Item(name='Novice sword'), accessory=Item(name='Holy Bible'))
         elif p.creature_class == 'Mage':
-            p.equipment = Equipment(right_hand=Staff(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
+            p.equipment = Equipment(right_hand=Item(name='Novice staff'), accessory=Item(name='Necklace of prudence'))
         elif p.creature_class == 'Ranger':
-            p.equipment = Equipment(right_hand=Bow(name='Novice bow'), accessory=Item(name='Hunting necklace'))
+            p.equipment = Equipment(right_hand=Item(name='Novice bow'), accessory=Item(name='Hunting necklace'))
+
+        id_player = DatabasePlayer.add_player(p.x, p.y, p.name, p.hp, p.base_strength, p.base_dexterity,
+                                              p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
+                                              p.action_points, p.level, p.discord_identity, p.alignment,
+                                              p.backstory, id_game=game_id, character_race=p.character_race,
+                                              character_class=p.creature_class, id_equipment=p.equipment.id)
+        p.id = id_player
 
         entities[y].insert(x, p)
         return entities
+
+    @staticmethod
+    def add_equipment(helmet: Item = None, chest: Item = None, leg_armor: Item = None, boots: Item = None,
+                      left_hand: Item = None, right_hand: Item = None, accessory: Item = None) -> Equipment:
+        """adds equipment to database and returns id_equipment"""
+        e = Equipment()
+        if helmet is not None:
+            helmet_id = helmet.id = InitializeWorld.add_item(helmet)
+            e.helmet = helmet
+        else:
+            helmet_id = None
+        if chest is not None:
+            chest_id = chest.id = InitializeWorld.add_item(chest)
+            e.chest = chest
+        else:
+            chest_id = None
+        if leg_armor is not None:
+            leg_armor_id = leg_armor.id = InitializeWorld.add_item(leg_armor)
+            e.leg_armor = leg_armor
+        else:
+            leg_armor_id = None
+        if boots is not None:
+            boots_id = boots.id = InitializeWorld.add_item(boots)
+            e.boots = boots
+        else:
+            boots_id = None
+        if left_hand is not None:
+            left_hand_id = left_hand.id = InitializeWorld.add_item(left_hand)
+            e.left_hand = left_hand
+        else:
+            left_hand_id = None
+        if right_hand is not None:
+            right_hand_id = right_hand.id = InitializeWorld.add_item(right_hand)
+            e.right_hand = right_hand
+        else:
+            right_hand_id = None
+        if accessory is not None:
+            accessory_id = accessory.id = InitializeWorld.add_item(accessory)
+            e.accessory = accessory
+        else:
+            accessory_id = None
+
+        e.id = DatabaseEquipment.add_equipment(helmet=helmet_id, chest=chest_id, leg_armor=leg_armor_id, boots=boots_id,
+                                               left_hand=left_hand_id, right_hand=right_hand_id, accessory=accessory_id)
+        return e
+
+    @staticmethod
+    def add_item(i: Item) -> int:
+        """adds item to database and returns its id_item"""
+        return DatabaseItem.add_item(name=i.name)
+
+    @staticmethod
+    async def add_entities_to_database(game):
+        async def add_row_entities_to_database(row):
+            queries = []
+            parameters_list = []
+
+            # add entities
+            entities_in_row = [e for e in row if isinstance(e, Entity) and not isinstance(e, Player)]
+            for entity in entities_in_row:
+                query, parameters = DatabaseEntity.add_entity_query(name=entity.name, x=entity.x, y=entity.y,
+                                                                    id_game=game.id)
+                queries.append(query)
+                parameters_list.append(parameters)
+
+            entity_ids = DatabaseConnection.add_multiple_to_db(queries, parameters_list)
+
+            for entity, entity_id in zip(entities_in_row, entity_ids):
+                entity.id = entity_id
+
+            queries.clear()
+            parameters_list.clear()
+            # add creatures
+            creatures_in_row = [c for c in entities_in_row if isinstance(c, Creature) and not isinstance(c, Player)]
+            for creature in creatures_in_row:
+                query, parameters = DatabaseCreature.add_creature_query(name=creature.name, x=creature.x, y=creature.y,
+                                                                        hp=creature.hp, strength=creature.strength,
+                                                                        dexterity=creature.dexterity,
+                                                                        intelligence=creature.intelligence,
+                                                                        charisma=creature.charisma,
+                                                                        perception=creature.perception,
+                                                                        initiative=creature.initiative,
+                                                                        action_points=creature.action_points,
+                                                                        level=creature.level, id_game=game.id,
+                                                                        experience=creature.experience,
+                                                                        id_entity=creature.id)
+                queries.append(query)
+                parameters_list.append(parameters)
+
+            creature_ids = DatabaseConnection.add_multiple_to_db(queries, parameters_list)
+
+            for creature, creature_id in zip(creatures_in_row, creature_ids):
+                creature.id = creature_id
+
+        # add rows in parallel
+        q = asyncio.Queue()
+        tasks = [asyncio.create_task(add_row_entities_to_database(row)) for row in game.entities]
+        await asyncio.gather(*tasks)
+        await q.join()

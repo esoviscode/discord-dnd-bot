@@ -29,6 +29,7 @@ class Game(DatabaseObject):
         self.world_width = world_width
         self.world_height = world_height
         self.active_creature = None
+        self.last_visible_creature = None
         self.players_views = dict()  # this dict is to save the view non-active player is looking at;
         # key values are stringified discord ids and values are particular views
 
@@ -72,8 +73,15 @@ class Game(DatabaseObject):
                     return entity
         return None
 
+    def get_entity_by_x_y(self, x=0, y=0) -> Entity | None:
+        if x >= self.world_width or y >= self.world_height:
+            return None
+        return self.entities[y][x]
+
     def delete_entity(self, entity_id):
         entity = self.get_entity_by_id(entity_id)
+        if entity in self.creatures_queue:
+            self.creatures_queue.remove(entity)
         x = entity.x
         y = entity.y
 
@@ -87,7 +95,8 @@ class Game(DatabaseObject):
 
     def add_entity(self, entity: Entity):
         """adds new entity to game array. WARNING! you probably want to only add entities that have fragile=True,
-        if that is not the case, then you have to run logic/.../utils.py:get_game_view() to properly draw it on the map"""
+        if that is not the case, then you have to run logic/.../utils.py:get_game_view() to properly draw it on the map
+        """
         self.entities[entity.y][entity.x] = entity
 
     def all_users_ready(self):
@@ -115,41 +124,36 @@ class Game(DatabaseObject):
 
         return None
 
-    def get_movable_entities(self):
-        """returns all entities which are able to move"""
-        movable_entities = []
+    def get_creatures(self):
+        """returns all creatures"""
+        creatures = []
         for entity_row in self.entities:
             for entity in entity_row:
                 if isinstance(entity, Creature):
-                    movable_entities.append(entity)
-        return movable_entities
+                    creatures.append(entity)
+        return creatures
 
     def get_active_creature(self):
         """returns current active player"""
         return self.active_creature
 
     def get_attackable_enemies_for_player(self, player):
-        creatures = self.get_movable_entities()
+        from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
+        creatures = self.get_creatures()
         result = []
         weapon = player.equipment.right_hand
         if weapon is None:
             return result
 
-        from dnd_bot.logic.utils.utils import find_position_to_check
+        from dnd_bot.logic.utils.utils import find_position_to_check, in_range
         attack_range = min(weapon.use_range, player.perception)
         for creature in creatures:
-            if not isinstance(creature, Player):
+            if isinstance(creature, Enemy):
                 # check if creature is in player's range circle
-                # mod is conditional variable which defines proper circles
-                mod = 1
-                if 3 <= attack_range < 6:
-                    mod = 3
-                elif attack_range >= 6:
-                    mod = 4
-                if (player.x - creature.x)**2 + (player.y - creature.y)**2 <= attack_range**2 + mod:
+                if in_range(player.x, player.y, creature.x, creature.y, attack_range):
                     add = True
                     positions = find_position_to_check(player.x, player.y, creature.x, creature.y)
-                    for pos in positions:
+                    for pos in positions[1:-1]:
                         if self.entities[pos[1]][pos[0]]:
                             add = False
                             break

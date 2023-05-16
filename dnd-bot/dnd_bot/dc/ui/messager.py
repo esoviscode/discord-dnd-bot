@@ -67,7 +67,7 @@ class Messager:
         return sent_message
 
     @staticmethod
-    async def send_dm_message(user_id: int, content: str | None, embeds=None, view=None, files=None):
+    async def send_dm_message(user_id: int, token: str, content: str | None, embeds=None, view=None, files=None):
         """
         method used to send a direct message to a user
         """
@@ -77,40 +77,40 @@ class Messager:
 
         sent_message = await Messager.__send_dm_message(user, content, embeds, view, files)
 
-        MessageHolder.register_last_message_data(user_id, user.dm_channel.id, sent_message.id)
+        MessageHolder.register_last_message_data(user_id, token, user.dm_channel.id, sent_message.id)
 
     @staticmethod
-    async def send_dm_error_message(user_id: int, content: str, embeds=None, view=None, files=None):
+    async def send_dm_error_message(user_id: int, token: str, content: str, embeds=None, view=None, files=None):
         """
         method used to send a direct error message to user
         note: content will be preceded by a warning emoji
         """
         if embeds is None:
             embeds = []
-        await Messager.delete_last_user_error_message(user_id)
+        await Messager.delete_last_user_error_message(user_id, token)
 
         user = Messager.bot.get_user(user_id)
 
         sent_message = await Messager.__send_dm_message(user, f'⚠️ {content}' if content != '' else None,
                                                         embeds, view, files)
 
-        MessageHolder.register_last_error_data(user_id, user.dm_channel.id, sent_message.id)
+        MessageHolder.register_last_error_data(user_id, token, user.dm_channel.id, sent_message.id)
 
     @staticmethod
-    async def send_dm_information_message(user_id: int, content: str, embeds=None, view=None, files=None):
+    async def send_dm_information_message(user_id: int, token: str, content: str, embeds=None, view=None, files=None):
         """
         method used to send a direct error message to user
         note: content will be preceded by an information emoji
         """
         if embeds is None:
             embeds = []
-        await Messager.delete_last_user_error_message(user_id)
+        await Messager.delete_last_user_error_message(user_id, token)
 
         user = Messager.bot.get_user(user_id)
 
         sent_message = await Messager.__send_dm_message(user, f'ℹ️ {content}', embeds, view, files)
 
-        MessageHolder.register_last_error_data(user_id, user.dm_channel.id, sent_message.id)
+        MessageHolder.register_last_error_data(user_id, token, user.dm_channel.id, sent_message.id)
 
     @staticmethod
     async def edit_message(channel_id: int, message_id: int, new_content: str):
@@ -120,11 +120,12 @@ class Messager:
         await message.edit(content=new_content, embeds=message.embeds)
 
     @staticmethod
-    async def edit_last_user_message(user_id: int, content: str = '', embeds: list[Embed] | None = None, view=None,
+    async def edit_last_user_message(user_id: int, token: str, content: str = '', embeds: list[Embed] | None = None, view=None,
                                      files=None, retain_view=False):
         """
         edit message
         :param user_id: id of user to which the message will be sent to
+        :param token: game token
         :param content: message as a string
         :param embeds: list of zero or more embeds to attach to the message
         :param view: nextcord View will be attached to the message
@@ -134,7 +135,7 @@ class Messager:
         if embeds is None:
             embeds = []
 
-        channel_id, message_id = MessageHolder.read_last_message_data(user_id)
+        channel_id, message_id = MessageHolder.read_last_message_data(user_id, token)
 
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
@@ -147,13 +148,13 @@ class Messager:
             await message.edit(content=str(content), embeds=embeds, view=view)
 
     @staticmethod
-    async def edit_last_user_error_message(user_id: int, content: str):
+    async def edit_last_user_error_message(user_id: int, token: str, content: str):
         """
         edits last user error or information message
         """
-        error_data = MessageHolder.read_last_error_data(user_id)
+        error_data = MessageHolder.read_last_error_data(user_id, token)
         if error_data is not None:
-            MessageHolder.delete_last_error_data(user_id)
+            MessageHolder.delete_last_error_data(user_id, token)
             await Messager.edit_message(error_data[0], error_data[1], f'⚠️ {content}')
 
     @staticmethod
@@ -163,22 +164,22 @@ class Messager:
         await message.delete()
 
     @staticmethod
-    async def delete_last_user_message(user_id: int):
-        channel_id, message_id = MessageHolder.read_last_message_data(user_id)
+    async def delete_last_user_message(user_id: int, token: str):
+        channel_id, message_id = MessageHolder.read_last_message_data(user_id, token)
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
         await message.delete()
 
     @staticmethod
-    async def delete_last_user_error_message(user_id: int):
+    async def delete_last_user_error_message(user_id: int, token: str):
         """deletes last user error message and data about it in MessageHolder.
         If there were no error messages the function does nothing"""
         # check for previous error messages
-        error_data = MessageHolder.read_last_error_data(user_id)
+        error_data = MessageHolder.read_last_error_data(user_id, token)
 
         # delete error messages
         if error_data is not None:
-            MessageHolder.delete_last_error_data(user_id)
+            MessageHolder.delete_last_error_data(user_id, token)
             await Messager.__delete_message(error_data[0], error_data[1])
 
     @staticmethod

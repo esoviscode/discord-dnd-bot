@@ -36,14 +36,14 @@ class ModalNameForm(nextcord.ui.Modal):
         self.name_textbox = nextcord.ui.TextInput(
             label="Name",
             placeholder="Enter your character name!",
-            default_value=ChosenAttributes.chosen_attributes[user_id]['name'],
+            default_value=ChosenAttributes.chosen_attributes[(user_id, self.token)]['name'],
             custom_id='name-input'
         )
 
         self.backstory_textbox = nextcord.ui.TextInput(
             label="Background",
             placeholder="Tell something about your character's past!",
-            default_value=ChosenAttributes.chosen_attributes[user_id]['backstory'],
+            default_value=ChosenAttributes.chosen_attributes[(user_id, self.token)]['backstory'],
             custom_id='background-input'
         )
 
@@ -52,9 +52,10 @@ class ModalNameForm(nextcord.ui.Modal):
 
     async def callback(self, interaction: nextcord.Interaction):
         """save user's choices and open alignment form"""
-        ChosenAttributes.chosen_attributes[self.user_id]['name'] = self.name_textbox.value
-        ChosenAttributes.chosen_attributes[self.user_id]['backstory'] = self.backstory_textbox.value
+        ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['name'] = self.name_textbox.value
+        ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['backstory'] = self.backstory_textbox.value
         await Messager.edit_last_user_message(user_id=self.user_id,
+                                              token=self.token,
                                               embeds=[MessageTemplates.alignment_form_view_message_template()],
                                               view=ViewAlignmentForm(self.user_id, self.token))
 
@@ -67,8 +68,8 @@ class ViewAlignmentForm(nextcord.ui.View):
         self.user_id = user_id
         self.token = token
         self.on_error = on_error
-        self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][0]
-        self.goodness_axis_value = ChosenAttributes.chosen_attributes[self.user_id]['alignment'][1]
+        self.lawfulness_axis_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][0]
+        self.goodness_axis_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['alignment'][1]
 
         lawfulness_option1 = nextcord.SelectOption(
             label="Lawful",
@@ -129,12 +130,16 @@ class ViewAlignmentForm(nextcord.ui.View):
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=2, custom_id='alignment-next')
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         try:
+            from dnd_bot.logic.prototype.multiverse import Multiverse
+            game = Multiverse.get_game(self.token)
+
             await HandlerAlignment.handle_next(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embeds=[MessageTemplates.class_form_view_message_template()],
+                                                  token=self.token,
+                                                  embeds=[MessageTemplates.class_form_view_message_template(game.campaign_name)],
                                                   view=ViewClassForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewClassForm(nextcord.ui.View):
@@ -145,12 +150,15 @@ class ViewClassForm(nextcord.ui.View):
         self.user_id = user_id
         self.token = token
         self.on_error = on_error
-        self.class_value = ChosenAttributes.chosen_attributes[self.user_id]['class']
+        self.class_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['class']
+
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        game = Multiverse.get_game(token)
 
         class_options = [nextcord.SelectOption(label=chr_class.name, description=chr_class.description,
                                                emoji=chr_class.emoji,
                                                default=True if self.class_value == chr_class.name else False)
-                         for chr_class in HandlerCharacterCreation.classes]
+                         for chr_class in HandlerCharacterCreation.campaigns[game.campaign_name]["classes"]]
 
         self.class_dropdown = nextcord.ui.Select(
             placeholder="Select a class.",
@@ -164,18 +172,23 @@ class ViewClassForm(nextcord.ui.View):
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await HandlerClass.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
+                                              token=self.token,
                                               embeds=[MessageTemplates.alignment_form_view_message_template()],
                                               view=ViewAlignmentForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Next', style=nextcord.ButtonStyle.green, row=1, custom_id='class-next')
     async def next(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         try:
+            from dnd_bot.logic.prototype.multiverse import Multiverse
+            game = Multiverse.get_game(self.token)
+
             await HandlerClass.handle_next(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embeds=[MessageTemplates.race_form_view_message_template()],
+                                                  token=self.token,
+                                                  embeds=[MessageTemplates.race_form_view_message_template(game.campaign_name)],
                                                   view=ViewRaceForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewRaceForm(nextcord.ui.View):
@@ -186,12 +199,15 @@ class ViewRaceForm(nextcord.ui.View):
         self.user_id = user_id
         self.token = token
         self.on_error = on_error
-        self.race_value = ChosenAttributes.chosen_attributes[self.user_id]['race']
+        self.race_value = ChosenAttributes.chosen_attributes[(self.user_id, self.token)]['race']
+
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        game = Multiverse.get_game(token)
 
         race_options = [nextcord.SelectOption(label=chr_race.name, description=chr_race.description,
                                               emoji=chr_race.emoji,
                                               default=True if self.race_value == chr_race.name else False)
-                        for chr_race in HandlerCharacterCreation.races]
+                        for chr_race in HandlerCharacterCreation.campaigns[game.campaign_name]["races"]]
 
         self.race_dropdown = nextcord.ui.Select(
             placeholder="Select a race.",
@@ -203,9 +219,13 @@ class ViewRaceForm(nextcord.ui.View):
 
     @nextcord.ui.button(label='Back', style=nextcord.ButtonStyle.red, row=1, custom_id='race-back')
     async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        from dnd_bot.logic.prototype.multiverse import Multiverse
+        game = Multiverse.get_game(self.token)
+
         await HandlerRace.handle_back(self)
         await Messager.edit_last_user_message(user_id=self.user_id,
-                                              embeds=[MessageTemplates.class_form_view_message_template()],
+                                              token=self.token,
+                                              embeds=[MessageTemplates.class_form_view_message_template(game.campaign_name)],
                                               view=ViewClassForm(self.user_id, self.token))
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1, custom_id='race-confirm')
@@ -213,10 +233,12 @@ class ViewRaceForm(nextcord.ui.View):
         try:
             await HandlerRace.handle_confirm(self)
             await Messager.edit_last_user_message(user_id=self.user_id,
-                                                  embeds=[MessageTemplates.stats_retrospective_form_view_message_template(self.user_id)],
+                                                  token=self.token,
+                                                  embeds=[MessageTemplates.stats_retrospective_form_view_message_template(
+                                                      self.user_id, self.token)],
                                                   view=ViewStatsRetrospectiveForm(self.user_id, self.token))
         except DiscordDndBotException as e:
-            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))
 
 
 class ViewStatsRetrospectiveForm(nextcord.ui.View):
@@ -231,10 +253,11 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
     @nextcord.ui.button(label='Reroll', style=nextcord.ButtonStyle.red, row=1, custom_id='retrospective-reroll')
     async def reroll(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         button.disabled = True
-        await HandlerCharacterCreation.assign_attribute_values(self.user_id)
+        await HandlerCharacterCreation.assign_attribute_values(self.token, self.user_id)
         await Messager.edit_last_user_message(user_id=self.user_id,
+                                              token=self.token,
                                               embeds=[MessageTemplates.stats_retrospective_form_view_message_template(
-                                                  self.user_id)],
+                                                  self.user_id, self.token)],
                                               view=self)
 
     @nextcord.ui.button(label='Confirm', style=nextcord.ButtonStyle.green, row=1, custom_id='retrospective-confirm')
@@ -242,5 +265,5 @@ class ViewStatsRetrospectiveForm(nextcord.ui.View):
         try:
             await HandlerStatsRetrospective.handle_confirm(self)
         except DiscordDndBotException as e:
-            await Messager.delete_last_user_error_message(self.user_id)
-            await Messager.send_dm_error_message(user_id=self.user_id, content=str(e))
+            await Messager.delete_last_user_error_message(self.user_id, self.token)
+            await Messager.send_dm_error_message(user_id=self.user_id, token=self.token, content=str(e))

@@ -7,7 +7,7 @@ class HandlerManageItems:
     """handler for managing items in equipment"""
 
     @staticmethod
-    async def equip_item(player, index_of_item_in_backpack):
+    async def equip_item(player, index_of_item_in_backpack, token):
         """handles equipping an item"""
         item = player.backpack[index_of_item_in_backpack]
 
@@ -43,8 +43,10 @@ class HandlerManageItems:
                 player.equipment.accessory = to_be_equipped
             elif to_be_equipped.equipable == Equipable.OFF_HAND:
                 if player.equipment.right_hand and player.equipment.right_hand.two_handed:
-                    await Messager.send_dm_error_message(player.discord_identity,
-                                                         "You can't equip this item, because equipped weapon is two-handed")
+                    await Messager.send_dm_error_message(user_id=player.discord_identity,
+                                                         token=token,
+                                                         content="You can't equip this item, because equipped weapon "
+                                                                 "is two-handed")
                     return
                 if player.equipment.left_hand:
                     player.backpack.append(player.equipment.left_hand)
@@ -54,7 +56,9 @@ class HandlerManageItems:
             player.backpack.sort(key=Item.compare_items)
 
         if item.equipable == Equipable.NO:
-            await Messager.send_dm_error_message(player.discord_identity, "You can't equip this item")
+            await Messager.send_dm_error_message(user_id=player.discord_identity,
+                                                 token=token,
+                                                 content="You can't equip this item")
             return
         await equip(item)
 

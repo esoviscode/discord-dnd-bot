@@ -3,7 +3,6 @@ from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
-from dnd_bot.logic.utils.exceptions import LootCorpseException
 
 
 class HandlerLootCorpse:
@@ -18,8 +17,6 @@ class HandlerLootCorpse:
                 break
         if not corpse:
             raise Exception("Player tried to loot the corpse when there is not one nearby!")
-
-        print(corpse.id)
 
         money = corpse.dropped_money
         items = corpse.dropped_items

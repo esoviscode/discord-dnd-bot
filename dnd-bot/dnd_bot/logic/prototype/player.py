@@ -1,4 +1,5 @@
 from dnd_bot.logic.prototype.creature import Creature
+from dnd_bot.logic.prototype.equipment import Equipment
 from dnd_bot.logic.prototype.entities.misc.corpse import Corpse
 from dnd_bot.logic.prototype.items.item import Item
 from dnd_bot.logic.prototype.multiverse import Multiverse
@@ -12,7 +13,7 @@ class Player(Creature):
                  perception: int = 0, initiative: int = 0, action_points: int = 0, level: int = 1,
                  discord_identity: int = 0, alignment: str = '', backstory: str = '',
                  game_token: str = '', character_race: str = '', character_class: str = '', experience: int = 0,
-                 backpack=None, money: int = 0):
+                 equipment: Equipment = None, backpack=None, money: int = 0):
 
         # request a sprite path for the player based on the user
         if backpack is None:
@@ -31,7 +32,7 @@ class Player(Creature):
         super().__init__(x=x, y=y, sprite=self.sprite, name=name, hp=hp, strength=strength, dexterity=dexterity,
                          intelligence=intelligence, charisma=charisma, perception=perception, initiative=initiative,
                          action_points=action_points, level=level, game_token=game_token, experience=experience,
-                         creature_class=character_class)
+                         creature_class=character_class, equipment=equipment, money=money)
 
         self.discord_identity = discord_identity
         self.alignment = alignment
@@ -40,7 +41,6 @@ class Player(Creature):
         self.active = False
         self.attack_mode = False
         self.backpack = backpack  # Player_item in database
-        self.money = money
 
     def get_sprite_path_by_color(self, color: str, character_class: str):
         import os
@@ -70,6 +70,14 @@ class Player(Creature):
     def can_loot_corpse(self):
         for entity in self.get_entities_around(cross_only=True):
             if isinstance(entity, Corpse):
+                return True
+        return False
+
+    @property
+    def can_talk(self):
+        from dnd_bot.logic.prototype.entities.creatures.npc import NPC
+        for entity in self.get_entities_around():
+            if isinstance(entity, NPC):
                 return True
         return False
 

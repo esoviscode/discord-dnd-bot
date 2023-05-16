@@ -1,5 +1,6 @@
 import os
 from sqlite3 import ProgrammingError
+from typing import List
 
 from psycopg2 import connect
 
@@ -61,6 +62,13 @@ class DatabaseConnection:
 
     @staticmethod
     def add_to_db(query: str = "", parameters: tuple = None, element_name: str = "element") -> int | None:
+        """
+        adds an element to the database and return its id
+        :param query: the SQL query to be executed
+        :param parameters: the parameters to be passed to the query
+        :param element_name: the name of the element being added, for more informative errors
+        :return: the id of the added element if successful, or None if an error occurred.
+        """
         DatabaseConnection.cursor.execute(query, parameters)
         DatabaseConnection.cursor.execute('SELECT LASTVAL()')
 
@@ -72,6 +80,30 @@ class DatabaseConnection:
 
         DatabaseConnection.connection.commit()
         return id
+
+    @staticmethod
+    def add_multiple_to_db(queries: List[str], parameters_list: List[tuple]) -> List[int]:
+        """
+        add multiple elements to the database in bulk and return a list of their ids (in the order that the elements
+        were provided). This method is faster than adding elements individually
+        :param queries: list of queries to be executed
+        :param parameters_list: list of parameter tuples, where each corresponds to a query in 'queries'
+        :return: list of ids of the added elements
+        """
+        ids = []
+
+        for query, parameters in list(zip(queries, parameters_list)):
+            DatabaseConnection.cursor.execute(query, parameters)
+            DatabaseConnection.cursor.execute('SELECT LASTVAL()')
+
+            try:
+                id = DatabaseConnection.cursor.fetchone()[0]
+                ids.append(id)
+            except ProgrammingError as err:
+                print(f"db: error adding element {err}")
+
+        DatabaseConnection.connection.commit()
+        return ids
 
     @staticmethod
     def get_object_from_db(query: str = '', parameters: tuple = None, element_name: str = '') -> tuple | None:
@@ -98,3 +130,11 @@ class DatabaseConnection:
         DatabaseConnection.connection.commit()
         return objs
 
+    @staticmethod
+    def update_object_in_db(query: str = '', parameters: tuple = None, element_name: str = '') -> None:
+        try:
+            DatabaseConnection.cursor.execute(query, parameters)
+        except ProgrammingError as err:
+            print(f'db: error updating {element_name} {err}')
+
+        DatabaseConnection.connection.commit()

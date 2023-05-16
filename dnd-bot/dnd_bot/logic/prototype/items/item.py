@@ -1,5 +1,6 @@
 import json
 
+from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.logic.prototype.database_object import DatabaseObject
 from dnd_bot.logic.prototype.items.equipable import Equipable
 
@@ -8,10 +9,7 @@ class Item(DatabaseObject):
     """represents an item in the player's inventory"""
 
     def __init__(self, id_item: int = 0, name: str = "", effect: str = ""):
-        ## TODO super().__init__(DatabaseItem.add_item(name,hp,strength, dexterity, intelligence, charisma, perception,
-        ##                                       action_points, effect, base_price))
-
-        self.id = id_item
+        super().__init__(DatabaseItem.add_item(name))
         self.name = name
 
         self.damage = (0, 0)
@@ -26,8 +24,9 @@ class Item(DatabaseObject):
         self.charisma = 0
         self.perception = 0
         self.action_points = 0
-        self.equipable: Equipable = Equipable.NO
+        self.defence = 0
         self.two_handed = False
+        self.equipable: Equipable = Equipable.NO
 
         self.load_attributes_from_json()
 
@@ -85,11 +84,12 @@ class Item(DatabaseObject):
                                 self.charisma = item['charisma']
                             if 'perception' in item:
                                 self.perception = item['perception']
+                            if 'defence' in item:
+                                self.defence = item['defence']
                             if 'two-handed' in item:
                                 self.two_handed = item['two-handed']
 
-
     @staticmethod
     def compare_items(item):
-        """ this method is to return compare value fe for sorting items in backpack"""
+        """ this method is to return compare value for sorting items in backpack"""
         return item.name

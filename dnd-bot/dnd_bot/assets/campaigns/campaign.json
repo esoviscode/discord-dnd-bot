@@ -5,7 +5,8 @@
       "description": "You like close encounters with your enemies.",
       "long-description": "Skilled fighter with high strength and endurance, excels in close-quarters combat and can withstand many heavy hits. \n\n ",
       "stats": {
-        "initiative": 6
+        "initiative": 6,
+        "hp": 20
       }
     },
     "Mage": {
@@ -13,7 +14,8 @@
       "description": "You're a magic freak.",
       "long-description": "Master of arcane magic, wields powerful spells to manipulate elements, summon creatures or control minds. Their abilities make them formidable opponents in battle. \n\n ",
       "stats": {
-        "initiative": 3
+        "initiative": 3,
+        "hp": 20
       }
     },
     "Ranger": {
@@ -21,7 +23,8 @@
       "description": "A bow is your closest friend.",
       "long-description": "Skilled hunter, proficient in ranged combat, using bows and arrows to take down enemies from a distance. they are proficient in survival skills such as foraging or setting traps.\n\n ",
       "stats": {
-        "initiative": 10
+        "initiative": 10,
+        "hp": 20
       }
     }
   },
@@ -53,7 +56,7 @@
       "description": "You're a hard, tough worker.",
       "long-description": "A hardy and sturdy race, dwarves are known for their craftsmanship and mining skills. They are short but strong and resilient. They have the best ability to see in the dark. \n\n\n",
       "stats": {
-        "perception": 3,
+        "perception": 2,
         "hp": 18,
         "strength": 7,
         "action-points": 9
@@ -63,14 +66,16 @@
   "items": {
     "armors": {
       "helmets": {
-        "Plate Helmet": {}
+        "Plate Helmet": {
+          "defence": 2
+        }
       },
       "chestplates": {},
       "leg armors": {},
-      "boots: ": {}
+      "boots": {}
     },
     "weapons": {
-      "swords": {
+      "melee": {
         "Novice sword": {
           "damage": [6, 8],
           "range": 1,
@@ -83,9 +88,34 @@
           "action-points": 8,
           "base-price": 3,
           "two-handed": true
+        },
+        "Swords of Slaughter" : {
+          "damage": [8, 9],
+          "range": 1,
+          "action-points": 5,
+          "base-price": 6,
+          "two-handed": true
+        },
+        "Iron sword" : {
+          "damage": [7, 8],
+          "range": 1,
+          "action-points": 3,
+          "base-price": 3
+        },
+        "Rusty blade": {
+          "damage": [3, 5],
+          "range": 1,
+          "action-points": 3,
+          "base-price": 2
+        },
+        "Morning star": {
+          "damage": [3, 5],
+          "range": 1,
+          "action-points": 4,
+          "base-price": 4
         }
       },
-      "staffs": {
+      "magic": {
         "Novice staff": {
           "damage": [3, 5],
           "range": 3,
@@ -97,9 +127,15 @@
           "range": 3,
           "action-points": 12,
           "base-price": 6
+        },
+        "Magic ice shard": {
+          "damage": [9, 10],
+          "range": 2,
+          "action-points": 9,
+          "base-price": 5
         }
       },
-      "bows": {
+      "range": {
         "Novice bow": {
           "damage": [4, 7],
           "range": 4,
@@ -111,6 +147,13 @@
           "damage": [12, 14],
           "range": 4,
           "action-points": 5,
+          "base-price": 7,
+          "two-handed": true
+        },
+        "Longbow" : {
+          "damage": [7, 11],
+          "range": 4,
+          "action-points": 8,
           "base-price": 6,
           "two-handed": true
         }
@@ -121,13 +164,16 @@
         "Wooden shield": {
           "dexterity": -2,
           "strength": 2
+        },
+        "Tarnished shield" : {
+          "defence": 1
         }
       }
     },
     "accessories": {
       "basic": {
         "Ring of vitality" :{
-          "hp": 4,
+          "defence": 4,
           "charisma": 2,
           "base-price": 9
         },
@@ -136,7 +182,6 @@
           "base-price": 10
         },
         "Holy Bible": {
-          "hp": 10,
           "strength": 3,
           "base-price": 35
         },
@@ -148,83 +193,179 @@
           "perception": 1
         }
       }
-      }
+    }
   },
   "entities": {
     "enemies": {
       "Frost mage": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/frost_mage_sprite.png",
         "hp": 20,
-        "strength": 10,
-        "dexterity": 5,
-        "intelligence": 5,
-        "charisma": 5,
+        "strength": 3,
+        "dexterity": 3,
+        "intelligence": 12,
+        "charisma": 1,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 15,
         "level": 1,
-        "equipment": {},
+        "equipment": {
+          "right_hand": "Magic ice shard"
+        },
         "drop_money": [1, 3],
         "drops": {
-          "Plate Helmet": 0.95,
-          "Wooden shield": 0.9
+          "Magic ice shard": 0.5,
+          "Ring of vitality": 0.2
         },
-        "ai": 0
+        "creature_class": "Mage",
+        "ai": 2
       },
       "Half dragon assassin": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_assassin_sprite.png",
         "hp": 20,
-        "strength": 10,
-        "dexterity": 5,
-        "intelligence": 5,
-        "charisma": 5,
+        "strength": 8,
+        "dexterity": 7,
+        "intelligence": 8,
+        "charisma": 0,
         "perception": 3,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 15,
         "level": 1,
-        "equipment": {},
+        "equipment": {
+          "right_hand": "Swords of Slaughter"
+        },
         "drop_money": [1, 3],
         "drops": {
-          "Hunting necklace": 0.9,
-          "Necklace of prudence": 0.85
+          "Swords of Slaughter": 0.5,
+          "Necklace of prudence": 0.2
         },
+        "creature_class": "Warrior",
         "ai": 0
+      },
+      "Half dragon warrior": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/half_dragon_warrior_sprite.png",
+        "hp": 20,
+        "strength": 10,
+        "dexterity": 3,
+        "intelligence": 6,
+        "charisma": 1,
+        "perception": 2,
+        "initiative": 0,
+        "action_points": 15,
+        "level": 1,
+        "equipment": {
+          "right_hand": "Iron sword",
+          "left_hand": "Wooden shield"
+        },
+        "drop_money": [1, 3],
+        "drops": {
+          "Iron sword": 0.5,
+          "Wooden shield": 0.2,
+          "Holy Bible": 0.2
+        },
+        "creature_class": "Warrior",
+        "ai": 0
+      },
+      "Lizardfolk archer": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/lizardfolk_archer_sprite.png",
+        "hp": 20,
+        "strength": 5,
+        "dexterity": 7,
+        "intelligence": 6,
+        "charisma": 2,
+        "perception": 3,
+        "initiative": 0,
+        "action_points": 15,
+        "level": 1,
+        "equipment": {
+          "right_hand": "Longbow"
+        },
+        "drop_money": [1, 3],
+        "drops": {
+          "Longbow": 0.5,
+          "Hunting necklace": 0.2
+        },
+        "creature_class": "Ranger",
+        "ai": 1
       },
       "Nothic": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/nothic_sprite.png",
         "hp": 20,
-        "strength": 10,
-        "dexterity": 5,
-        "intelligence": 5,
-        "charisma": 5,
-        "perception": 3,
+        "strength": 12,
+        "dexterity": 0,
+        "intelligence": 1,
+        "charisma": 2,
+        "perception": 2,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 8,
         "level": 1,
         "equipment": {},
         "drop_money": [1, 3],
-        "drops": {
-          "Holy Bible": 0.2
+        "drops": {},
+        "creature_class": "Warrior",
+        "ai": 0
+      },
+      "Skeleton morningstar": {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/skeleton_morningstar_sprite.png",
+        "hp": 20,
+        "strength": 5,
+        "dexterity": 2,
+        "intelligence": 2,
+        "charisma": 10,
+        "perception": 2,
+        "initiative": 0,
+        "action_points": 15,
+        "level": 1,
+        "equipment": {
+          "right_hand": "Morningstar"
         },
+        "drop_money": [1, 3],
+        "drops": {
+          "Morningstar": 0.5
+        },
+        "creature_class": "Warrior",
         "ai": 0
       },
       "Skeleton warrior": {
         "sprite_path": "dnd_bot/assets/gfx/entities/creatures/skeleton_warrior_sprite.png",
         "hp": 20,
-        "strength": 10,
-        "dexterity": 5,
-        "intelligence": 5,
-        "charisma": 5,
-        "perception": 3,
+        "strength": 6,
+        "dexterity": 1,
+        "intelligence": 2,
+        "charisma": 10,
+        "perception": 2,
         "initiative": 0,
-        "action_points": 2,
+        "action_points": 15,
         "level": 1,
-        "equipment": {},
+        "equipment": {
+          "right_hand": "Rusty blade",
+          "left_hand": "Tarnished shield",
+          "helmet": "Plate Helmet"
+        },
         "drop_money": [1, 3],
         "drops": {
           "Light crossbow": 0.2
         },
+        "creature_class": "Warrior",
         "ai": 0
+      }
+    },
+    "npc" : {
+      "Traveller" : {
+        "sprite_path": "dnd_bot/assets/gfx/entities/creatures/traveller.png",
+        "hp": 20,
+        "strength": 3,
+        "dexterity": 2,
+        "intelligence": 4,
+        "charisma": 6,
+        "perception": 3,
+        "initiative": 5,
+        "action_points": 1,
+        "level": 1,
+        "equipment": {},
+        "drop_money": [0, 0],
+        "drops": {},
+        "creature_class": "",
+        "ai": -1
       }
     },
     "map_elements": {
