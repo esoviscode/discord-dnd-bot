@@ -4,8 +4,11 @@ from typing import List
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_entity import DatabaseEntity
+from dnd_bot.database.database_event import DatabaseEvent
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
+from dnd_bot.logic.prototype.event import Event
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.utils.exceptions import GameException
@@ -14,23 +17,29 @@ from dnd_bot.logic.utils.exceptions import GameException
 class DatabaseMultiverse:
 
     @staticmethod
-    def save_game_state(token):
+    def update_game_state(token):
         """
-        driver method that handles saving all elements of a game
+        driver method that handles saving all elements of a game to the database
         :param token: game token
         """
         game: Game = Multiverse.get_game(token)
         if not game:
             raise GameException('Game with provided token doesn\'t exist!')
 
-        print("\n-- Saving game state --")
+        print("\n-- Updating db game state --")
+
+        DatabaseGame.update_game_state(DatabaseGame.get_id_game_from_game_token(token), game.game_state)
 
         time_snapshot = time.time()
-        DatabaseMultiverse.__save_game_entities(game.entities)
+        DatabaseMultiverse.__update_game_entities(game.entities)
         print(f'   - saving entities - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
+        time_snapshot = time.time()
+        DatabaseMultiverse.__update_game_events(game.events)
+        print(f'   - saving events - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
     @staticmethod
-    def __save_game_entities(entities: List[List[Entity]]):
+    def __update_game_entities(entities: List[List[Entity]]):
 
         for entities_row in entities:
             queries = []
@@ -66,3 +75,15 @@ class DatabaseMultiverse:
                                                                    x=creature.x, y=creature.y)
         queries.append(query)
         parameters_list.append(parameters)
+
+    @staticmethod
+    def __update_game_events(events: List[Event]):
+        BATCH_SIZE = 100  # how many events should be saved during one transaction
+
+        events_batches = [events[i::BATCH_SIZE] for i in range(BATCH_SIZE)]
+
+        for batch in events_batches:
+            event_ids = [ev.id for ev in batch]
+            event_statuses = [ev.status for ev in batch]
+
+            DatabaseEvent.update_multiple_events(event_ids, event_statuses)
