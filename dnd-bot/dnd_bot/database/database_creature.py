@@ -50,6 +50,12 @@ class DatabaseCreature:
         DatabaseEntity.update_entity(id_entity, x, y)
 
     @staticmethod
+    def update_creature_query(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0,
+                              x: int = 0, y: int = 0) -> tuple[str, tuple]:
+        return 'UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), experience = (%s) WHERE ' \
+               'id_creature = (%s)', (level, hp, money, experience, id_creature)
+
+    @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
         query = f'SELECT * FROM public."Creature" WHERE id_creature = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_creature,), "Creature")

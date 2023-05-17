@@ -18,6 +18,10 @@ class DatabaseEntity:
                                                (x, y, id_entity), "Entity")
 
     @staticmethod
+    def update_entity_query(id_entity: int = 0, x: int = 0, y: int = 0) -> tuple[str, tuple]:
+        return 'UPDATE public."Entity" SET x = (%s), y = (%s) WHERE id_entity = (%s)', (x, y, id_entity)
+
+    @staticmethod
     def get_entity(id_entity: int) -> dict | None:
         query = f'SELECT * FROM public."Entity" WHERE id_entity = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query,(id_entity,), "Entity")
