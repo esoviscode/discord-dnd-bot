@@ -236,7 +236,8 @@ class InitializeWorld:
                                               p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class, id_equipment=p.equipment.id)
+                                              character_class=p.creature_class, id_equipment=p.equipment.id,
+                                              max_hp=p.max_hp, initial_action_points=p.initial_action_points)
         p.id = id_player
 
         entities[y].insert(x, p)
@@ -326,7 +327,8 @@ class InitializeWorld:
                                                                         action_points=creature.action_points,
                                                                         level=creature.level, id_game=game.id,
                                                                         experience=creature.experience,
-                                                                        id_entity=creature.id)
+                                                                        id_entity=creature.id, max_hp=creature.max_hp,
+                                                                        initial_action_points=creature.initial_action_points)
                 queries.append(query)
                 parameters_list.append(parameters)
 

@@ -26,7 +26,8 @@ def test_add_player(postgresql):
                                           initiative=p.initiative, action_points=p.action_points,
                                           level=p.level, discord_identity=p.discord_identity, alignment=p.alignment,
                                           backstory=p.backstory, id_game=game_id,
-                                          character_race=p.character_race, character_class=p.creature_class)
+                                          character_race=p.character_race, character_class=p.creature_class,
+                                          max_hp=p.max_hp, initial_action_points=p.initial_action_points)
 
     player_tuple = cur.execute(f'SELECT * FROM public."Player" WHERE id_player = (SELECT LASTVAL())').fetchone()
     creature_tuple = cur.execute(f'SELECT * FROM public."Creature" WHERE id_creature = (SELECT LASTVAL())').fetchone()

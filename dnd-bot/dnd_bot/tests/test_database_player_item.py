@@ -22,7 +22,7 @@ def test_add_player_item(postgresql):
     p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.base_strength, dexterity=p.base_dexterity,
                                      intelligence=p.base_intelligence, charisma=p.base_charisma, perception=p.base_perception,
                                      initiative=p.initiative, action_points=p.action_points, level=p.level,
-                                     experience=p.experience)
+                                     experience=p.experience, max_hp=p.max_hp, initial_action_points=p.initial_action_points)
 
     i = Item(name='TestItem', hp=1, strength=2, dexterity=3, intelligence=4, charisma=5, perception=6, action_points=7,
              effect='efekt', base_price=8, use_range=1, description="test item")
@@ -45,7 +45,7 @@ def test_get_player_items(postgresql):
     p.id = DatabasePlayer.add_player(x=p.x, y=p.y, name=p.name, hp=p.hp, strength=p.base_strength, dexterity=p.base_dexterity,
                                      intelligence=p.base_intelligence, charisma=p.base_charisma, perception=p.base_perception,
                                      initiative=p.initiative, action_points=p.action_points, level=p.level,
-                                     experience=p.experience)
+                                     experience=p.experience, max_hp=p.max_hp, initial_action_points=p.initial_action_points)
 
     i = Item(name='TestItem', hp=1, strength=2, dexterity=3, intelligence=4, charisma=5, perception=6, action_points=7,
              effect='efekt', base_price=8, use_range=1, description="test item")

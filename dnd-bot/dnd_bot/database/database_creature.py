@@ -37,7 +37,7 @@ class DatabaseCreature:
                            initial_action_points: int = 0) -> tuple[str, tuple]:
         return 'INSERT INTO public."Creature" (level, "HP", strength, dexterity, ' \
                'intelligence, charisma, perception, initiative, action_points, ' \
-               'money, id_entity, experience, id_equipment, class) ' \
+               'money, id_entity, experience, id_equipment, class, max_hp, initial_action_points) ' \
                'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', \
             (level, hp, strength, dexterity, intelligence,
              charisma, perception, initiative, action_points,
