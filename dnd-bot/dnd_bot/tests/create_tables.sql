@@ -139,6 +139,8 @@ CREATE TABLE public."Creature"
     experience INTEGER,
     id_equipment BIGINT,
     class VARCHAR,
+    max_hp INTEGER,
+    initial_action_points INTEGER,
     PRIMARY KEY (id_creature),
     CONSTRAINT base_entity FOREIGN KEY (id_entity)
         REFERENCES public."Entity" (id_entity) MATCH SIMPLE
