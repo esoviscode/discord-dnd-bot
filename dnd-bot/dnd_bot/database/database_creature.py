@@ -14,18 +14,16 @@ class DatabaseCreature:
         if creature_class is not None:
             creature_class = creature_class.upper()
 
-        id_creature = DatabaseConnection.add_to_db('INSERT INTO public."Creature" (level, "HP", strength, dexterity, '
-                                                   'intelligence, charisma, perception, initiative, action_points, '
-                                                   'money, id_entity, experience, id_equipment, class, max_hp, '
-                                                   'initial_action_points)'
-                                                   'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                                                   '%s, %s)',
-                                                   (
-                                                       level, hp, strength, dexterity, intelligence,
-                                                       charisma, perception, initiative, action_points,
-                                                       money, id_entity, experience, id_equipment, creature_class,
-                                                       max_hp, initial_action_points),
-                                                   "creature")
+        query, parameters = DatabaseCreature.add_creature_query(x=x, y=y, name=name, hp=hp, strength=strength,
+                                                                dexterity=dexterity, intelligence=intelligence,
+                                                                charisma=charisma, perception=perception,
+                                                                initiative=initiative, action_points=action_points,
+                                                                level=level, money=money, id_game=id_game,
+                                                                experience=experience, id_equipment=id_equipment,
+                                                                creature_class=creature_class, description=description,
+                                                                id_entity=id_entity, max_hp=max_hp,
+                                                                initial_action_points=initial_action_points)
+        id_creature = DatabaseConnection.add_to_db(query, parameters, "creature")
         return id_creature
 
     @staticmethod
