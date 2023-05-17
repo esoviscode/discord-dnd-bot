@@ -18,8 +18,6 @@ class CommandPause(Cog):
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e), token=token)
 
-        # await Messager.send_dm_information_message(user_id=interaction.user.id, content=f'Pausing the game!',
-        #                                            token=token)
         await interaction.response.send_message('ℹ️ Pausing the game!', ephemeral=True)
 
 

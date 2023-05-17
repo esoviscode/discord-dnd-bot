@@ -6,11 +6,13 @@ from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_event import DatabaseEvent
 from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.event import Event
 from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
+from dnd_bot.logic.prototype.user import User
 from dnd_bot.logic.utils.exceptions import GameException
 
 
@@ -87,3 +89,34 @@ class DatabaseMultiverse:
             event_statuses = [ev.status for ev in batch]
 
             DatabaseEvent.update_multiple_events(event_ids, event_statuses)
+
+    @staticmethod
+    def load_game_state(token):
+        """
+        driver method that handles loading all game elements
+        :param token: game token
+        """
+
+        print(f"\n-- Loading game state for game #{token} from db --")
+        game: Game = Multiverse.get_game(token)
+        if not game:
+            # create a new game object
+            dbdict = DatabaseGame.get_game(DatabaseGame.get_id_game_from_game_token(token))
+            game = Game(token=dbdict['token'], id_host=dbdict['id_host'], game_state=dbdict['game_state'],
+                        campaign_name=dbdict['campaign_name'])
+            game.id = DatabaseGame.get_id_game_from_game_token(token)
+
+            Multiverse.add_game(game)
+
+        time_snapshot = time.time()
+        DatabaseMultiverse.__load_game_state_user_list(game)
+        print(f'   - loading users - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
+        print('test')
+
+    @staticmethod
+    def __load_game_state_user_list(game):
+        user_list = DatabaseUser.get_all_users(game.id)
+        for user_dict in user_list:
+            user = User(game_token=game.token, discord_id=user_dict['discord_id'])
+            game.user_list.append(user)

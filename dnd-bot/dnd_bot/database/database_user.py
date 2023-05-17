@@ -1,4 +1,5 @@
 from sqlite3 import ProgrammingError
+from typing import List
 
 from dnd_bot.database.database_connection import DatabaseConnection
 
@@ -19,6 +20,12 @@ class DatabaseUser:
         query = f'SELECT id_game, discord_id FROM public."User" WHERE id_user = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_user,), "User")
         return {'id_user': id_user, 'id_game': db_t[0], 'discord_id': db_t[1]}
+
+    @staticmethod
+    def get_all_users(id_game: int = 0) -> List[dict] | None:
+        query = f'SELECT * FROM public."User" WHERE id_game = (%s)'
+        db_l = DatabaseConnection.get_multiple_objects_from_db(query, (id_game,), "User")
+        return [{'id_user': el[0], 'id_game': el[1], 'discord_id': el[2]} for el in db_l]
 
     @staticmethod
     def get_user_id_from_discord_id(discord_id: int = 0, id_game: int = 0) -> int | None:

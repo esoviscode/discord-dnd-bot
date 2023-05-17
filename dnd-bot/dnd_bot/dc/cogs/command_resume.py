@@ -1,6 +1,7 @@
 from nextcord import slash_command
 from nextcord.ext.commands import Cog, Bot
 
+from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.logic.game.handler_game import HandlerGame
 from dnd_bot.logic.utils.exceptions import DiscordDndBotException
 
@@ -15,7 +16,9 @@ class CommandResume(Cog):
         try:
             await HandlerGame.resume_game(token)
         except DiscordDndBotException as e:
-            await interaction.response.send_message(f'⚠️ {e}')
+            await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e), token=token)
+
+        await interaction.response.send_message('ℹ️ Resuming the game!', ephemeral=True)
 
 
 def setup(bot):

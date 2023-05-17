@@ -71,7 +71,7 @@ class HandlerGame:
 
         game.status = 'INACTIVE'
 
-        DatabaseMultiverse.save_game_state(token)
+        DatabaseMultiverse.update_game_state(token)
 
     @staticmethod
     async def resume_game(token: str = ''):
@@ -82,6 +82,7 @@ class HandlerGame:
         if not game:
             raise Exception('Game with provided token doesn\'t exist!')
 
-        # TODO load game state from database
+        DatabaseMultiverse.load_game_state(token)
 
+        # TODO load user info (usernames, colors etc)
         game.status = 'ACTIVE'
