@@ -82,7 +82,7 @@ class HandlerGame:
         if not game:
             raise Exception('Game with provided token doesn\'t exist!')
 
-        DatabaseMultiverse.load_game_state(token)
+        await DatabaseMultiverse.load_game_state(token)
 
         # TODO load user info (usernames, colors etc)
         game.status = 'ACTIVE'

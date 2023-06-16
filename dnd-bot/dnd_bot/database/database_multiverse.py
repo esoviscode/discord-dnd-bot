@@ -6,7 +6,9 @@ from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_event import DatabaseEvent
 from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.database.database_user import DatabaseUser
+from dnd_bot.logic.game.initialize_world import InitializeWorld
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entity import Entity
 from dnd_bot.logic.prototype.event import Event
@@ -14,6 +16,7 @@ from dnd_bot.logic.prototype.game import Game
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.user import User
 from dnd_bot.logic.utils.exceptions import GameException
+from dnd_bot.logic.prototype.player import Player
 
 
 class DatabaseMultiverse:
@@ -42,11 +45,9 @@ class DatabaseMultiverse:
 
     @staticmethod
     def __update_game_entities(entities: List[List[Entity]]):
-
+        queries = []
+        parameters_list = []
         for entities_row in entities:
-            queries = []
-            parameters_list = []
-
             for e in entities_row:
                 if e is None:
                     continue
@@ -56,15 +57,22 @@ class DatabaseMultiverse:
                     DatabaseMultiverse.__add_query_update_creature(e, queries, parameters_list)
                     continue
 
-                if isinstance(e, Entity):
+                if isinstance(e, Entity) and e.fragile:
                     DatabaseMultiverse.__add_query_update_entity(e, queries, parameters_list)
                     continue
 
-            DatabaseConnection.update_multiple_objects_in_db(queries, parameters_list)
+        DatabaseConnection.update_multiple_objects_in_db(queries, parameters_list)
 
     @staticmethod
     def __add_query_update_entity(entity: Entity, queries: List[str], parameters_list: List[tuple]) -> None:
-        query, parameters = DatabaseEntity.update_entity_query(id_entity=entity.id,
+        entity_id = entity.id
+        if isinstance(entity, Creature):
+            entity_id = DatabaseCreature.get_creature_id_entity(entity.id)
+        if isinstance(entity, Player):
+            creature_id = DatabasePlayer.get_players_id_creature(entity.id)
+            entity_id = DatabaseCreature.get_creature_id_entity(creature_id)
+
+        query, parameters = DatabaseEntity.update_entity_query(id_entity=entity_id,
                                                                x=entity.x, y=entity.y)
         queries.append(query)
         parameters_list.append(parameters)
@@ -91,7 +99,7 @@ class DatabaseMultiverse:
             DatabaseEvent.update_multiple_events(event_ids, event_statuses)
 
     @staticmethod
-    def load_game_state(token):
+    async def load_game_state(token):
         """
         driver method that handles loading all game elements
         :param token: game token
@@ -108,15 +116,40 @@ class DatabaseMultiverse:
 
             Multiverse.add_game(game)
 
+            await InitializeWorld.load_entities(game, 'dnd_bot/assets/maps/map.json',
+                                                'dnd_bot/assets/campaigns/campaign.json')
+
         time_snapshot = time.time()
         DatabaseMultiverse.__load_game_state_user_list(game)
         print(f'   - loading users - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
-        print('test')
+        time_snapshot = time.time()
+        DatabaseMultiverse.__load_game_entities(game)
+        print(f'   - loading entities - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
     @staticmethod
     def __load_game_state_user_list(game):
+        game.user_list = []
         user_list = DatabaseUser.get_all_users(game.id)
         for user_dict in user_list:
             user = User(game_token=game.token, discord_id=user_dict['discord_id'])
             game.user_list.append(user)
+
+    @staticmethod
+    def __load_game_entities(game):
+        entities: List[List[Entity]] = game.entities
+
+        database_entities = DatabaseEntity.get_all_entities(game.id)
+
+        for entities_row in entities:
+            for e in entities_row:
+                if e is None or e.fragile:
+                    continue
+
+
+
+
+
+
+
+
