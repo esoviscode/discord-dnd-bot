@@ -14,8 +14,8 @@ def test_add_game(postgresql):
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
-    DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name)'
-                                 ' VALUES (%s, %s, %s, %s)', ('12345', 1, 'LOBBY', 'test'))
+    DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name, active_creature)'
+                                 ' VALUES (%s, %s, %s, %s, %s)', ('12345', 1, 'LOBBY', 'test', 123))
 
     game_tuple = cur.execute(f'SELECT * FROM public."Game" WHERE id_game = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
@@ -24,6 +24,7 @@ def test_add_game(postgresql):
     assert (game_tuple[2] == 1)  # id_host
     assert (game_tuple[3] == 'LOBBY')
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] == 123)
 
     cur.close()
 
@@ -34,8 +35,8 @@ def test_add_game_no_token(postgresql):
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
-    DatabaseConnection.add_to_db('INSERT INTO public."Game" (id_host, game_state, campaign_name)'
-                                 ' VALUES (%s, %s, %s)', (1, 'LOBBY', 'test'))
+    DatabaseConnection.add_to_db('INSERT INTO public."Game" (id_host, game_state, campaign_name, active_creature)'
+                                 ' VALUES (%s, %s, %s, %s)', (1, 'LOBBY', 'test', 123))
 
     game_tuple = cur.execute(f'SELECT * FROM public."Game" WHERE id_game = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
@@ -44,6 +45,7 @@ def test_add_game_no_token(postgresql):
     assert (game_tuple[2] == 1)  # id_host
     assert (game_tuple[3] == 'LOBBY')
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] == 123)
 
 
 def test_add_game_no_game_state(postgresql):
@@ -52,8 +54,8 @@ def test_add_game_no_game_state(postgresql):
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
-    DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, campaign_name)'
-                                 ' VALUES (%s, %s, %s)', ('12345', 1, 'test'))
+    DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, campaign_name, active_creature)'
+                                 ' VALUES (%s, %s, %s, %s)', ('12345', 1, 'test', 123))
 
     game_tuple = cur.execute(f'SELECT * FROM public."Game" WHERE id_game = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
@@ -62,6 +64,7 @@ def test_add_game_no_game_state(postgresql):
     assert (game_tuple[2] == 1)
     assert (game_tuple[3] is None)
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] == 123)
 
 
 #
@@ -166,6 +169,7 @@ def test_find_game_by_token_correct(postgresql):
     assert game_dict['id_host'] == 678
     assert game_dict['game_state'] == 'LOBBY'
     assert game_dict['campaign_name'] == 'test_campaign'
+    assert game_dict['active_creature'] == 123
 
 
 def test_find_game_by_token_nonexistent(postgresql):
