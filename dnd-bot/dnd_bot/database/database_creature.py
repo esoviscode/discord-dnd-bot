@@ -9,7 +9,7 @@ class DatabaseCreature:
                      dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                      initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
                      id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None,
-                     description: str = '', max_hp: int = 0, initial_action_points: int = 0) -> int | None:
+                     description: str = '', max_hp: int = 0, initial_action_points: int = 0, look_direction: str = "RIGHT") -> int | None:
         id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game, description=description)
         if creature_class is not None:
             creature_class = creature_class.upper()
@@ -22,7 +22,8 @@ class DatabaseCreature:
                                                                 experience=experience, id_equipment=id_equipment,
                                                                 creature_class=creature_class, description=description,
                                                                 id_entity=id_entity, max_hp=max_hp,
-                                                                initial_action_points=initial_action_points)
+                                                                initial_action_points=initial_action_points,
+                                                                look_direction=look_direction)
         id_creature = DatabaseConnection.add_to_db(query, parameters, "creature")
         return id_creature
 
@@ -32,24 +33,23 @@ class DatabaseCreature:
                            initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
                            id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None,
                            description: str = '', id_entity: int = 0, max_hp: int = 0,
-                           initial_action_points: int = 0) -> tuple[str, tuple]:
+                           initial_action_points: int = 0, look_direction: str = "RIGHT") -> tuple[str, tuple]:
         return 'INSERT INTO public."Creature" (level, "HP", strength, dexterity, ' \
                'intelligence, charisma, perception, initiative, action_points, ' \
-               'money, id_entity, experience, id_equipment, class, max_hp, initial_action_points) ' \
-               'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', \
+               'money, id_entity, experience, id_equipment, class, max_hp, initial_action_points, look_direction) ' \
+               'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', \
             (level, hp, strength, dexterity, intelligence,
              charisma, perception, initiative, action_points,
-             money, id_entity, experience, id_equipment, creature_class, max_hp, initial_action_points)
+             money, id_entity, experience, id_equipment, creature_class, max_hp, initial_action_points, look_direction)
 
     @staticmethod
     def update_creature(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0,
-                        x: int = 0,
-                        y: int = 0) -> None:
+                        x: int = 0, y: int = 0, look_direction: str = "RIGHT") -> None:
         DatabaseConnection.update_object_in_db('UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), '
                                                'experience = (%s) WHERE id_creature = (%s)',
                                                (level, hp, money, experience, id_creature), "Creature")
         id_entity = DatabaseCreature.get_creature_id_entity(id_creature)
-        DatabaseEntity.update_entity(id_entity, x, y)
+        DatabaseEntity.update_entity(id_entity, x, y, look_direction)
 
     @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
