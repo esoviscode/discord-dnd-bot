@@ -117,7 +117,8 @@ CREATE TABLE public."Entity"
     CONSTRAINT id_game FOREIGN KEY (id_game)
         REFERENCES public."Game" (id_game) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT look_direction_enum CHECK (look_direction in ('RIGHT', 'LEFT', 'UP', 'DOWN'))
 );
 
 ALTER TABLE IF EXISTS public."Entity"
