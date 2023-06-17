@@ -1,5 +1,7 @@
 import asyncio
 
+from dnd_bot.database.database_game import DatabaseGame
+from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
 from dnd_bot.dc.utils.handler_views import HandlerViews
@@ -37,6 +39,13 @@ class HandlerGame:
         # reset creature's action points to the initial value
         game.active_creature.action_points = game.active_creature.initial_action_points
         game.active_creature = next_creature
+
+        game_id = DatabaseGame.get_id_game_from_game_token(game_token)
+        if isinstance(game.active_creature, Player):
+            active_creature_id = DatabasePlayer.get_players_id_creature(game.active_creature.id)
+            DatabaseGame.update_game_active_creature(game_id, active_creature_id)
+        else:
+            DatabaseGame.update_game_active_creature(game_id, game.active_creature.id)
 
         # send messages to users
         if visible:

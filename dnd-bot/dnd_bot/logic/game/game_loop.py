@@ -1,3 +1,4 @@
+from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive
 from dnd_bot.dc.ui.views.view_game import ViewMain
@@ -57,6 +58,14 @@ class GameLoop:
 
         first_creature = game.creatures_queue.popleft()
         game.active_creature = first_creature
+
+        game_id = DatabaseGame.get_id_game_from_game_token(game_token)
+        if isinstance(first_creature, Player):
+            active_creature_id = DatabasePlayer.get_players_id_creature(game.active_creature.id)
+            DatabaseGame.update_game_active_creature(game_id, active_creature_id)
+        else:
+            DatabaseGame.update_game_active_creature(game_id, game.active_creature.id)
+
         for c in game.creatures_queue:
             if c.visible_for_players() or isinstance(c, Player):
                 game.last_visible_creature = c
