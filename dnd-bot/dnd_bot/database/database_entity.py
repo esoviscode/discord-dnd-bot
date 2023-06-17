@@ -13,6 +13,9 @@ class DatabaseEntity:
 
     @staticmethod
     def add_entity_query(name: str = "", x: int = 0, y: int = 0, id_game: int = None, description: str = "", look_direction: str = "RIGHT") -> tuple[str, tuple]:
+        if look_direction is not None:
+            look_direction = look_direction.upper()
+
         return 'INSERT INTO public."Entity" (name, x, y, id_game, description, look_direction) VALUES (%s, %s, %s, %s, %s, %s)', (name, x, y, id_game, description, look_direction)
 
     @staticmethod
