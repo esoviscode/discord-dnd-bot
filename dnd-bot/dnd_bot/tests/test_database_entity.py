@@ -59,7 +59,7 @@ def test_update_entity(postgresql):
     assert db_d[3] == 222
     assert db_d[4] == id_game
     assert db_d[5] == "test_description"
-    assert db_d[6] == "UP"
+    assert db_d[6] == "LEFT"
 
 
 def test_get_entity(postgresql):

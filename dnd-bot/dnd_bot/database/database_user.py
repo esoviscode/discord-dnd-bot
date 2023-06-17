@@ -17,7 +17,7 @@ class DatabaseUser:
 
     @staticmethod
     def get_user(id_user: int = 0) -> dict | None:
-        query = f'SELECT id_game, discord_id FROM public."User" WHERE id_user = (%s)'
+        query = f'SELECT id_game, discord_id, discord_channel FROM public."User" WHERE id_user = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_user,), "User")
         return {'id_user': id_user, 'id_game': db_t[0], 'discord_id': db_t[1], 'discord_channel': db_t[2]}
 
