@@ -40,12 +40,8 @@ class HandlerGame:
         game.active_creature.action_points = game.active_creature.initial_action_points
         game.active_creature = next_creature
 
-        game_id = DatabaseGame.get_id_game_from_game_token(game_token)
-        if isinstance(game.active_creature, Player):
-            active_creature_id = DatabasePlayer.get_players_id_creature(game.active_creature.id)
-            DatabaseGame.update_game_active_creature(game_id, active_creature_id)
-        else:
-            DatabaseGame.update_game_active_creature(game_id, game.active_creature.id)
+        # update active_creature game attribute in db
+        GameLoop.update_game_active_creature(game)
 
         # send messages to users
         if visible:

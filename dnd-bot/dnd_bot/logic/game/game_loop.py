@@ -59,12 +59,8 @@ class GameLoop:
         first_creature = game.creatures_queue.popleft()
         game.active_creature = first_creature
 
-        game_id = DatabaseGame.get_id_game_from_game_token(game_token)
-        if isinstance(first_creature, Player):
-            active_creature_id = DatabasePlayer.get_players_id_creature(game.active_creature.id)
-            DatabaseGame.update_game_active_creature(game_id, active_creature_id)
-        else:
-            DatabaseGame.update_game_active_creature(game_id, game.active_creature.id)
+        # update active_creature game attribute in db
+        GameLoop.update_game_active_creature(game)
 
         for c in game.creatures_queue:
             if c.visible_for_players() or isinstance(c, Player):
@@ -92,4 +88,13 @@ class GameLoop:
     def update_creature(c: Creature) -> None:
         DatabaseCreature.update_creature(id_creature=c.id, level=c.level, hp=c.hp, money=c.money,
                                          experience=c.experience, x=c.x, y=c.y)
+
+    @staticmethod
+    def update_game_active_creature(g: Game) -> None:
+        if isinstance(g.active_creature, Player):
+            active_creature_id = DatabasePlayer.get_players_id_creature(g.active_creature.id)
+            DatabaseGame.update_game_active_creature(g.id, active_creature_id)
+        else:
+            DatabaseGame.update_game_active_creature(g.id, g.active_creature.id)
+
 
