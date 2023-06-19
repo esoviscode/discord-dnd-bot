@@ -18,7 +18,7 @@ class CommandStart(Cog):
         try:
             lobby_players_identities = await HandlerStart.start_game(token, interaction.user.id)
 
-            await interaction.response.send_message('Starting the game!', ephemeral=True)
+            partial_msg = await interaction.response.send_message('Starting the game!', ephemeral=True)
 
             # send messages about successful start operation
             for user in lobby_players_identities:
@@ -26,6 +26,9 @@ class CommandStart(Cog):
 
             await GameStart.start(token)
             await GameLoop.start_loop(token)
+
+            msg = await partial_msg.fetch()
+            await msg.delete()
         except DiscordDndBotException as e:
             await interaction.response.send_message(f'{e}', ephemeral=True)
 

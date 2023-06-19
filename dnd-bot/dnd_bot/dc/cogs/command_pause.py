@@ -16,12 +16,14 @@ class CommandPause(Cog):
         try:
             partial_msg = await interaction.response.send_message('Pausing in progress...', ephemeral=True)
             await HandlerGame.pause_game(token)
-            await Messager.delete_last_user_message(interaction.user.id, token)
+
+            await Messager.edit_last_user_message(user_id=interaction.user.id, content='### The game has been paused!',
+                                                  token=token, files=[])
 
             msg = await partial_msg.fetch()
             await msg.delete()
-            await Messager.send_dm_information_message(user_id=interaction.user.id, content='The game has been paused!',
-                                                       token=token)
+            await Messager.send_dm_information_message(user_id=interaction.user.id,
+                                                       content='You can unpause the game using `/resume`!', token=token)
 
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e), token=token)

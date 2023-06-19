@@ -80,6 +80,41 @@ class GameLoop:
             await HandlerGame.turn(game_token, first_creature)
 
     @staticmethod
+    async def resume_loop(token):
+        """resumes game loop after it was paused, the active creature should be set already"""
+        game = GameLoop.get_game_object(token)
+
+        active_creature = game.active_creature
+        GameLoop.prepare_queue(game)
+
+        # shift creatures queue so that the active creature is at the front
+        loop_len = len(game.creatures_queue)
+        for i in range(loop_len):
+            cr = game.creatures_queue[0]
+
+            if cr is active_creature:
+                break
+
+            game.creatures_queue.popleft()
+
+        for c in game.creatures_queue:
+            if c.visible_for_players() or isinstance(c, Player):
+                game.last_visible_creature = c
+                break
+
+        for user in game.user_list:
+            game.players_views[user.discord_id] = (ViewCharacterNonActive, [])
+        if isinstance(active_creature, Player):
+            game.players_views[active_creature.discord_identity] = (ViewMain, [])
+
+        await HandlerViews.display_views_for_users(token, "Game has been resumed!")
+
+        # move of non player creature
+        if not isinstance(active_creature, Player):
+            from dnd_bot.logic.game.handler_game import HandlerGame
+            await HandlerGame.turn(token, active_creature)
+
+    @staticmethod
     def update_player(p: Player) -> None:
         DatabasePlayer.update_player(id_player=p.id, level=p.level, hp=p.hp, money=p.money, experience=p.experience,
                                      x=p.x, y=p.y)

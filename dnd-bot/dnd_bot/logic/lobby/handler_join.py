@@ -27,7 +27,7 @@ class HandlerJoin:
         if game.game_state != 'LOBBY':
             raise JoinLobbyException(":no_entry: This game has already started!")
 
-        DatabaseUser.add_user(game.id, user_id)
+        DatabaseUser.add_user(game.id, user_id, discord_channel=user_dm_channel)
         game.add_player(user_id, user_dm_channel, username, HandlerJoin.get_color_by_index(len(game.user_list)))
 
         return game.user_list

@@ -142,7 +142,9 @@ class DatabaseMultiverse:
         Multiverse.games[game.token] = copy.deepcopy(game)
 
         time_snapshot = time.time()
-        await GameLoop.start_loop(game.token)  # TODO resume loop rather than starting it
+        DatabaseMultiverse.__set_active_creature(game)
+        Multiverse.games[game.token] = copy.deepcopy(game)
+        await GameLoop.resume_loop(game.token)
         print(f'   - preparing queue and starting the game - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
     @staticmethod
@@ -266,3 +268,22 @@ class DatabaseMultiverse:
             creature.equipment.__setattr__(eq_part, Item(name=json_data['equipment'][eq_part]))
 
         entity_row.append(creature)
+
+    @staticmethod
+    def __set_active_creature(game):
+        db_game = DatabaseGame.get_game(game.id)
+        active_creature_id = db_game['active_creature']
+
+        if active_creature_id is None:
+            return
+
+        creatures = game.get_creatures()
+
+        for creature in creatures:
+            cr_id = creature.id
+            if isinstance(creature, Player):
+                cr_id = DatabasePlayer.get_players_id_creature(creature.id)
+
+            if cr_id == active_creature_id:
+                game.active_creature = creature
+                return
