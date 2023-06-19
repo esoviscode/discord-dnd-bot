@@ -69,6 +69,19 @@ class DatabaseCreature:
         return creature
 
     @staticmethod
+    def get_creature_by_id_entity(id_entity: int = 0) -> dict | None:
+        query = f'SELECT * FROM public."Creature" WHERE id_entity = (%s)'
+        db_t = DatabaseConnection.get_object_from_db(query, (id_entity,), "Creature")
+        creature = {'id_creature': db_t[0], 'level': db_t[1], 'hp': db_t[2], 'strength': db_t[3], 'dexterity': db_t[4],
+                    'intelligence': db_t[5], 'charisma': db_t[6], 'perception': db_t[7], 'initiative': db_t[8],
+                    'action_points': db_t[9], 'money': db_t[10], 'id_entity': db_t[11], 'experience': db_t[12],
+                    'id_equipment': db_t[13], 'class': db_t[14]}
+        entity = DatabaseEntity.get_entity(creature['id_entity'])
+        for key, value in entity.items():
+            creature[key] = value
+        return creature
+
+    @staticmethod
     def get_creature_id_entity(id_creature: int = 0) -> int | None:
         return DatabaseConnection.get_object_from_db(
             f'SELECT id_entity FROM public."Creature" WHERE id_creature = (%s)',

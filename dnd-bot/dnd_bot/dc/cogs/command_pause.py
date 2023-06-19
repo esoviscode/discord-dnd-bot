@@ -15,8 +15,11 @@ class CommandPause(Cog):
     async def pause(self, interaction, token: str):
         try:
             await HandlerGame.pause_game(token)
+            partial_msg = await interaction.response.send_message('Pausing in progress...', ephemeral=True)
+            msg = await partial_msg.fetch()
+            await msg.delete()
 
-            await Messager.send_dm_information_message(user_id=interaction.user.id, content='Pausing the game!',
+            await Messager.send_dm_information_message(user_id=interaction.user.id, content='The game has been paused!',
                                                        token=token)
         except DiscordDndBotException as e:
             await Messager.send_dm_error_message(user_id=interaction.user.id, content=str(e), token=token)

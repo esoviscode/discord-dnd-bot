@@ -3,8 +3,8 @@ import asyncio
 from dnd_bot.database.database_multiverse import DatabaseMultiverse
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewMain
+from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
@@ -73,16 +73,12 @@ class HandlerGame:
 
         DatabaseMultiverse.update_game_state(token)
 
+        # remove game from memory
+        Multiverse.delete_game(game)
+
     @staticmethod
     async def resume_game(token: str = ''):
         """resumes game based on a token.
            Game is loaded from db and state is set to ACTIVE"""
-        game = Multiverse.get_game(token)
-
-        if not game:
-            raise Exception('Game with provided token doesn\'t exist!')
 
         await DatabaseMultiverse.load_game_state(token)
-
-        # TODO load user info (usernames, colors etc)
-        game.status = 'ACTIVE'

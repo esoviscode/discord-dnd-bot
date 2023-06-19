@@ -8,7 +8,7 @@ from dnd_bot.logic.prototype.items.equipable import Equipable
 class Item(DatabaseObject):
     """represents an item in the player's inventory"""
 
-    def __init__(self, id_item: int = 0, name: str = "", effect: str = ""):
+    def __init__(self, name: str = "", effect: str = ""):
         super().__init__(DatabaseItem.add_item(name))
         self.name = name
 

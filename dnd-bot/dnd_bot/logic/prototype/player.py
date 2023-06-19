@@ -25,7 +25,8 @@ class Player(Creature):
         else:
             user = game.get_user_by_id(discord_identity)
             if user is None:
-                print('Warning: this player has no associated User!')
+                # print('Warning: this player has no associated User!')
+                pass
             else:
                 self.sprite = self.get_sprite_path_by_color(user.color, character_class)
 
