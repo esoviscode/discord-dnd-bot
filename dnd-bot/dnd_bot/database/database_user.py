@@ -24,9 +24,9 @@ class DatabaseUser:
 
     @staticmethod
     def get_all_users(id_game: int = 0) -> List[dict] | None:
-        query = f'SELECT * FROM public."User" WHERE id_game = (%s)'
+        query = f'SELECT * FROM public."User" WHERE id_game = (%s) ORDER BY id_user'
         db_l = DatabaseConnection.get_multiple_objects_from_db(query, (id_game,), "User")
-        return [{'id_user': el[0], 'id_game': el[1], 'discord_id': el[2]} for el in db_l]
+        return [{'id_user': el[0], 'id_game': el[1], 'discord_id': el[2], 'discord_channel': el[3]} for el in db_l]
 
     @staticmethod
     def get_user_id_from_discord_id(discord_id: int = 0, id_game: int = 0) -> int | None:

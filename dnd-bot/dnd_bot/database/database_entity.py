@@ -41,7 +41,7 @@ class DatabaseEntity:
         query = f'SELECT * FROM public."Entity" WHERE id_game = (%s)'
         db_l = DatabaseConnection.get_multiple_objects_from_db(query, (id_game,), "Entities")
         return [{'id_entity': db_t[0], 'name': db_t[1], 'x': db_t[2], 'y': db_t[3],
-                 'id_game': db_t[4], 'description': db_t[5]} for db_t in db_l]
+                 'id_game': db_t[4], 'description': db_t[5], 'look_direction': db_t[6]} for db_t in db_l]
 
     @staticmethod
     def get_entity_query(id_entity: int) -> tuple[str, tuple]:

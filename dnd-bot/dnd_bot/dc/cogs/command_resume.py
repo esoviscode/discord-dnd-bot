@@ -14,9 +14,10 @@ class CommandResume(Cog):
     @slash_command(name='resume', description='Resumes a game by providing a game token')
     async def resume(self, interaction, token: str):
         try:
+            partial_msg = await interaction.response.send_message('Resuming in progress...', ephemeral=True)
+            await Messager.delete_last_user_error_message(interaction.user.id, token)
             await HandlerGame.resume_game(token)
 
-            partial_msg = await interaction.response.send_message('Resuming in progress...', ephemeral=True)
             msg = await partial_msg.fetch()
             await msg.delete()
 

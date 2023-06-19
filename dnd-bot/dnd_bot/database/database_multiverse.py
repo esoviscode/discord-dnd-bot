@@ -15,6 +15,7 @@ from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.dc.utils.utils import get_user_name_by_id
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.initialize_world import InitializeWorld
+from dnd_bot.logic.lobby.handler_join import HandlerJoin
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
 from dnd_bot.logic.prototype.entities.creatures.npc import NPC
@@ -137,18 +138,20 @@ class DatabaseMultiverse:
         DatabaseMultiverse.__load_game_entities(game, 'dnd_bot/assets/campaigns/campaign.json')
         print(f'   - loading entities - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
+        InitializeWorld.load_map_information(game, map_path='dnd_bot/assets/maps/map.json')
         Multiverse.games[game.token] = copy.deepcopy(game)
 
         time_snapshot = time.time()
-        await GameLoop.start_loop(game.token)
+        await GameLoop.start_loop(game.token)  # TODO resume loop rather than starting it
         print(f'   - preparing queue and starting the game - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
     @staticmethod
     async def __load_game_state_user_list(game):
         user_list = DatabaseUser.get_all_users(game.id)
-        for user_dict in user_list:
+        for i, user_dict in enumerate(user_list):
             username = await get_user_name_by_id(user_dict['discord_id'])
-            user = User(game_token=game.token, discord_id=user_dict['discord_id'], username=username)
+            user = User(game_token=game.token, discord_id=user_dict['discord_id'], username=username,
+                        channel_id=user_dict['discord_channel'], color=HandlerJoin.get_color_by_index(i))
 
             if user_dict['discord_id'] == game.id_host:
                 user.is_host = True
@@ -186,13 +189,13 @@ class DatabaseMultiverse:
                 db_c = DatabaseCreature.get_creature_by_id_entity(db_entity['id_entity'])
                 row = game.entities[db_entity['y']]
                 DatabaseMultiverse.__load_creature(row, db_entity['x'], db_entity['y'], db_entity['name'], game.token,
-                                                   db_c, npc_json[db_entity['name']], "NPC")
+                                                   db_c, npc_json[db_entity['name']], "NPC")  # TODO load look direction
                 continue
             if db_entity['name'] in map_elements_json:
                 # just an entity
                 entity = Entity(id=db_entity['id_entity'], x=db_entity['x'], y=db_entity['y'],
                                 sprite=map_elements_json[db_entity['name']], name=db_entity['name'],
-                                game_token=game.token)  # TODO load look_direction
+                                game_token=game.token, look_direction=db_entity['look_direction'].lower())
                 row = game.entities[db_entity['y']]
                 row[db_entity['x']] = copy.deepcopy(entity)
 
@@ -216,16 +219,25 @@ class DatabaseMultiverse:
                             action_points=db_c['action_points'],
                             character_race=db_p['race'], character_class=db_c['class'], level=db_c['level'],
                             money=db_c['money'])
+            player.look_direction = db_entity['look_direction'].lower()
             player.id = db_p['id_player']
 
             equipment_db = DatabaseEquipment.get_equipment(db_c['id_equipment'])
-            equipment = Equipment(helmet=Item(name=DatabaseItem.get_item(equipment_db['helmet'])['name']) if equipment_db['helmet'] else None,
-                                  chest=Item(name=DatabaseItem.get_item(equipment_db['chest'])['name']) if equipment_db['chest'] else None,
-                                  leg_armor=Item(name=DatabaseItem.get_item(equipment_db['leg_armor'])['name']) if equipment_db['leg_armor'] else None,
-                                  boots=Item(name=DatabaseItem.get_item(equipment_db['boots'])['name']) if equipment_db['boots'] else None,
-                                  left_hand=Item(name=DatabaseItem.get_item(equipment_db['left_hand'])['name']) if equipment_db['left_hand'] else None,
-                                  right_hand=Item(name=DatabaseItem.get_item(equipment_db['right_hand'])['name']) if equipment_db['right_hand'] else None,
-                                  accessory=Item(name=DatabaseItem.get_item(equipment_db['accessory'])['name']) if equipment_db['accessory'] else None)
+            equipment = Equipment(
+                helmet=Item(name=DatabaseItem.get_item(equipment_db['helmet'])['name']) if equipment_db[
+                    'helmet'] else None,
+                chest=Item(name=DatabaseItem.get_item(equipment_db['chest'])['name']) if equipment_db[
+                    'chest'] else None,
+                leg_armor=Item(name=DatabaseItem.get_item(equipment_db['leg_armor'])['name']) if equipment_db[
+                    'leg_armor'] else None,
+                boots=Item(name=DatabaseItem.get_item(equipment_db['boots'])['name']) if equipment_db[
+                    'boots'] else None,
+                left_hand=Item(name=DatabaseItem.get_item(equipment_db['left_hand'])['name']) if equipment_db[
+                    'left_hand'] else None,
+                right_hand=Item(name=DatabaseItem.get_item(equipment_db['right_hand'])['name']) if equipment_db[
+                    'right_hand'] else None,
+                accessory=Item(name=DatabaseItem.get_item(equipment_db['accessory'])['name']) if equipment_db[
+                    'accessory'] else None)
             player.equipment = equipment
 
             row = game.entities[db_entity['y']]
@@ -245,7 +257,8 @@ class DatabaseMultiverse:
 
         creature.id = entity_data['id_creature']
 
-        equipment_db = DatabaseEquipment.get_equipment(entity_data['id_equipment']) if entity_data['id_equipment'] is not None else None
+        equipment_db = DatabaseEquipment.get_equipment(entity_data['id_equipment']) if entity_data[
+                                                                                           'id_equipment'] is not None else None
         # TODO equipment is not even saved to the database for creatures - for now it resets to
         #  default equipment from JSON
         creature.equipment = Equipment()
