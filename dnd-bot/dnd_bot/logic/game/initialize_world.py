@@ -244,7 +244,8 @@ class InitializeWorld:
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
                                               character_class=p.creature_class, id_equipment=p.equipment.id,
-                                              max_hp=p.max_hp, initial_action_points=p.initial_action_points)
+                                              max_hp=p.max_hp, initial_action_points=p.initial_action_points,
+                                              look_direction=p.look_direction)
         p.id = id_player
 
         entities[y].insert(x, p)
@@ -310,7 +311,7 @@ class InitializeWorld:
             entities_in_row = [e for e in row if isinstance(e, Entity) and not isinstance(e, Player)]
             for entity in entities_in_row:
                 query, parameters = DatabaseEntity.add_entity_query(name=entity.name, x=entity.x, y=entity.y,
-                                                                    id_game=game.id)
+                                                                    id_game=game.id, look_direction=entity.look_direction)
                 queries.append(query)
                 parameters_list.append(parameters)
 

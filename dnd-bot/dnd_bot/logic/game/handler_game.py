@@ -40,6 +40,9 @@ class HandlerGame:
         game.active_creature.action_points = game.active_creature.initial_action_points
         game.active_creature = next_creature
 
+        # update active_creature game attribute in db
+        GameLoop.update_game_active_creature(game)
+
         # send messages to users
         if visible:
             await HandlerViews.display_views_for_users(game_token, recent_action_message, False)

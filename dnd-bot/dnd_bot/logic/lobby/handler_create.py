@@ -43,11 +43,12 @@ class HandlerCreate:
             generated_ids[j] = tmp
 
     @staticmethod
-    async def create_lobby(host_id, host_dm_channel, host_username) -> (str, User):
+    async def create_lobby(host_id, host_dm_channel, host_username, discord_channel) -> (str, User):
         """creates an actual lobby
         :param host_id: discord id of the host/user who used the command
         :param host_dm_channel: discord private message channel with host
         :param host_username: discord username
+        :param discord_channel: id of discord channel
         :return: (new game token, User object of host)
         """
         tokens = DatabaseGame.get_all_game_tokens()
@@ -62,7 +63,7 @@ class HandlerCreate:
         if game.id is None:
             raise CreateLobbyException(":no_entry: Error creating game!")
 
-        DatabaseUser.add_user(game.id, host_id)
+        DatabaseUser.add_user(game.id, host_id, discord_channel)
         user = User(token, host_id, host_dm_channel, host_username, HandlerJoin.get_color_by_index(0), True)
         if user.id is None:
             raise CreateLobbyException(":no_entry: Error creating host user")

@@ -16,7 +16,7 @@ def test_add_creature(postgresql):
           'hp': 4,
           'strength': 5, 'dexterity': 6, 'intelligence': 7, 'charisma': 8, 'perception': 9, 'initiative': 10,
           'action_points': 11, 'money': 12, 'experience': 13, 'id_equipment': None, 'class': 'WARRIOR', 'max_hp': 4,
-          'initial_action_points': 11}
+          'initial_action_points': 11, 'look_direction': "RIGHT"}
     id_creature = DatabaseCreature.add_creature(x=cm['x'], y=cm['y'], name=cm['name'], hp=cm['hp'],
                                                 strength=cm['strength'],
                                                 dexterity=cm['dexterity'], intelligence=cm['intelligence'],
@@ -26,7 +26,8 @@ def test_add_creature(postgresql):
                                                 id_game=cm['id_game'], experience=cm['experience'],
                                                 id_equipment=cm['id_equipment'],
                                                 creature_class=cm['class'], description=cm['description'],
-                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'])
+                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'],
+                                                look_direction=cm['look_direction'])
 
     db_d = cur.execute(f'SELECT * FROM public."Creature" WHERE id_creature = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
@@ -60,7 +61,7 @@ def test_update_creature(postgresql):
           'hp': 4,
           'strength': 5, 'dexterity': 6, 'intelligence': 7, 'charisma': 8, 'perception': 9, 'initiative': 10,
           'action_points': 11, 'money': 12, 'experience': 13, 'id_equipment': None, 'class': 'WARRIOR', 'max_hp': 9,
-          'initial_action_points': 15}
+          'initial_action_points': 15, 'look_direction': 'DOWN'}
     id_creature = DatabaseCreature.add_creature(x=cm['x'], y=cm['y'], name=cm['name'], hp=cm['hp'],
                                                 strength=cm['strength'],
                                                 dexterity=cm['dexterity'], intelligence=cm['intelligence'],
@@ -70,10 +71,11 @@ def test_update_creature(postgresql):
                                                 id_game=cm['id_game'], experience=cm['experience'],
                                                 id_equipment=cm['id_equipment'],
                                                 creature_class=cm['class'], description=cm['description'],
-                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'])
+                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'],
+                                                look_direction=cm['look_direction'])
 
     DatabaseCreature.update_creature(id_creature=id_creature, hp=100, level=101, money=102, experience=103, x=104,
-                                     y=105)
+                                     y=105, look_direction="RIGHT")
 
     db_d = cur.execute(f'SELECT * FROM public."Creature" WHERE id_creature = (SELECT LASTVAL())').fetchone()
     postgresql.commit()
@@ -107,7 +109,7 @@ def test_get_creature(postgresql):
           'hp': 4,
           'strength': 5, 'dexterity': 6, 'intelligence': 7, 'charisma': 8, 'perception': 9, 'initiative': 10,
           'action_points': 11, 'money': 12, 'experience': 13, 'id_equipment': None, 'class': 'WARRIOR', 'max_hp': 9,
-          'initial_action_points': 15}
+          'initial_action_points': 15, 'look_direction': 'RIGHT'}
     id_creature = DatabaseCreature.add_creature(x=cm['x'], y=cm['y'], name=cm['name'], hp=cm['hp'],
                                                 strength=cm['strength'],
                                                 dexterity=cm['dexterity'], intelligence=cm['intelligence'],
@@ -117,7 +119,8 @@ def test_get_creature(postgresql):
                                                 id_game=cm['id_game'], experience=cm['experience'],
                                                 id_equipment=cm['id_equipment'],
                                                 creature_class=cm['class'], description=cm['description'],
-                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'])
+                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'],
+                                                look_direction=cm['look_direction'])
     db_d = DatabaseCreature.get_creature(id_creature)
     for key, value in db_d.items():
         if key == 'id_creature':
@@ -137,7 +140,7 @@ def test_get_creature_id_entity(postgresql):
           'hp': 4,
           'strength': 5, 'dexterity': 6, 'intelligence': 7, 'charisma': 8, 'perception': 9, 'initiative': 10,
           'action_points': 11, 'money': 12, 'experience': 13, 'id_equipment': None, 'class': 'WARRIOR', 'max_hp': 9,
-          'initial_action_points': 15}
+          'initial_action_points': 15, 'look_direction': 'LEFT'}
     id_creature = DatabaseCreature.add_creature(x=cm['x'], y=cm['y'], name=cm['name'], hp=cm['hp'],
                                                 strength=cm['strength'],
                                                 dexterity=cm['dexterity'], intelligence=cm['intelligence'],
@@ -147,7 +150,8 @@ def test_get_creature_id_entity(postgresql):
                                                 id_game=cm['id_game'], experience=cm['experience'],
                                                 id_equipment=cm['id_equipment'],
                                                 creature_class=cm['class'], description=cm['description'],
-                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'])
+                                                max_hp=cm['max_hp'], initial_action_points=cm['initial_action_points'],
+                                                look_direction=cm['look_direction'])
 
     id_entity = DatabaseCreature.get_creature_id_entity(id_creature=id_creature)
 

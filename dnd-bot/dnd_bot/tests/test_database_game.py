@@ -12,7 +12,8 @@ def test_get_game(postgresql):
     DatabaseConnection.connection = postgresql
     DatabaseConnection.cursor = cur
 
-    gm = {'token': 'game_token', 'id_host': None, 'game_state': 'ACTIVE', 'campaign_name': "Sheeesh game"}
+    gm = {'token': 'game_token', 'id_host': None, 'game_state': 'ACTIVE', 'campaign_name': "Sheeesh game",
+          'active_creature': 123}
 
     id_game = DatabaseGame.add_game(token=gm['token'], id_host=gm['id_host'], game_state=gm['game_state'],
                                     campaign_name=gm['campaign_name'])
