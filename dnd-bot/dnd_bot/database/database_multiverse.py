@@ -13,6 +13,7 @@ from dnd_bot.database.database_item import DatabaseItem
 from dnd_bot.database.database_player import DatabasePlayer
 from dnd_bot.database.database_user import DatabaseUser
 from dnd_bot.dc.utils.utils import get_user_name_by_id
+from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.game.initialize_world import InitializeWorld
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
@@ -130,11 +131,17 @@ class DatabaseMultiverse:
         await DatabaseMultiverse.__load_game_state_user_list(game)
         print(f'   - loading users - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
-        print(f'game {game.token} users: {game.user_list}')
+        Multiverse.add_game(game)
 
         time_snapshot = time.time()
         DatabaseMultiverse.__load_game_entities(game, 'dnd_bot/assets/campaigns/campaign.json')
         print(f'   - loading entities - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+
+        Multiverse.games[game.token] = copy.deepcopy(game)
+
+        time_snapshot = time.time()
+        await GameLoop.start_loop(game.token)
+        print(f'   - preparing queue and starting the game - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
     @staticmethod
     async def __load_game_state_user_list(game):
