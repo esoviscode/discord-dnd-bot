@@ -1,6 +1,7 @@
 import pytest
 
 from dnd_bot.database.database_connection import DatabaseConnection
+from dnd_bot.database.database_creature import DatabaseCreature
 from dnd_bot.database.database_game import DatabaseGame
 from dnd_bot.tests.autoconf import database_fixture
 
@@ -13,8 +14,9 @@ def test_get_game(postgresql):
     DatabaseConnection.cursor = cur
 
     gm = {'token': 'game_token', 'id_host': None, 'game_state': 'ACTIVE', 'campaign_name': "Sheeesh game",
-          'active_creature': 123}
+          'active_creature': 1}
 
+    DatabaseCreature.add_creature()
     id_game = DatabaseGame.add_game(token=gm['token'], id_host=gm['id_host'], game_state=gm['game_state'],
                                     campaign_name=gm['campaign_name'], active_creature=gm['active_creature'])
     db_d = DatabaseGame.get_game(id_game)
