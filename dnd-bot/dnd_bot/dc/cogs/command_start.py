@@ -25,20 +25,23 @@ class CommandStart(Cog):
                 or caller_id == 544262699907809309:
             try:
                 lobby_players_identities = await HandlerStart.start_game(token, interaction.user.id)
-    
-                await interaction.response.send_message('Starting the game!', ephemeral=True)
-    
+
+                partial_msg = await interaction.response.send_message('Starting the game!', ephemeral=True)
+
                 # send messages about successful start operation
                 for user in lobby_players_identities:
                     await Messager.send_dm_message(user, token, "Game has started successfully!\n")
-    
+
                 await GameStart.start(token)
                 await GameLoop.start_loop(token)
+
+                msg = await partial_msg.fetch()
+                await msg.delete()
             except DiscordDndBotException as e:
                 await interaction.response.send_message(f'{e}', ephemeral=True)
         else:
             await interaction.response.send_message("You have no permission quick start the game :man_gesturing_no:!")
 
-
+            
 def setup(bot):
     bot.add_cog(CommandStart(bot))

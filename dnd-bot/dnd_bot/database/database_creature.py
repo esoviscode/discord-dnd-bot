@@ -53,9 +53,28 @@ class DatabaseCreature:
         DatabaseEntity.update_entity(id_entity, x, y, look_direction)
 
     @staticmethod
+    def update_creature_query(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0,
+                              action_points: int = 0) -> tuple[str, tuple]:
+        return 'UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), experience = (%s), action_points = (%s) WHERE ' \
+               'id_creature = (%s)', (level, hp, money, experience, action_points, id_creature)
+
+    @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:
         query = f'SELECT * FROM public."Creature" WHERE id_creature = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_creature,), "Creature")
+        creature = {'id_creature': db_t[0], 'level': db_t[1], 'hp': db_t[2], 'strength': db_t[3], 'dexterity': db_t[4],
+                    'intelligence': db_t[5], 'charisma': db_t[6], 'perception': db_t[7], 'initiative': db_t[8],
+                    'action_points': db_t[9], 'money': db_t[10], 'id_entity': db_t[11], 'experience': db_t[12],
+                    'id_equipment': db_t[13], 'class': db_t[14], 'max_hp': db_t[15], 'initial_action_points': db_t[16]}
+        entity = DatabaseEntity.get_entity(creature['id_entity'])
+        for key, value in entity.items():
+            creature[key] = value
+        return creature
+
+    @staticmethod
+    def get_creature_by_id_entity(id_entity: int = 0) -> dict | None:
+        query = f'SELECT * FROM public."Creature" WHERE id_entity = (%s)'
+        db_t = DatabaseConnection.get_object_from_db(query, (id_entity,), "Creature")
         creature = {'id_creature': db_t[0], 'level': db_t[1], 'hp': db_t[2], 'strength': db_t[3], 'dexterity': db_t[4],
                     'intelligence': db_t[5], 'charisma': db_t[6], 'perception': db_t[7], 'initiative': db_t[8],
                     'action_points': db_t[9], 'money': db_t[10], 'id_entity': db_t[11], 'experience': db_t[12],

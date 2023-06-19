@@ -62,29 +62,30 @@ def bot_run():
 
 
 # Error handling
-@bot.event
-async def on_command_error(interaction, error):
-    """handles errors"""
-    await on_application_command_error(interaction, error)
-
-
-@bot.event
-async def on_application_command_error(interaction, error):
-    """handles errors"""
-
-    print(f'ERROR: {error}', file=sys.stderr)
-
-    error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
-                                 color=0xFF5733)
-
-    error_embed.set_author(name=bot.user.display_name, icon_url=bot.user.display_avatar)
-    error_embed.add_field(name="__What To do?__",
-                          value="Check if you use the correct command arguments",
-                          inline=False)
-    error_embed.set_footer(
-        text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
-
-    await interaction.response.send_message(embed=error_embed)
+# @bot.event
+# async def on_command_error(interaction, error):
+#     """handles errors"""
+#     await on_application_command_error(interaction, error)
+#
+#
+# @bot.event
+# async def on_application_command_error(interaction, error):
+#     """handles errors"""
+#
+#     print(f'ERROR: {error}', file=sys.stderr)
+#     traceback.print_exc()
+#
+#     error_embed = nextcord.Embed(title="❌ The client has encountered an error while running this command!",
+#                                  color=0xFF5733)
+#
+#     error_embed.set_author(name=bot.user.display_name, icon_url=bot.user.display_avatar)
+#     error_embed.add_field(name="__What To do?__",
+#                           value="Check if you use the correct command arguments",
+#                           inline=False)
+#     error_embed.set_footer(
+#         text=f"Command requested by {interaction.user.name}", icon_url=interaction.user.display_avatar)
+#
+#     await interaction.response.send_message(embed=error_embed)
 
 
 @bot.event

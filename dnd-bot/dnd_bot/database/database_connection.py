@@ -138,3 +138,13 @@ class DatabaseConnection:
             print(f'db: error updating {element_name} {err}')
 
         DatabaseConnection.connection.commit()
+
+    @staticmethod
+    def update_multiple_objects_in_db(queries: List[str], parameters_list: List[tuple]) -> None:
+        for query, parameters in list(zip(queries, parameters_list)):
+            try:
+                DatabaseConnection.cursor.execute(query, parameters)
+            except ProgrammingError as err:
+                print(f'db: error updating multiple objects {err}')
+
+        DatabaseConnection.connection.commit()

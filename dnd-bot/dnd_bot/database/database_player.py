@@ -52,6 +52,18 @@ class DatabasePlayer:
         return player
 
     @staticmethod
+    def get_player_by_id_creature(id_creature) -> dict | None:
+        query = f'SELECT * FROM public."Player" WHERE id_creature = (%s)'
+        db_t = DatabaseConnection.get_object_from_db(query, (id_creature,), "Player")
+        player = {'id_player': db_t[0], 'id_user': db_t[1], 'alignment': db_t[2], 'backstory': db_t[3],
+                  'id_creature': db_t[4], 'race': db_t[5]}
+        db_d = DatabaseCreature.get_creature(player['id_creature'])
+        for key, value in db_d.items():
+            player[key] = value
+
+        return player
+
+    @staticmethod
     def get_players_id_entity(id_player: int = 0) -> int:
         id_creature = DatabasePlayer.get_players_id_creature(id_player=id_player)
 

@@ -24,6 +24,9 @@ class DatabaseEquipment:
     def get_equipment(id_equipment: int = 0) -> dict | None:
         query = f'SELECT * FROM public."Equipment" WHERE id_equipment = (%s)'
         db_l = DatabaseConnection.get_object_from_db(query, (id_equipment,), "Equipment")
+        if db_l is None:
+            return None
+
         return {'id_equipment': id_equipment, 'helmet': db_l[1], 'chest': db_l[2], 'leg_armor': db_l[3],
                 'boots': db_l[4], 'left_hand': db_l[5], 'right_hand': db_l[6], 'accessory': db_l[7]}
 

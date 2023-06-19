@@ -107,4 +107,5 @@ class DatabaseGame:
     def get_game(id_game: int) -> dict | None:
         query = f'SELECT *  FROM public."Game" WHERE id_game = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_game,), "Game")
-        return {'id_game': db_t[0], 'token': db_t[1], 'id_host': db_t[2], 'game_state': db_t[3], 'campaign_name': db_t[4]}
+        return {'id_game': db_t[0], 'token': db_t[1], 'id_host': db_t[2], 'game_state': db_t[3],
+                'campaign_name': db_t[4], 'active_creature': db_t[5]}
