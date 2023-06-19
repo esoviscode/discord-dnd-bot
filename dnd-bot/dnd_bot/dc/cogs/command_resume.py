@@ -15,7 +15,6 @@ class CommandResume(Cog):
     async def resume(self, interaction, token: str):
         try:
             partial_msg = await interaction.response.send_message('Resuming in progress...', ephemeral=True)
-            await Messager.delete_last_user_error_message(interaction.user.id, token)
             await HandlerGame.resume_game(token)
 
             msg = await partial_msg.fetch()

@@ -23,11 +23,11 @@ class DatabaseEntity:
     @staticmethod
     def update_entity(id_entity: int = 0, x: int = 0, y: int = 0, look_direction: str = "RIGHT") -> None:
         DatabaseConnection.update_object_in_db('UPDATE public."Entity" SET x = (%s), y = (%s), look_direction = (%s) WHERE id_entity = (%s)',
-                                               (x, y, look_direction, id_entity), "Entity")
+                                               (x, y, look_direction.upper(), id_entity), "Entity")
 
     @staticmethod
-    def update_entity_query(id_entity: int = 0, x: int = 0, y: int = 0) -> tuple[str, tuple]:
-        return 'UPDATE public."Entity" SET x = (%s), y = (%s) WHERE id_entity = (%s)', (x, y, id_entity)
+    def update_entity_query(id_entity: int = 0, x: int = 0, y: int = 0, look_direction: str = "RIGHT") -> tuple[str, tuple]:
+        return 'UPDATE public."Entity" SET x = (%s), y = (%s), look_direction = (%s) WHERE id_entity = (%s)', (x, y, look_direction.upper(), id_entity)
 
     @staticmethod
     def get_entity(id_entity: int) -> dict | None:

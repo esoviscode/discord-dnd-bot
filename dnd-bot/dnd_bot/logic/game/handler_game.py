@@ -73,11 +73,17 @@ class HandlerGame:
             raise GameException('Game with provided token doesn\'t exist!')
 
         game.status = 'INACTIVE'
+        user_list = Multiverse.get_game(token).user_list
 
         DatabaseMultiverse.update_game_state(token)
 
         # remove game from memory
         Multiverse.delete_game(game)
+
+        for user in user_list:
+            await Messager.edit_last_user_message(user_id=user.discord_id, content='### The game has been paused!',
+                                                  token=token, files=[])
+            await Messager.delete_last_user_error_message(user_id=user.discord_id, token=token)
 
     @staticmethod
     async def resume_game(token: str = ''):
@@ -85,3 +91,7 @@ class HandlerGame:
            Game is loaded from db and state is set to ACTIVE"""
 
         await DatabaseMultiverse.load_game_state(token)
+
+        user_list = Multiverse.get_game(token).user_list
+        for user in user_list:
+            await Messager.delete_last_user_error_message(user.discord_id, token)

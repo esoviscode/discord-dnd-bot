@@ -271,6 +271,7 @@ def get_player_view(game: Game, player: Player, attack_mode=False):
 
 def rotate_image_to_direction(img, direction):
     """rotates image by given direction"""
+    direction = direction.lower()
     if direction == 'down':
         return img
     if direction == 'right':

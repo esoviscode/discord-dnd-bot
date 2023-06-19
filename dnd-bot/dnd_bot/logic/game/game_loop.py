@@ -97,6 +97,8 @@ class GameLoop:
 
             game.creatures_queue.popleft()
 
+        game.creatures_queue.popleft()
+
         for c in game.creatures_queue:
             if c.visible_for_players() or isinstance(c, Player):
                 game.last_visible_creature = c
@@ -108,6 +110,8 @@ class GameLoop:
             game.players_views[active_creature.discord_identity] = (ViewMain, [])
 
         await HandlerViews.display_views_for_users(token, "Game has been resumed!")
+
+        GameLoop.update_game_active_creature(game)
 
         # move of non player creature
         if not isinstance(active_creature, Player):

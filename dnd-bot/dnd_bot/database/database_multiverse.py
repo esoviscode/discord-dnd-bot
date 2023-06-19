@@ -84,16 +84,21 @@ class DatabaseMultiverse:
             entity_id = DatabaseCreature.get_creature_id_entity(creature_id)
 
         query, parameters = DatabaseEntity.update_entity_query(id_entity=entity_id,
-                                                               x=entity.x, y=entity.y)
+                                                               x=entity.x, y=entity.y,
+                                                               look_direction=entity.look_direction)
         queries.append(query)
         parameters_list.append(parameters)
 
     @staticmethod
     def __add_query_update_creature(creature: Creature, queries: List[str], parameters_list: List[tuple]) -> None:
-        query, parameters = DatabaseCreature.update_creature_query(id_creature=creature.id, hp=creature.hp,
+        id_creature = creature.id
+        if isinstance(creature, Player):
+            id_creature = DatabasePlayer.get_players_id_creature(creature.id)
+
+        query, parameters = DatabaseCreature.update_creature_query(id_creature=id_creature, hp=creature.hp,
                                                                    level=creature.level, money=creature.money,
                                                                    experience=creature.experience,
-                                                                   x=creature.x, y=creature.y)
+                                                                   action_points=creature.action_points)
         queries.append(query)
         parameters_list.append(parameters)
 
@@ -122,7 +127,6 @@ class DatabaseMultiverse:
         dbdict = DatabaseGame.get_game(DatabaseGame.get_id_game_from_game_token(token))
         game = Game(token=dbdict['token'], id_host=dbdict['id_host'], game_state=dbdict['game_state'],
                     campaign_name=dbdict['campaign_name'])
-        print(f'game {game.id}, {game.game_state}, {game.id_host}, {game.token}')
 
         Multiverse.add_game(game)
 
@@ -183,7 +187,8 @@ class DatabaseMultiverse:
                 db_c = DatabaseCreature.get_creature_by_id_entity(db_entity['id_entity'])
                 row = game.entities[db_entity['y']]
                 DatabaseMultiverse.__load_creature(row, db_entity['x'], db_entity['y'], db_entity['name'], game.token,
-                                                   db_c, enemies_json[db_entity['name']], "Enemy")
+                                                   db_c, enemies_json[db_entity['name']],
+                                                   db_entity['look_direction'], "Enemy")
                 continue
 
             if db_entity['name'] in npc_json:
@@ -191,7 +196,8 @@ class DatabaseMultiverse:
                 db_c = DatabaseCreature.get_creature_by_id_entity(db_entity['id_entity'])
                 row = game.entities[db_entity['y']]
                 DatabaseMultiverse.__load_creature(row, db_entity['x'], db_entity['y'], db_entity['name'], game.token,
-                                                   db_c, npc_json[db_entity['name']], "NPC")  # TODO load look direction
+                                                   db_c, npc_json[db_entity['name']],
+                                                   db_entity['look_direction'], "NPC")  # TODO load look direction
                 continue
             if db_entity['name'] in map_elements_json:
                 # just an entity
@@ -221,6 +227,8 @@ class DatabaseMultiverse:
                             action_points=db_c['action_points'],
                             character_race=db_p['race'], character_class=db_c['class'], level=db_c['level'],
                             money=db_c['money'])
+            player.max_hp = db_c['max_hp']
+            player.initial_action_points = db_c['initial_action_points']
             player.look_direction = db_entity['look_direction'].lower()
             player.id = db_p['id_player']
 
@@ -246,7 +254,7 @@ class DatabaseMultiverse:
             row[db_entity['x']] = copy.deepcopy(player)
 
     @staticmethod
-    def __load_creature(entity_row, x, y, name, game_token, entity_data, json_data, creature_type="Creature"):
+    def __load_creature(entity_row, x, y, name, game_token, entity_data, json_data, look_direction, creature_type="Creature"):
         creature = eval(creature_type)(game_token=game_token, x=x, y=y, sprite=json_data['sprite_path'], name=name,
                                        hp=entity_data['hp'],
                                        strength=entity_data['strength'], dexterity=entity_data['dexterity'],
@@ -258,6 +266,9 @@ class DatabaseMultiverse:
                                        ai=json_data['ai'], drop_money=json_data['drop_money'], drops=json_data['drops'])
 
         creature.id = entity_data['id_creature']
+        creature.look_direction = look_direction
+        creature.max_hp = entity_data['max_hp']
+        creature.initial_action_points = entity_data['initial_action_points']
 
         equipment_db = DatabaseEquipment.get_equipment(entity_data['id_equipment']) if entity_data[
                                                                                            'id_equipment'] is not None else None
@@ -267,7 +278,7 @@ class DatabaseMultiverse:
         for eq_part in json_data['equipment']:
             creature.equipment.__setattr__(eq_part, Item(name=json_data['equipment'][eq_part]))
 
-        entity_row.append(creature)
+        entity_row[x] = creature
 
     @staticmethod
     def __set_active_creature(game):

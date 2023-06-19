@@ -17,9 +17,6 @@ class CommandPause(Cog):
             partial_msg = await interaction.response.send_message('Pausing in progress...', ephemeral=True)
             await HandlerGame.pause_game(token)
 
-            await Messager.edit_last_user_message(user_id=interaction.user.id, content='### The game has been paused!',
-                                                  token=token, files=[])
-
             msg = await partial_msg.fetch()
             await msg.delete()
             await Messager.send_dm_information_message(user_id=interaction.user.id,
