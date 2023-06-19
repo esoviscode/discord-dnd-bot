@@ -9,8 +9,10 @@ class DatabaseCreature:
                      dexterity: int = 0, intelligence: int = 0, charisma: int = 0, perception: int = 0,
                      initiative: int = 0, action_points: int = 0, level: int = 0, money: int = 0,
                      id_game: int = 1, experience: int = 0, id_equipment: int = None, creature_class: str = None,
-                     description: str = '', max_hp: int = 0, initial_action_points: int = 0) -> int | None:
-        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game, description=description)
+                     description: str = '', max_hp: int = 0, initial_action_points: int = 0,
+                     look_direction: str = "RIGHT") -> int | None:
+        id_entity = DatabaseEntity.add_entity(name=name, x=x, y=y, id_game=id_game, description=description,
+                                              look_direction=look_direction)
         if creature_class is not None:
             creature_class = creature_class.upper()
 
@@ -43,13 +45,12 @@ class DatabaseCreature:
 
     @staticmethod
     def update_creature(id_creature: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0,
-                        x: int = 0,
-                        y: int = 0) -> None:
+                        x: int = 0, y: int = 0, look_direction: str = "RIGHT") -> None:
         DatabaseConnection.update_object_in_db('UPDATE public."Creature" SET level = (%s), "HP" = (%s), money = (%s), '
                                                'experience = (%s) WHERE id_creature = (%s)',
                                                (level, hp, money, experience, id_creature), "Creature")
         id_entity = DatabaseCreature.get_creature_id_entity(id_creature)
-        DatabaseEntity.update_entity(id_entity, x, y)
+        DatabaseEntity.update_entity(id_entity, x, y, look_direction)
 
     @staticmethod
     def get_creature(id_creature: int = 0) -> dict | None:

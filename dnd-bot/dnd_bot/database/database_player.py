@@ -11,14 +11,16 @@ class DatabasePlayer:
                    initiative: int = 0, action_points: int = 0, level: int = 0, discord_identity: int = 0,
                    alignment: str = '', backstory: str = '', id_game: int = None, experience: int = 0,
                    character_class: str = None, character_race: str = None, id_equipment: int = None, money: int = 0,
-                   description: str = "", max_hp: int = 0, initial_action_points: int = 0) -> int | None:
+                   description: str = "", max_hp: int = 0, initial_action_points: int = 0,
+                   look_direction: str = "RIGHT") -> int | None:
         id_creature = DatabaseCreature.add_creature(x=x, y=y, name=name, hp=hp, strength=strength,
                                                     dexterity=dexterity, intelligence=intelligence, charisma=charisma,
                                                     perception=perception, initiative=initiative,
                                                     action_points=action_points, level=level, id_game=id_game,
                                                     experience=experience, id_equipment=id_equipment,
                                                     creature_class=character_class, money=money, description=description,
-                                                    max_hp=max_hp, initial_action_points=initial_action_points)
+                                                    max_hp=max_hp, initial_action_points=initial_action_points,
+                                                    look_direction=look_direction)
         id_user = None
         if discord_identity:
             id_user = DatabaseUser.get_user_id_from_discord_id(discord_identity, id_game)
@@ -31,11 +33,11 @@ class DatabasePlayer:
         return id_player
 
     @staticmethod
-    def update_player(id_player: int = 0,hp: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
-                      y: int = 0) -> None:
+    def update_player(id_player: int = 0, hp: int = 0, level: int = 0, money: int = 0, experience: int = 0, x: int = 0,
+                      y: int = 0, look_direction: str = "RIGHT") -> None:
         id_creature = DatabasePlayer.get_players_id_creature(id_player)
         DatabaseCreature.update_creature(id_creature=id_creature, level=level, money=money, experience=experience, x=x,
-                                         y=y, hp=hp)
+                                         y=y, hp=hp, look_direction=look_direction)
 
     @staticmethod
     def get_player(id_player) -> dict | None:

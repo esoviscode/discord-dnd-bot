@@ -6,18 +6,19 @@ from dnd_bot.database.database_connection import DatabaseConnection
 class DatabaseGame:
 
     @staticmethod
-    def add_game(token: str = '', id_host: int = None, game_state: str = 'LOBBY', campaign_name: str = ''
-                 ) -> int | None:
+    def add_game(token: str = '', id_host: int = None, game_state: str = 'LOBBY', campaign_name: str = '',
+                 active_creature: int = None) -> int | None:
         """start game and add game to database
         :param token: lobby/game token (5 digit password)
         :param id_host: discord id of host
         :param game_state: string enum, initial value of added game is 'LOBBY'
         :param campaign_name: campaign  name
+        :param active_creature: active creature id
         :return:
             on success: game id, on failure: None
         """
-        return DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name)'
-                                            'VALUES (%s, %s, %s, %s)', (token, id_host, game_state, campaign_name),
+        return DatabaseConnection.add_to_db('INSERT INTO public."Game" (token, id_host, game_state, campaign_name, active_creature)'
+                                            'VALUES (%s, %s, %s, %s, %s)', (token, id_host, game_state, campaign_name, active_creature),
                                             "game")
 
     @staticmethod
@@ -33,6 +34,12 @@ class DatabaseGame:
         """
         DatabaseConnection.update_object_in_db('UPDATE public."Game" SET game_state = (%s) WHERE id_game = (%s)',
                                                (game_state, id_game), "Game")
+
+    @staticmethod
+    def update_game_active_creature(id_game: int, active_creature: int) -> None:
+        """updates active_creature id"""
+        DatabaseConnection.update_object_in_db('UPDATE public."Game" SET active_creature = (%s) WHERE id_game = (%s)',
+                                               (active_creature, id_game), "Game")
 
     @staticmethod
     def get_all_game_tokens():

@@ -18,6 +18,7 @@ CREATE TABLE public."User"
     id_user BIGSERIAL NOT NULL,
     id_game BIGINT,
     discord_id BIGINT,
+    discord_channel BIGINT,
     PRIMARY KEY (id_user),
     CONSTRAINT id_game FOREIGN KEY (id_game)
         REFERENCES public."Game" (id_game) MATCH SIMPLE
@@ -111,11 +112,13 @@ CREATE TABLE public."Entity"
     y INTEGER,
     id_game BIGINT,
     description VARCHAR,
+    look_direction VARCHAR,
     PRIMARY KEY (id_entity),
     CONSTRAINT id_game FOREIGN KEY (id_game)
         REFERENCES public."Game" (id_game) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT look_direction_enum CHECK (look_direction in ('RIGHT', 'LEFT', 'UP', 'DOWN'))
 );
 
 ALTER TABLE IF EXISTS public."Entity"
@@ -253,3 +256,11 @@ CREATE TABLE public."Entity_Skill"
 
 ALTER TABLE IF EXISTS public."Entity_Skill"
     OWNER to admin;
+
+ALTER TABLE public."Game"
+ADD COLUMN active_creature BIGINT;
+
+ALTER TABLE public."Game"
+ADD CONSTRAINT active_creature FOREIGN KEY (active_creature)
+REFERENCES public."Creature" (id_creature) MATCH SIMPLE
+        ON UPDATE CASCADE;
