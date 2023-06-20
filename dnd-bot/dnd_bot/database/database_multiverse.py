@@ -185,6 +185,8 @@ class DatabaseMultiverse:
             if db_entity['name'] in enemies_json:
                 # enemy creature
                 db_c = DatabaseCreature.get_creature_by_id_entity(db_entity['id_entity'])
+                if not db_c:
+                    continue
                 row = game.entities[db_entity['y']]
                 DatabaseMultiverse.__load_creature(row, db_entity['x'], db_entity['y'], db_entity['name'], game.token,
                                                    db_c, enemies_json[db_entity['name']],
