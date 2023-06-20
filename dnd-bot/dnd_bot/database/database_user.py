@@ -33,3 +33,8 @@ class DatabaseUser:
         query = f'SELECT id_user FROM public."User" WHERE discord_id = (%s) AND id_game = (%s)'
         return DatabaseConnection.get_object_from_db(query, (discord_id, id_game), "User")[0]
 
+    @staticmethod
+    def delete_user(id_user: int = 0) -> None:
+        query = 'DELETE FROM public."User" WHERE id_user = (%s)'
+        parameters = (id_user,)
+        return DatabaseConnection.update_object_in_db(query, parameters)

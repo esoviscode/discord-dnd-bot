@@ -75,3 +75,9 @@ class DatabasePlayer:
     def get_players_id_creature(id_player: int = 0) -> int:
         return DatabaseConnection.get_object_from_db('SELECT id_creature FROM public."Player" WHERE '
                                                      'id_player = (%s)', (id_player,), "Player")[0]
+
+    @staticmethod
+    def delete_player(id_player: int = 0) -> None:
+        query = 'DELETE FROM public."Player" WHERE id_player = (%s)'
+        parameters = (id_player,)
+        return DatabaseConnection.update_object_in_db(query, parameters)

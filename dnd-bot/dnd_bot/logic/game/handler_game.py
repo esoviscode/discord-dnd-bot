@@ -55,11 +55,12 @@ class HandlerGame:
         game = Multiverse.get_game(game_token)
         while game.active_creature.action_points > 0:
             recent_action_message = await active_creature.ai_action()
-            await asyncio.sleep(1)
             print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
-            if active_creature.visible_for_players():
+            if active_creature.visible_for_players() or recent_action_message[-9:] == "defeated!":
                 game.last_visible_creature = active_creature
                 await HandlerViews.display_views_for_users(game_token, recent_action_message)
+                await asyncio.sleep(.8)
+            await asyncio.sleep(.2)
 
         await HandlerGame.end_turn(game_token, active_creature.visible_for_players())
 

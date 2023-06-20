@@ -50,3 +50,9 @@ class DatabaseEntity:
     @staticmethod
     def get_entity_skills(id_entity: int = 0) -> list | None:
         pass
+
+    @staticmethod
+    def delete_entity(id_entity: int = 0) -> None:
+        query = 'DELETE FROM public."Entity" WHERE id_entity = (%s)'
+        parameters = (id_entity,)
+        return DatabaseConnection.update_object_in_db(query, parameters)
