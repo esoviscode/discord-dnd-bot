@@ -76,6 +76,18 @@ class HandlerAttack:
             target_name = target.name
             game.delete_entity(target.id)
 
+            from dnd_bot.database.database_entity import DatabaseEntity
+            if isinstance(target, Player):
+                from dnd_bot.database.database_player import DatabasePlayer
+                id_entity = DatabasePlayer.get_players_id_entity(target.id)
+                DatabaseEntity.delete_entity(id_entity)
+                DatabasePlayer.delete_player(target.id)
+            else:
+                from dnd_bot.database.database_creature import DatabaseCreature
+                id_entity = DatabaseCreature.get_creature_id_entity(target.id)
+                DatabaseEntity.delete_entity(id_entity)
+                DatabaseCreature.delete_creature(target.id)
+
             HandlerKillEnemy.handle_kill_enemy(game, target)
 
             return attack_status_message[:-3] + f' for **`{damage}`**  damage!\n\n' + \
