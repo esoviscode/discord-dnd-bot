@@ -1,12 +1,14 @@
 import asyncio
 
+from dnd_bot.database.database_multiverse import DatabaseMultiverse
 from dnd_bot.dc.ui.message_templates import MessageTemplates
 from dnd_bot.dc.ui.messager import Messager
-from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.dc.ui.views.view_game import ViewCharacterNonActive, ViewMain
+from dnd_bot.dc.utils.handler_views import HandlerViews
 from dnd_bot.logic.game.game_loop import GameLoop
 from dnd_bot.logic.prototype.multiverse import Multiverse
 from dnd_bot.logic.prototype.player import Player
+from dnd_bot.logic.utils.exceptions import GameException
 
 
 class HandlerGame:
@@ -38,6 +40,9 @@ class HandlerGame:
         game.active_creature.action_points = game.active_creature.initial_action_points
         game.active_creature = next_creature
 
+        # update active_creature game attribute in db
+        GameLoop.update_game_active_creature(game)
+
         # send messages to users
         if visible:
             await HandlerViews.display_views_for_users(game_token, recent_action_message, False)
@@ -50,11 +55,12 @@ class HandlerGame:
         game = Multiverse.get_game(game_token)
         while game.active_creature.action_points > 0:
             recent_action_message = await active_creature.ai_action()
-            await asyncio.sleep(1)
             print(f"{active_creature.name}<{active_creature.id}>", recent_action_message)
-            if active_creature.visible_for_players():
+            if active_creature.visible_for_players() or recent_action_message[-9:] == "defeated!":
                 game.last_visible_creature = active_creature
                 await HandlerViews.display_views_for_users(game_token, recent_action_message)
+                await asyncio.sleep(.8)
+            await asyncio.sleep(.2)
 
         await HandlerGame.end_turn(game_token, active_creature.visible_for_players())
 
@@ -65,21 +71,28 @@ class HandlerGame:
         game = Multiverse.get_game(token)
 
         if not game:
-            raise Exception('Game with provided token doesn\'t exist!')
+            raise GameException('Game with provided token doesn\'t exist!')
 
         game.status = 'INACTIVE'
+        user_list = Multiverse.get_game(token).user_list
 
-        # TODO save game state to database
+        DatabaseMultiverse.update_game_state(token)
+
+        # remove game from memory
+        Multiverse.delete_game(game)
+
+        for user in user_list:
+            await Messager.edit_last_user_message(user_id=user.discord_id, content='### The game has been paused!',
+                                                  token=token, files=[])
+            await Messager.delete_last_user_error_message(user_id=user.discord_id, token=token)
 
     @staticmethod
     async def resume_game(token: str = ''):
         """resumes game based on a token.
            Game is loaded from db and state is set to ACTIVE"""
-        game = Multiverse.get_game(token)
 
-        if not game:
-            raise Exception('Game with provided token doesn\'t exist!')
+        await DatabaseMultiverse.load_game_state(token)
 
-        # TODO load game state from database
-
-        game.status = 'ACTIVE'
+        user_list = Multiverse.get_game(token).user_list
+        for user in user_list:
+            await Messager.delete_last_user_error_message(user.discord_id, token)

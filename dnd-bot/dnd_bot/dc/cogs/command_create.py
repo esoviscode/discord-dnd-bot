@@ -18,7 +18,7 @@ class CommandCreate(Cog):
     async def create(self, interaction: nextcord.Interaction):
         try:
             token, user = await HandlerCreate.create_lobby(interaction.user.id, interaction.user.dm_channel,
-                                                           interaction.user.name)
+                                                           interaction.user.name, interaction.channel_id)
 
             await Messager.send_dm_message(interaction.user.id, token,
                                            f'You have successfully created a lobby! Game token: `{token}`')

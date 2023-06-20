@@ -17,7 +17,8 @@ def test_get_player(postgresql):
           'hp': 4,
           'strength': 5, 'dexterity': 6, 'intelligence': 7, 'charisma': 8, 'perception': 9, 'initiative': 10,
           'action_points': 11, 'money': 12, 'experience': 13, 'id_equipment': None, 'class': 'WARRIOR', 'id_user': None,
-          'alignment': "happy", 'backstory': "interesting backstory", 'race': 'ELF'}
+          'alignment': "happy", 'backstory': "interesting backstory", 'race': 'ELF', 'max_hp': 9,
+          'initial_action_points': 15, 'look_direction': 'LEFT'}
     id_player = DatabasePlayer.add_player(x=pm['x'], y=pm['y'], name=pm['name'], hp=pm['hp'], strength=pm['strength'],
                                           dexterity=pm['dexterity'], intelligence=pm['intelligence'],
                                           charisma=pm['charisma'], perception=pm['perception'],
@@ -26,7 +27,9 @@ def test_get_player(postgresql):
                                           experience=pm['experience'], id_equipment=pm['id_equipment'],
                                           character_class=pm['class'], description=pm['description'],
                                           discord_identity=None, alignment=pm['alignment'], backstory=pm['backstory'],
-                                          character_race=pm['race'])
+                                          character_race=pm['race'], max_hp=pm['max_hp'],
+                                          initial_action_points=pm['initial_action_points'],
+                                          look_direction=pm['look_direction'])
     db_d = DatabasePlayer.get_player(id_player)
 
     for key, value in db_d.items():

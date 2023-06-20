@@ -136,13 +136,16 @@ class Messager:
             embeds = []
 
         channel_id, message_id = MessageHolder.read_last_message_data(user_id, token)
+        if channel_id is None:
+            await Messager.send_dm_message(user_id, token, content, embeds, view, files)
+            return
 
         channel = Messager.bot.get_channel(channel_id)
         message = await channel.fetch_message(message_id)
         if retain_view:
             view = nextcord.ui.View.from_message(message)
 
-        if files:
+        if files is not None:
             await message.edit(content=str(content), embeds=embeds, view=view, files=[nextcord.File(f) for f in files])
         else:
             await message.edit(content=str(content), embeds=embeds, view=view)

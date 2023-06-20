@@ -1,3 +1,5 @@
+from typing import List
+
 from dnd_bot.database.database_connection import DatabaseConnection
 
 
@@ -30,3 +32,23 @@ class DatabaseEvent:
     def update_event(id_event: int, status: str = '') -> None:
         query = f'UPDATE public."Event" SET status = (%s) WHERE id_event = (%s)'
         DatabaseConnection.update_object_in_db(query, (status, id_event), "Event")
+
+    @staticmethod
+    def __update_event_query(id_event: int, status: str = '') -> tuple[str, tuple]:
+        return f'UPDATE public."Event" SET status = (%s) WHERE id_event = (%s)', (status, id_event)
+
+    @staticmethod
+    def update_multiple_events(event_ids: List[int], status_list: List[str]):
+        """
+        update events based on the provided ids, with statuses that correspond in order to the ids
+        """
+        queries = []
+        parameters_list = []
+        for id_event, status in zip(event_ids, status_list):
+            query, parameters = DatabaseEvent.__update_event_query(id_event, status)
+            queries.append(query)
+            parameters_list.append(parameters)
+        DatabaseConnection.update_multiple_objects_in_db(queries, parameters_list)
+
+
+

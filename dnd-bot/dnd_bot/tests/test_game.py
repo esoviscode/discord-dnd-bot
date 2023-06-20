@@ -24,6 +24,7 @@ def test_add_game(postgresql):
     assert (game_tuple[2] == 1)  # id_host
     assert (game_tuple[3] == 'LOBBY')
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] is None)
 
     cur.close()
 
@@ -44,6 +45,7 @@ def test_add_game_no_token(postgresql):
     assert (game_tuple[2] == 1)  # id_host
     assert (game_tuple[3] == 'LOBBY')
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] is None)
 
 
 def test_add_game_no_game_state(postgresql):
@@ -62,6 +64,7 @@ def test_add_game_no_game_state(postgresql):
     assert (game_tuple[2] == 1)
     assert (game_tuple[3] is None)
     assert (game_tuple[4] == 'test')
+    assert (game_tuple[5] is None)
 
 
 #

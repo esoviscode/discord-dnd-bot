@@ -12,20 +12,27 @@ class HandlerViews:
         """sends views for users and makes sure that the displayed view is correct"""
         game = Multiverse.get_game(game_token)
 
+        for u in game.user_list:
+            if not game.get_player_by_id_user(u.discord_id):
+                update_pov = True
+                await Messager.send_dm_message(u.discord_id, game_token, ":skull: You have been slain...")
+                game.user_list.remove(u)
+                del game.players_views[u.discord_id]
+                from dnd_bot.database.database_user import DatabaseUser
+                DatabaseUser.delete_user(u.discord_id)
+                break
+
         async def send_view(user):
             # get current view from player and resend it in case someone made an action
             player_current_view, player_current_embeds = game.players_views[user.discord_id]
             view_to_show = player_current_view(game_token, user.discord_id)
 
             player = game.get_player_by_id_user(user.discord_id)
-            if not player:
-                game.user_list.remove(user)
-                del game.players_views[user.discord_id]
-                return
             if update_pov:  # if to generate new player's pov
                 player_view = get_player_view(Multiverse.get_game(game_token), player, player.attack_mode)
             turn_view_embed = await MessageTemplates.creature_turn_embed(game_token, user.discord_id,
                                                                          recent_action=recent_action_message)
+
             await Messager.edit_last_user_message(user_id=user.discord_id,
                                                   token=game_token,
                                                   embeds=[turn_view_embed] + player_current_embeds,

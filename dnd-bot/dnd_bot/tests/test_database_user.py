@@ -14,8 +14,8 @@ def test_get_user_id_from_discord_id(postgresql):
     DatabaseConnection.cursor = cur
 
     id_game = DatabaseGame.add_game('shhesh')
-    um = {'id_game': id_game, 'discord_id': 78}
-    id_user = DatabaseUser.add_user(um['id_game'], um['discord_id'])
+    um = {'id_game': id_game, 'discord_id': 78, 'discord_channel': 514}
+    id_user = DatabaseUser.add_user(um['id_game'], um['discord_id'], um['discord_channel'])
 
     test_user_id = DatabaseUser.get_user_id_from_discord_id(um['discord_id'], um['id_game'])
 
@@ -28,8 +28,8 @@ def test_get_user(postgresql):
     DatabaseConnection.cursor = cur
 
     id_game = DatabaseGame.add_game('shhesh')
-    um = {'id_game': id_game, 'discord_id': 78}
-    id_user = DatabaseUser.add_user(um['id_game'], um['discord_id'])
+    um = {'id_game': id_game, 'discord_id': 78, 'discord_channel': 514}
+    id_user = DatabaseUser.add_user(um['id_game'], um['discord_id'], um['discord_channel'])
 
     db_d = DatabaseUser.get_user(id_user)
 

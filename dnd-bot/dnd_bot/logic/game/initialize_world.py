@@ -8,11 +8,11 @@ import cv2 as cv
 
 from dnd_bot.database.database_connection import DatabaseConnection
 from dnd_bot.database.database_creature import DatabaseCreature
+from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_equipment import DatabaseEquipment
 from dnd_bot.database.database_item import DatabaseItem
-from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
-from dnd_bot.database.database_entity import DatabaseEntity
 from dnd_bot.database.database_player import DatabasePlayer
+from dnd_bot.logic.character_creation.chosen_attributes import ChosenAttributes
 from dnd_bot.logic.prototype.creature import Creature
 from dnd_bot.logic.prototype.entities.creatures.enemy import Enemy
 from dnd_bot.logic.prototype.entities.creatures.npc import NPC
@@ -26,43 +26,13 @@ from dnd_bot.logic.utils.utils import get_game_view
 class InitializeWorld:
 
     @staticmethod
-    async def load_entities(game, map_path, campaign_path):
+    def load_entities(game, map_path, campaign_path):
         """loads entities from json, players will be placed in random available spawning spots"""
 
         print("\n-- Initializing world --")
         time_snapshot = time.time()
-        with open(map_path) as file:
-            map_json = json.load(file)
-            entities_json = map_json['map']['entities']
-
-            # load entity types dict
-            entity_types = map_json['entity_types']
-
-            # load enemies and map elements from campaign json
-            with open(campaign_path) as file:
-                campaign_json = json.load(file)
-                enemies_json = campaign_json['entities']['enemies']
-                npc_json = campaign_json['entities']['npc']
-                map_elements_json = campaign_json['entities']['map_elements']
-
-                entities = []
-                player_spawning_points = []
-                for y, row in enumerate(entities_json):
-                    entities_row = []
-                    for x, entity in enumerate(row):
-                        if str(entity) not in entity_types:
-                            entities_row.append(None)
-
-                        elif entity_types[str(entity)] == 'Player':
-                            player_spawning_points.append((x, y))
-                            entities_row.append(None)
-                        else:
-                            entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y,
-                                                                      game.token, game.id, enemies_json, npc_json,
-                                                                      map_elements_json)
-
-                    entities.append(entities_row)
-
+        map_json, entities, player_spawning_points = InitializeWorld.load_entities_from_json(game, map_path,
+                                                                                             campaign_path)
         game.entities = copy.deepcopy(entities)
         print(f'   - loading entities from json - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
@@ -74,15 +44,52 @@ class InitializeWorld:
         InitializeWorld.spawn_players(game, player_spawning_points)
         print(f'   - spawning players - {round((time.time() - time_snapshot) * 1000, 2)} ms')
 
-        time_snapshot = time.time()
-        await InitializeWorld.add_entities_to_database(game)
-        print(f'   - adding entities to database - {round((time.time() - time_snapshot) * 1000, 2)} ms')
+        InitializeWorld.load_map_information(game, map_path)
 
-        game.sprite = str(map_json['map']['img_file'])  # path to raw map image
-        # generated image of map without fragile entities
-        game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
-        game.world_width = map_json['map']['size']['x']
-        game.world_height = map_json['map']['size']['y']
+    @staticmethod
+    def load_map_information(game, map_path):
+        with open(map_path) as file:
+            map_json = json.load(file)
+            game.sprite = str(map_json['map']['img_file'])  # path to raw map image
+            # generated image of map without fragile entities
+            game.sprite = cv.imread(get_game_view(game), cv.IMREAD_UNCHANGED)
+            game.world_width = map_json['map']['size']['x']
+            game.world_height = map_json['map']['size']['y']
+
+    @staticmethod
+    def load_entities_from_json(game, map_path, campaign_path):
+        with open(map_path) as file:
+            map_json = json.load(file)
+            entities_json = map_json['map']['entities']
+
+            # load entity types dict
+            entity_types = map_json['entity_types']
+
+        with open(campaign_path) as file:
+            campaign_json = json.load(file)
+            enemies_json = campaign_json['entities']['enemies']
+            npc_json = campaign_json['entities']['npc']
+            map_elements_json = campaign_json['entities']['map_elements']
+
+            entities = []
+            player_spawning_points = []
+            for y, row in enumerate(entities_json):
+                entities_row = []
+                for x, entity in enumerate(row):
+                    if str(entity) not in entity_types:
+                        entities_row.append(None)
+
+                    elif entity_types[str(entity)] == 'Player':
+                        player_spawning_points.append((x, y))
+                        entities_row.append(None)
+                    else:
+                        entities_row = InitializeWorld.add_entity(entities_row, entity_types[str(entity)], x, y,
+                                                                  game.token, game.id, enemies_json, npc_json,
+                                                                  map_elements_json)
+
+                entities.append(entities_row)
+
+        return map_json, entities, player_spawning_points
 
     @staticmethod
     def load_entity_rotations(game, map_path):
@@ -236,7 +243,9 @@ class InitializeWorld:
                                               p.base_intelligence, p.base_charisma, p.base_perception, p.initiative,
                                               p.action_points, p.level, p.discord_identity, p.alignment,
                                               p.backstory, id_game=game_id, character_race=p.character_race,
-                                              character_class=p.creature_class, id_equipment=p.equipment.id)
+                                              character_class=p.creature_class, id_equipment=p.equipment.id,
+                                              max_hp=p.max_hp, initial_action_points=p.initial_action_points,
+                                              look_direction=p.look_direction)
         p.id = id_player
 
         entities[y].insert(x, p)
@@ -302,7 +311,7 @@ class InitializeWorld:
             entities_in_row = [e for e in row if isinstance(e, Entity) and not isinstance(e, Player)]
             for entity in entities_in_row:
                 query, parameters = DatabaseEntity.add_entity_query(name=entity.name, x=entity.x, y=entity.y,
-                                                                    id_game=game.id)
+                                                                    id_game=game.id, look_direction=entity.look_direction)
                 queries.append(query)
                 parameters_list.append(parameters)
 
@@ -326,7 +335,8 @@ class InitializeWorld:
                                                                         action_points=creature.action_points,
                                                                         level=creature.level, id_game=game.id,
                                                                         experience=creature.experience,
-                                                                        id_entity=creature.id)
+                                                                        id_entity=creature.id, max_hp=creature.max_hp,
+                                                                        initial_action_points=creature.initial_action_points)
                 queries.append(query)
                 parameters_list.append(parameters)
 

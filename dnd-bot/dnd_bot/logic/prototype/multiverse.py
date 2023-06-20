@@ -21,6 +21,10 @@ class Multiverse:
         Multiverse.games[game.token] = copy.deepcopy(game)
 
     @staticmethod
+    def delete_game(game):
+        del Multiverse.games[game.token]
+
+    @staticmethod
     def generate_masks():
         """generates masks for every player's perception to overlap povs"""
         from dnd_bot.logic.utils.utils import generate_circle_points

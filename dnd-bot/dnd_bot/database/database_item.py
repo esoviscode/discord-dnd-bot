@@ -11,6 +11,9 @@ class DatabaseItem:
     def get_item(id_item) -> dict | None:
         query = f'SELECT * FROM public."Item" WHERE id_item = (%s)'
         db_t = DatabaseConnection.get_object_from_db(query, (id_item,), "Item")
+        if db_t is None:
+            return None
+
         return {'id_item': db_t[0], 'name': db_t[1]}
 
     @staticmethod
